@@ -207,66 +207,13 @@ export const DailyHabits: React.FC<DailyHabitsProps> = ({
     <div className="flex flex-col relative w-full h-full">
 
       {/* Header with inline navigation + stats */}
-      <div className="sticky top-0 z-20 bg-white/90 backdrop-blur-xl border-b border-[#e8eaed]">
+      <div className="sticky top-0 z-20">
         <Tabs tabs={tabs} activeTab={activeTab} onTabChange={onTabChange} onLogout={onLogout} isLoggingOut={isLoggingOut} />
       </div>
 
-      {/* History Date Picker */}
-      {isHistory && (
-        <div className="bg-white border-b border-[#e8eaed] p-3 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            {startDate !== todayStr ? (
-              <button 
-                onClick={() => {
-                  const d = new Date(todayStr);
-                  d.setDate(d.getDate() - 1);
-                  onDateChange?.(formatDateStr(d));
-                }}
-                className="w-10 h-10 rounded-full hover:bg-[#f0f1f5] flex items-center justify-center transition-colors text-[#8a8f97] hover:text-[#0a0a0a] touch-manipulation"
-                style={{ touchAction: 'manipulation' }}
-              >
-                <ChevronLeft className="w-5 h-5" />
-              </button>
-            ) : (
-              <div className="w-10 h-10" />
-            )}
-          </div>
-          
-          <div className="flex flex-col items-center flex-1 min-w-0">
-            <span className="text-[#0a0a0a] font-black text-sm truncate">{formatDateStr(new Date(todayStr))}</span>
-            <span className="text-[#8b98a5] text-[10px] font-bold uppercase tracking-widest">{new Date(todayStr).toLocaleDateString(undefined, { weekday: 'long' })}</span>
-          </div>
-
-          <div className="flex items-center gap-1.5">
-            {maxDate !== todayStr ? (
-              <button 
-                 onClick={() => {
-                  const d = new Date(todayStr);
-                  d.setDate(d.getDate() + 1);
-                  onDateChange?.(formatDateStr(d));
-                }}
-                className="w-10 h-10 rounded-full hover:bg-[#f0f1f5] flex items-center justify-center transition-colors text-[#8a8f97] hover:text-[#0a0a0a] touch-manipulation"
-                style={{ touchAction: 'manipulation' }}
-              >
-                <ChevronRight className="w-5 h-5" />
-              </button>
-            ) : (
-              <div className="w-10 h-10" />
-            )}
-            <button
-              onClick={() => useAppStore.getState().openHistoryGrid()}
-              className="w-10 h-10 rounded-full bg-[#f0f1f5] border border-[#e8eaed] hover:bg-[#e8eaed] flex items-center justify-center transition-all text-[#0a0a0a] active:scale-95 touch-manipulation"
-              title="Show History Grid"
-              style={{ touchAction: 'manipulation' }}
-            >
-              <LayoutGrid className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-      )}
-
-      <div>
-        <div className="px-5 py-3 md:px-6 md:py-4 flex flex-col md:flex-row md:items-center justify-between gap-2 md:gap-4 border-b border-[#e8eaed]">
+      {/* Sticky sub-header: categories/date/stats bar */}
+      <div className="sticky top-[72px] z-10 sub-nav">
+        <div className="px-5 py-3 md:px-6 md:py-4 flex flex-col md:flex-row md:items-center justify-between gap-2 md:gap-4 border-b border-[var(--border-soft)]">
           <div className="min-w-0 flex items-center gap-3">
             {/* Category Filter Button */}
             <div className="relative">
@@ -382,9 +329,63 @@ export const DailyHabits: React.FC<DailyHabitsProps> = ({
                   </span>
                 </div>
               )}
+
+              {/* Navigable Date - Shown on History page, same slot/style as To Do List */}
+              {isHistory && (
+                <div className="flex items-center gap-1 ml-2 shrink-0">
+                  {startDate !== todayStr ? (
+                    <button
+                      onClick={() => {
+                        const d = new Date(todayStr);
+                        d.setDate(d.getDate() - 1);
+                        onDateChange?.(formatDateStr(d));
+                      }}
+                      className="glass-hover w-7 h-7 rounded-full flex items-center justify-center text-[var(--text-muted)] hover:text-[var(--text-primary)] touch-manipulation shrink-0"
+                      style={{ touchAction: 'manipulation' }}
+                    >
+                      <ChevronLeft className="w-4 h-4" />
+                    </button>
+                  ) : (
+                    <div className="w-7 h-7 shrink-0" />
+                  )}
+
+                  <div className="flex items-center gap-2 px-0.5">
+                    <Clock className="w-3 h-3 text-[#8a8f97] shrink-0" />
+                    <span className="text-[#8b98a5] text-[9px] md:text-[11px] font-black uppercase tracking-[0.15em] whitespace-nowrap">
+                      {new Date(todayStr).toLocaleDateString('en-US', { weekday: 'short' })}, {new Date(todayStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                    </span>
+                  </div>
+
+                  {maxDate !== todayStr ? (
+                    <button
+                      onClick={() => {
+                        const d = new Date(todayStr);
+                        d.setDate(d.getDate() + 1);
+                        onDateChange?.(formatDateStr(d));
+                      }}
+                      className="glass-hover w-7 h-7 rounded-full flex items-center justify-center text-[var(--text-muted)] hover:text-[var(--text-primary)] touch-manipulation shrink-0"
+                      style={{ touchAction: 'manipulation' }}
+                    >
+                      <ChevronRight className="w-4 h-4" />
+                    </button>
+                  ) : (
+                    <div className="w-7 h-7 shrink-0" />
+                  )}
+                </div>
+              )}
           </div>
 
           <div className="flex items-center gap-2 md:gap-4 shrink-0">
+            {isHistory && (
+              <button
+                onClick={() => useAppStore.getState().openHistoryGrid()}
+                className="w-9 h-9 md:w-10 md:h-10 rounded-full bg-[var(--bg-soft)] border border-[var(--border-soft)] hover:bg-[var(--border-medium)] flex items-center justify-center transition-all text-[var(--text-primary)] active:scale-95 touch-manipulation shrink-0"
+                title="Show History Grid"
+                style={{ touchAction: 'manipulation' }}
+              >
+                <LayoutGrid className="w-4 h-4" />
+              </button>
+            )}
             {/* Done Chip */}
             <div className="bg-white border border-[#e8eaed] rounded-xl p-1.5 md:p-2 flex items-center gap-2 shadow-xl flex-1 md:flex-none justify-center md:justify-start">
                 <div 
@@ -449,7 +450,7 @@ export const DailyHabits: React.FC<DailyHabitsProps> = ({
                     </span>
                   )}
                 </div>
-                <div className="flex-1 h-px bg-[#e8eaed]" />
+                <div className="flex-1 h-px section-divider" />
                 <span className="text-[10px] font-black text-[#8a8f97] uppercase tracking-wider">
                   {phaseHabits.length} {phaseHabits.length === 1 ? 'CATEGORY' : 'CATEGORIES'}
                 </span>

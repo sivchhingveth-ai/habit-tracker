@@ -285,8 +285,8 @@ html[data-theme="dark"] .top-nav {
   background-color: rgba(10, 11, 15, 0.6);
 }
 
-.top-nav .nav-divide-r { border-right: 1px solid var(--border-soft); }
-.top-nav .nav-divide-l { border-left: 1px solid var(--border-soft); }
+.top-nav .nav-divide-r { border-right: 1px solid var(--border-medium); }
+.top-nav .nav-divide-l { border-left: 1px solid var(--border-medium); }
 
 /* Tab icon + label: muted by default, primary on hover/active */
 .top-nav .nav-tab-icon,
@@ -330,6 +330,56 @@ html[data-theme="dark"] .top-nav {
 }
 .top-nav .nav-icon-btn:hover { color: var(--text-primary); }
 .top-nav .nav-icon-btn--danger:hover { color: var(--accent-deep); }
+
+/* ============================================================
+   SUB NAV — sticky glass bar directly beneath .top-nav
+   Same frosted-glass treatment, stacked below the tabs bar so the
+   categories filter / date / done+streak stats stay visible and
+   never scroll out of view while browsing a long habit list.
+   ============================================================ */
+.sub-nav {
+  background-color: rgba(255, 255, 255, 0.72);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(20px) saturate(180%);
+}
+html[data-theme="dark"] .sub-nav {
+  background-color: rgba(10, 11, 15, 0.6);
+}
+
+/* ============================================================
+   SECTION DIVIDER — horizontal rule next to a category/phase
+   label (e.g. "HEALTH ─── 10 CATEGORIES"). Uses --border-medium
+   rather than --border-soft so it reads clearly against the page
+   background in both themes, instead of nearly disappearing.
+   ============================================================ */
+.section-divider {
+  background-color: var(--border-medium);
+}
+
+.section-divider-fade {
+  background-image: linear-gradient(to right, var(--border-medium), transparent);
+}
+
+/* ============================================================
+   CARD TOGGLE — circular expand/collapse button on habit cards
+   Mirrors the .nav-add treatment (soft outline circle -> solid
+   fill on activate) so it reads as a real, "designed" control
+   instead of a bare icon glyph, in both themes.
+   ============================================================ */
+.card-toggle {
+  background-color: var(--bg-soft);
+  border: 1px solid var(--border-soft);
+  color: var(--text-muted);
+}
+.card-toggle.is-active {
+  background-color: var(--text-primary);
+  border-color: transparent;
+  color: var(--bg-card);
+  box-shadow: var(--shadow-md);
+}
+.card-toggle.is-active svg {
+  transform: rotate(90deg);
+}
 
 .x-button-glass {
   background-color: #ffffff;

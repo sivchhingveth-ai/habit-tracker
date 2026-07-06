@@ -125,7 +125,7 @@ export const Detail: React.FC<DetailProps> = ({
             <div key={phaseKey} className="space-y-4">
               <div className="flex items-center gap-3">
                 <span className="text-[11px] font-black uppercase tracking-[0.3em]" style={{ color: phase.color }}>{phase.label}</span>
-                <div className="flex-1 h-px bg-[#e8eaed]" />
+                <div className="flex-1 h-px section-divider" />
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

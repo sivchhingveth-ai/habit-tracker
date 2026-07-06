@@ -398,12 +398,12 @@ export const Habits: React.FC<HabitsProps> = ({
                     <span className="text-[11px] md:text-[13px] font-black uppercase tracking-[0.2em]" style={{ color: phase.color }}>
                       {phase.label}
                     </span>
-                    <div className="h-px w-8 bg-[#2f3336] hidden md:block" />
+                    <div className="h-px w-8 section-divider hidden md:block" />
                     <span className="text-[9px] font-bold text-[#8a8f97] uppercase tracking-widest whitespace-nowrap">
                       {phaseHabits.length} {phaseHabits.length === 1 ? 'Category' : 'Categories'}
                     </span>
                   </div>
-                  <div className="flex-1 h-px bg-gradient-to-r from-[#2f3336] to-transparent" />
+                  <div className="flex-1 h-px section-divider-fade" />
                 </div>
 
                 <div className="grid gap-3 md:gap-4 grid-cols-1">
@@ -426,8 +426,8 @@ export const Habits: React.FC<HabitsProps> = ({
                         data-habit-id={String(habit.id)}
                         onClick={() => setShowActionsId(isExpanded ? null : habit.id)}
                         className={`w-full flex flex-col rounded-[24px] transition-all duration-500 group relative overflow-hidden cursor-pointer border-2 touch-manipulation ${
-                          isExpanded 
-                          ? 'bg-[#0a0a0a] border-white/[0.25] shadow-2xl z-[1]' 
+                          isExpanded
+                          ? 'bg-[var(--bg-card)] border-[var(--border-medium)] shadow-2xl z-[1]'
                           : 'bg-white/[0.02] border-white/[0.15] hover:bg-white/[0.04] hover:border-white/[0.25]'
                         }`}
                         style={{ touchAction: 'manipulation' }}
@@ -443,7 +443,7 @@ export const Habits: React.FC<HabitsProps> = ({
                           <div className="flex items-center gap-4 flex-1 min-w-0">
                             <div className="relative w-12 h-12 shrink-0">
                               <svg className="w-full h-full -rotate-90" viewBox="0 0 48 48">
-                                <circle cx="24" cy="24" r="21" fill="transparent" stroke="white" strokeOpacity="0.05" strokeWidth="4" />
+                                <circle cx="24" cy="24" r="21" fill="transparent" style={{ stroke: 'var(--border-soft)' }} strokeWidth="4" />
                                 <circle
                                   cx="24" cy="24" r="21"
                                   fill="transparent"
@@ -462,7 +462,7 @@ export const Habits: React.FC<HabitsProps> = ({
                             </div>
 
                             <div className="min-w-0">
-                              <h4 className={`text-[15px] md:text-[17px] font-black text-[#0a0a0a] uppercase tracking-tight group-hover:text-white transition-all ${
+                              <h4 className={`text-[15px] md:text-[17px] font-black text-[var(--text-primary)] uppercase tracking-tight transition-all ${
                                 isExpanded ? 'whitespace-normal break-words' : 'truncate'
                               }`}>
                                  {habit.name.toUpperCase()}
@@ -478,30 +478,32 @@ export const Habits: React.FC<HabitsProps> = ({
                           </div>
 
                           <div className="flex items-center gap-2 relative z-10">
-                             <AlignLeft className={`w-6 h-6 transition-all duration-300 ${isExpanded ? 'text-white' : 'text-[#8a8f97]'}`} />
+                            <div className={`card-toggle w-9 h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-all duration-300 ${isExpanded ? 'is-active' : ''}`}>
+                              <AlignLeft className="w-4 h-4 md:w-[18px] md:h-[18px] transition-transform duration-300" />
+                            </div>
                           </div>
                         </div>
 
                         {/* Expanded Content */}
                         {isExpanded && (
                           <div className="px-4 md:px-6 pb-6 pt-1 animate-in fade-in zoom-in-95 slide-in-from-top-4 duration-400 ease-out relative z-10 w-full max-w-full overflow-hidden">
-                            <div className="h-px bg-[#f0f1f5] mb-6" />
-                            
+                            <div className="h-px bg-[var(--border-soft)] mb-6" />
+
                             <div className="space-y-4">
                               {/* Action Row - Slim Line Style */}
-                              <div className="flex items-center justify-center gap-6 py-2 border-y border-[#e8eaed]" onClick={e => e.stopPropagation()}>
+                              <div className="flex items-center justify-center gap-6 py-2 border-y border-[var(--border-soft)]" onClick={e => e.stopPropagation()}>
                                 <button
                                   onClick={() => { setShowActionsId(null); onEditHabit(habit.id); }}
-                                  className="flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest text-[#8a8f97] hover:text-[#0a0a0a] transition-all touch-manipulation"
+                                  className="flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-all touch-manipulation"
                                   style={{ touchAction: 'manipulation' }}
                                 >
                                   <Pencil className="w-3 h-3" />
                                   Edit Category
                                 </button>
-                                <div className="w-[1px] h-3 bg-[#f0f1f5]" />
+                                <div className="w-[1px] h-3 bg-[var(--border-soft)]" />
                                 <button
                                   onClick={() => { setShowActionsId(null); onDeleteHabit(habit.id); }}
-                                  className="flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest text-[#8a8f97] hover:text-red-400 transition-all touch-manipulation"
+                                  className="flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)] hover:text-red-400 transition-all touch-manipulation"
                                   style={{ touchAction: 'manipulation' }}
                                 >
                                   <Trash2 className="w-3 h-3" />
@@ -510,19 +512,19 @@ export const Habits: React.FC<HabitsProps> = ({
                               </div>
 
                               {/* Description Section */}
-                              <div className="bg-white/[0.02] border border-[#e8eaed] rounded-[20px] p-4">
-                                <h5 className="text-[10px] font-black text-[#8a8f97] uppercase tracking-[0.25em] mb-2.5 flex items-center gap-2">
+                              <div className="bg-white/[0.02] border border-[var(--border-soft)] rounded-[20px] p-4">
+                                <h5 className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-[0.25em] mb-2.5 flex items-center gap-2">
                                   <Info className="w-3 h-3" />
                                   Description & Summary
                                 </h5>
-                                <div className="text-[13px] md:text-[14px] text-[#0a0a0a]/90 leading-relaxed font-medium italic whitespace-pre-wrap px-1">
+                                <div className="text-[13px] md:text-[14px] text-[var(--text-secondary)] leading-relaxed font-medium italic whitespace-pre-wrap px-1">
                                   {habit.description || "No detailed info provided."}
                                 </div>
                               </div>
 
                               {/* Recent Activity Bar */}
-                              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white/[0.01] p-4 rounded-xl border border-[#e8eaed]">
-                                <span className="text-[11px] font-black text-[#8a8f97] uppercase tracking-widest">Recent Activity</span>
+                              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white/[0.01] p-4 rounded-xl border border-[var(--border-soft)]">
+                                <span className="text-[11px] font-black text-[var(--text-muted)] uppercase tracking-widest">Recent Activity</span>
                                 <div className="flex gap-2 overflow-x-auto no-scrollbar py-1" style={{ WebkitOverflowScrolling: 'touch' }}>
                                   {currentWeekDates.map((d, i) => (
                                     <div
