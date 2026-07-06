@@ -98,6 +98,8 @@ interface AppStore extends TimeState, ModalState, FormState, UIState {
   closeHistoryGrid: () => void;
   nickname: string;
   setNickname: (name: string) => void;
+  avatar: string;
+  setAvatar: (emoji: string) => void;
 
   // Theme
   theme: Theme;
@@ -180,6 +182,7 @@ const useAppStore = create<AppStore>()(
       gymModalOpen: false,
       historyGridOpen: false,
       nickname: typeof window !== 'undefined' ? (localStorage.getItem('habit_tracker_nickname') || '') : '',
+      avatar: typeof window !== 'undefined' ? (localStorage.getItem('habit_tracker_avatar') || '') : '',
       theme: getInitialTheme(),
 
       // Time actions - single source of truth
@@ -270,6 +273,13 @@ const useAppStore = create<AppStore>()(
         }
         set({ nickname: name });
       },
+      setAvatar: (emoji) => {
+        if (typeof window !== 'undefined') {
+          if (emoji) localStorage.setItem('habit_tracker_avatar', emoji);
+          else localStorage.removeItem('habit_tracker_avatar');
+        }
+        set({ avatar: emoji });
+      },
 
       // Theme actions
       setTheme: (theme) => {
@@ -289,6 +299,7 @@ const useAppStore = create<AppStore>()(
         // Only persist UI preferences, not time-sensitive data
         activeTab: state.activeTab,
         nickname: state.nickname,
+        avatar: state.avatar,
       }),
     }
   )

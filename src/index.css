@@ -1,5 +1,16 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
 @import "tailwindcss";
+
+/* Geist Pixel (self-hosted, OFL license in /fonts/GeistPixel-OFL.txt).
+   Single-weight pixel face; the 100–900 weight range maps every
+   font-weight utility to the same glyphs so browsers never smear the
+   pixels with synthesized faux-bold. */
+@font-face {
+  font-family: 'Geist Pixel';
+  src: url('/fonts/GeistPixel-Variable.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
 
 :root {
   --bg-page: #f4f5f8;
@@ -86,7 +97,7 @@ html[data-theme="dark"] {
 }
 
 body {
-  font-family: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family: 'Geist Pixel', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   background-color: var(--bg-page);
   color: var(--text-primary);
   letter-spacing: -0.02em;

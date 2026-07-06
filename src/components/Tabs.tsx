@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { ListChecks, Plus, Clock, Dumbbell, LogOut, Loader2, User as UserIcon, Sun, Moon } from 'lucide-react';
 import useAppStore from '../store/appStore';
+import { avatarBackground } from '../utils/avatars';
 
 interface TabsProps {
   tabs: string[];
@@ -20,6 +21,7 @@ const TAB_ICONS: Record<string, React.ComponentType<{ className?: string; stroke
 export const Tabs: React.FC<TabsProps> = ({ tabs, activeTab, onTabChange, onLogout, isLoggingOut }) => {
   const activeTabRef = useRef<HTMLButtonElement>(null);
   const nickname = useAppStore((s) => s.nickname);
+  const avatar = useAppStore((s) => s.avatar);
   const openProfileModal = useAppStore((s) => s.openProfileModal);
   const theme = useAppStore((s) => s.theme);
   const toggleTheme = useAppStore((s) => s.toggleTheme);
@@ -89,11 +91,15 @@ export const Tabs: React.FC<TabsProps> = ({ tabs, activeTab, onTabChange, onLogo
             <div
               className="w-8 h-8 md:w-9 md:h-9 rounded-full flex items-center justify-center text-[12px] md:text-[13px] font-black text-white shrink-0"
               style={{
-                background: 'linear-gradient(135deg, #4e55e0 0%, #7856ff 100%)',
-                boxShadow: '0 2px 8px rgba(78, 85, 224, 0.3)',
+                background: avatarBackground(avatar),
+                boxShadow: '0 2px 8px rgba(10, 10, 10, 0.25)',
               }}
             >
-              {initial || <UserIcon className="w-4 h-4" />}
+              {avatar ? (
+                <span className="text-[16px] md:text-[18px] leading-none drop-shadow-sm">{avatar}</span>
+              ) : (
+                initial || <UserIcon className="w-4 h-4" />
+              )}
             </div>
             {nickname.trim() && (
               <span className="hidden md:inline text-[12px] font-black uppercase tracking-wider max-w-[120px] truncate">

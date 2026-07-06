@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Sparkles, User } from 'lucide-react';
+import { Sparkles, User, Timer, Repeat } from 'lucide-react';
 import { Tabs } from './Tabs';
 import { WORKOUTS, WORKOUT_QUOTES, Gender, Level, Workout } from '../utils/workouts';
 
@@ -137,52 +137,71 @@ export const GymView: React.FC<GymViewProps> = ({
               </div>
 
               <div className="p-3 space-y-1.5">
-                {workout.exercises.map((ex, i) => {
-                  const isRest = ex.name.toLowerCase().includes('rest') || ex.name.toLowerCase().includes('repeat');
-                  return (
-                    <div
-                      key={i}
-                      className={`flex items-center gap-3 p-2.5 rounded-xl ${
-                        isRest
-                          ? 'bg-[#f8f9fb] border border-dashed border-[#e8eaed]'
-                          : 'bg-[#f8f9fb]'
-                      }`}
-                    >
+                {(() => {
+                  let exerciseNumber = 0;
+                  return workout.exercises.map((ex, i) => {
+                    const isRepeat = ex.name.toLowerCase().includes('repeat');
+                    const isRest = isRepeat || ex.name.toLowerCase().includes('rest');
+
+                    if (isRest) {
+                      const BreakIcon = isRepeat ? Repeat : Timer;
+                      return (
+                        <div key={i} className="flex items-center gap-2.5 py-1">
+                          <div className="flex-1 border-t border-dashed border-[#d9dce2]" />
+                          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-dashed border-[#d9dce2] bg-[#f8f9fb] shrink-0">
+                            <BreakIcon className="w-3 h-3 text-[#8a8f97]" strokeWidth={2.5} />
+                            <span className="text-[9px] md:text-[10px] font-black uppercase tracking-wider text-[#8a8f97] whitespace-nowrap">
+                              {ex.name} · {ex.duration}
+                            </span>
+                          </div>
+                          <div className="flex-1 border-t border-dashed border-[#d9dce2]" />
+                        </div>
+                      );
+                    }
+
+                    exerciseNumber += 1;
+                    return (
                       <div
-                        className="w-7 h-7 rounded-lg flex items-center justify-center text-[11px] font-black shrink-0"
-                        style={{
-                          backgroundColor: isRest ? 'transparent' : `${levelMeta.color}20`,
-                          color: isRest ? '#8a8f97' : levelMeta.color,
-                          border: isRest ? '1px dashed #d9dce2' : 'none',
-                        }}
+                        key={i}
+                        className="flex items-center gap-3 p-3 rounded-xl bg-[#f8f9fb] border border-transparent hover:border-[#e8eaed] hover:shadow-sm transition-all"
                       >
-                        {isRest ? '·' : i + 1}
+                        <div
+                          className="w-9 h-9 rounded-xl flex items-center justify-center text-[12px] font-black shrink-0"
+                          style={{
+                            background: `linear-gradient(135deg, ${levelMeta.color}28 0%, ${levelMeta.color}10 100%)`,
+                            color: levelMeta.color,
+                          }}
+                        >
+                          {exerciseNumber}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-[13px] md:text-[14px] font-bold text-[#0a0a0a] truncate">
+                            {ex.name}
+                          </p>
+                          {ex.reps && (
+                            <p className="text-[10px] md:text-[11px] text-[#8a8f97] font-medium mt-0.5 truncate">{ex.reps}</p>
+                          )}
+                        </div>
+                        <div
+                          className="shrink-0 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider whitespace-nowrap"
+                          style={{ backgroundColor: `${levelMeta.color}18`, color: levelMeta.color }}
+                        >
+                          {ex.duration}
+                        </div>
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <p className={`text-[13px] font-bold truncate ${isRest ? 'text-[#8a8f97] italic' : 'text-[#0a0a0a]'}`}>
-                          {ex.name}
-                        </p>
-                        {ex.reps && (
-                          <p className="text-[10px] text-[#8a8f97] font-medium mt-0.5">{ex.reps}</p>
-                        )}
-                      </div>
-                      <div
-                        className="text-[10px] font-black uppercase tracking-wider shrink-0"
-                        style={{ color: isRest ? '#8a8f97' : levelMeta.color }}
-                      >
-                        {ex.duration}
-                      </div>
-                    </div>
-                  );
-                })}
+                    );
+                  });
+                })()}
               </div>
 
               <div className="p-4 bg-[#f8f9fb] border-t border-[#e8eaed]">
-                <div className="flex items-start gap-2">
-                  <Sparkles className="w-3.5 h-3.5 text-[#b08d2e] shrink-0 mt-0.5" />
-                  <div>
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 bg-[#f7cd63]/25">
+                    <Sparkles className="w-4 h-4 text-[#b08d2e]" />
+                  </div>
+                  <div className="min-w-0">
                     <p className="text-[9px] font-black text-[#8a8f97] uppercase tracking-widest mb-1">Coach Tip</p>
-                    <p className="text-[12px] text-[#0a0a0a] font-medium leading-snug">
+                    <p className="text-[12px] md:text-[13px] text-[#0a0a0a] font-medium leading-snug">
                       {workout.tip}
                     </p>
                   </div>

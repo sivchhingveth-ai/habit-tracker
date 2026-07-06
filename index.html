@@ -24,10 +24,8 @@
         }
       })();
     </script>
-    <!-- Preconnect for faster font loading -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <!-- Use only Outfit font (loaded in CSS) to avoid double loading -->
+    <!-- Preload the self-hosted Geist Pixel font for faster first paint -->
+    <link rel="preload" href="/fonts/GeistPixel-Variable.woff2" as="font" type="font/woff2" crossorigin>
     <title>Elite Habit Tracker</title>
   </head>
   <body>
