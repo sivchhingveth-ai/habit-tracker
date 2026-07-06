@@ -13,21 +13,19 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-md animate-fade-in" onClick={onClose}></div>
-      <div className="relative bg-black w-full max-w-[600px] rounded-2xl shadow-2xl overflow-hidden animate-slide-up border border-[#2f3336] max-h-[90vh] flex flex-col">
-        {/* Header */}
-        <div className="px-4 h-[44px] flex items-center gap-3 border-b border-[#2f3336]">
+      <div className="absolute inset-0 bg-black/30 backdrop-blur-sm animate-fade-in" onClick={onClose}></div>
+      <div className="relative bg-white w-full max-w-[600px] rounded-3xl shadow-2xl overflow-hidden animate-slide-up border border-[#e8eaed] max-h-[90vh] flex flex-col">
+        <div className="px-5 h-[56px] flex items-center gap-3 border-b border-[#e8eaed]">
           <button
             onClick={onClose}
-            className="w-7 h-7 rounded-full flex items-center justify-center bg-white/[0.08] border border-white/10 hover:bg-white/[0.15] transition-all active:scale-95"
+            className="w-8 h-8 rounded-full flex items-center justify-center bg-[#f0f1f5] hover:bg-[#e8eaed] transition-all active:scale-95"
           >
-            <CloseIcon className="w-[14px] h-[14px] text-[#eff3f4]" />
+            <CloseIcon className="w-[14px] h-[14px] text-[#0a0a0a]" />
           </button>
-          <h2 className="text-[15px] md:text-[17px] font-black text-[#eff3f4] tracking-tight">{title}</h2>
+          <h2 className="text-[16px] md:text-[18px] font-black text-[#0a0a0a] tracking-tight">{title}</h2>
         </div>
         
-        {/* Content */}
-        <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
+        <div className="flex-1 overflow-y-auto p-5 custom-scrollbar">
           {children}
         </div>
       </div>

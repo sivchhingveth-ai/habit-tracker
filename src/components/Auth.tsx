@@ -16,7 +16,6 @@ export const Auth: React.FC = () => {
   const [message, setMessage] = useState<string | null>(null);
   const [isSignUp, setIsSignUp] = useState(false);
 
-  // Load remembered email and password
   React.useEffect(() => {
     const savedEmail = localStorage.getItem('remembered_email');
     const savedPassword = localStorage.getItem('remembered_password');
@@ -26,10 +25,13 @@ export const Auth: React.FC = () => {
     }
     if (savedPassword) {
       try {
-        setPassword(atob(savedPassword));
+        if (/^[A-Za-z0-9+/]*={0,2}$/.test(savedPassword)) {
+          setPassword(atob(savedPassword));
+        } else {
+          localStorage.removeItem('remembered_password');
+        }
       } catch (e) {
-        // Handle old or invalid encoded passwords gracefully
-        console.error('Could not decode saved password');
+        localStorage.removeItem('remembered_password');
       }
     }
   }, []);
@@ -42,7 +44,6 @@ export const Auth: React.FC = () => {
     try {
       const normalizedEmail = email.trim().toLowerCase();
       
-      // Pre-flight check for duplicates during Sign Up
       if (isSignUp) {
         const exists = await convex.query(api.users.checkEmailExists, { email: normalizedEmail });
         if (exists) {
@@ -61,7 +62,11 @@ export const Auth: React.FC = () => {
         if (rememberMe) {
           localStorage.setItem('remembered_email', email);
           if (password) {
-            localStorage.setItem('remembered_password', btoa(password));
+            try {
+              localStorage.setItem('remembered_password', btoa(unescape(encodeURIComponent(password))));
+            } catch (e) {
+              localStorage.removeItem('remembered_password');
+            }
           }
         } else {
           localStorage.removeItem('remembered_email');
@@ -91,33 +96,37 @@ export const Auth: React.FC = () => {
     }
   };
 
+  const inputClass = "w-full bg-white border border-[#e8eaed] pl-12 pr-4 py-3 rounded-xl text-[#0a0a0a] text-base focus:border-[#4e55e0] focus:ring-2 focus:ring-[#4e55e0]/10 outline-none transition-all placeholder-[#8a8f97]";
+
   return (
-    <div className="min-h-[100dvh] flex items-center justify-center bg-black p-4 relative overflow-hidden">
-        {/* Ambient background glow */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[#1d9bf0]/10 rounded-full blur-[120px] pointer-events-none" />
+    <div className="min-h-[100dvh] flex items-center justify-center bg-[var(--bg-page)] p-4 relative overflow-hidden">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[#4e55e0]/8 rounded-full blur-[120px] pointer-events-none" />
         
         <div className="w-full max-w-md relative z-10">
-            <div className="bg-[#16181c] border border-[#2f3336] rounded-3xl p-8 shadow-2xl">
+            <div className="bg-white border border-[#e8eaed] rounded-3xl p-8 shadow-xl">
                 <div className="text-center mb-8">
-                    <h1 className="text-3xl font-black text-[#eff3f4] mb-2 uppercase tracking-tight">
+                    <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-[#4e55e0] to-[#7856ff] mb-4 shadow-lg">
+                      <Lock className="w-6 h-6 text-white" />
+                    </div>
+                    <h1 className="text-3xl font-black text-[#0a0a0a] mb-2 tracking-tight">
                         {isSignUp ? 'Create Account' : 'Welcome Back'}
                     </h1>
-                    <p className="text-[#71767b] font-bold">
+                    <p className="text-[#8a8f97] font-medium text-sm">
                         {isSignUp ? 'Join the habit tracking revolution' : 'Sign in to continue your progress'}
                     </p>
                 </div>
 
                 <form onSubmit={handleAuth} className="space-y-4">
                     <div>
-                        <label className="text-[14px] font-bold text-[#eff3f4] mb-1.5 block">Email Address</label>
+                        <label className="text-[12px] font-black text-[#4a4f5a] uppercase tracking-widest mb-1.5 block">Email Address</label>
                         <div className="relative">
-                            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#71767b]" />
+                            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#8a8f97]" />
                             <input 
                                 type="email" 
                                 required
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
-                                className="w-full bg-black border border-[#2f3336] pl-12 pr-4 py-3 rounded-xl text-[#eff3f4] text-base focus:border-[#1d9bf0] outline-none transition-all placeholder-[#71767b]"
+                                className={inputClass}
                                 placeholder="name@example.com"
                             />
                         </div>
@@ -125,22 +134,22 @@ export const Auth: React.FC = () => {
 
                     <div>
                         <div className="flex justify-between items-center mb-1.5">
-                            <label className="text-[14px] font-bold text-[#eff3f4]">Password</label>
+                            <label className="text-[12px] font-black text-[#4a4f5a] uppercase tracking-widest">Password</label>
                         </div>
                         <div className="relative">
-                            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#71767b]" />
+                            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#8a8f97]" />
                             <input 
                                 type={showPassword ? "text" : "password"} 
                                 required
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
-                                className="w-full bg-black border border-[#2f3336] pl-12 pr-12 py-3 rounded-xl text-[#eff3f4] text-base focus:border-[#1d9bf0] outline-none transition-all placeholder-[#71767b]"
+                                className={`${inputClass} pr-12`}
                                 placeholder="••••••••"
                             />
                             <button
                                 type="button"
                                 onClick={() => setShowPassword(!showPassword)}
-                                className="absolute right-4 top-1/2 -translate-y-1/2 text-[#71767b] hover:text-[#eff3f4] transition-colors"
+                                className="absolute right-4 top-1/2 -translate-y-1/2 text-[#8a8f97] hover:text-[#0a0a0a] transition-colors"
                             >
                                 {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                             </button>
@@ -157,29 +166,29 @@ export const Auth: React.FC = () => {
                                       onChange={(e) => setRememberMe(e.target.checked)}
                                       className="peer sr-only"
                                   />
-                                  <div className="w-5 h-5 border-2 border-[#2f3336] rounded-md peer-checked:bg-[#1d9bf0] peer-checked:border-[#1d9bf0] transition-all" />
+                                  <div className="w-5 h-5 border-2 border-[#e8eaed] rounded-md peer-checked:bg-[#4e55e0] peer-checked:border-[#4e55e0] transition-all" />
                                   <CheckIcon className="absolute w-3.5 h-3.5 text-white left-[3px] opacity-0 peer-checked:opacity-100 transition-opacity" strokeWidth={4} />
                               </div>
-                              <span className="text-[13px] font-bold text-[#71767b] group-hover:text-[#eff3f4] transition-colors">Remember Me</span>
+                              <span className="text-[13px] font-bold text-[#4a4f5a] group-hover:text-[#0a0a0a] transition-colors">Remember Me</span>
                           </label>
                       </div>
                     )}
 
                     {error && (
-                        <div className="text-red-500 text-sm font-bold bg-red-500/10 p-4 rounded-xl border border-red-500/20 space-y-2">
+                        <div className="text-[#d05a96] text-sm font-bold bg-[#fc8fc6]/10 p-4 rounded-xl border border-[#fc8fc6]/30 space-y-2">
                             <p>{error}</p>
                         </div>
                     )}
 
                     {message && (
-                        <p className="text-[#00ba7c] text-sm font-bold bg-[#00ba7c]/10 p-3 rounded-lg border border-[#00ba7c]/20">
+                        <p className="text-[#6fa83b] text-sm font-bold bg-[#b8eb6c]/20 p-3 rounded-lg border border-[#b8eb6c]/40">
                             {message}
                         </p>
                     )}
 
                     <button 
                         disabled={loading}
-                        className="x-button-primary w-full py-4 text-[17px] mt-2 group"
+                        className="x-button-primary w-full py-4 text-[15px] mt-2 group"
                     >
                         {loading ? (
                             <Loader2 className="w-5 h-5 animate-spin mx-auto" />
@@ -195,14 +204,14 @@ export const Auth: React.FC = () => {
                 <div className="mt-8 text-center space-y-4">
                     <button 
                         onClick={() => { setIsSignUp(!isSignUp); setError(null); setMessage(null); }}
-                        className="text-[#1d9bf0] font-bold hover:underline transition-all block w-full"
+                        className="text-[#4e55e0] font-bold hover:underline transition-all block w-full text-sm"
                     >
                         {isSignUp ? 'Already have an account? Sign In' : "Don't have an account? Sign Up"}
                     </button>
                 </div>
             </div>
 
-            <p className="text-center mt-8 text-[#71767b] text-sm">
+            <p className="text-center mt-8 text-[#8a8f97] text-xs font-medium">
                 Securely synced with Convex
             </p>
         </div>

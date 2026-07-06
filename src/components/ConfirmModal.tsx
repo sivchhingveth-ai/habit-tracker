@@ -25,7 +25,7 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={title}>
       <div className="space-y-6 pt-2">
-        <p className="text-[#71767b] text-[17px] leading-normal font-medium px-1">
+        <p className="text-[#4a4f5a] text-[15px] leading-normal font-medium px-1">
           {message}
         </p>
         
@@ -37,7 +37,7 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
             }}
             className={`w-full py-3 md:py-3.5 text-[15px] md:text-[16px] font-black transition-all rounded-2xl ${
               isDestructive 
-                ? 'bg-[#f4212e] text-white hover:bg-[#d71e28]' 
+                ? 'bg-[#d05a96] text-white hover:bg-[#b94a82]' 
                 : 'x-button-primary'
             }`}
           >

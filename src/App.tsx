@@ -20,6 +20,10 @@ import { Modal } from './components/Modal';
 import { ConfirmModal } from './components/ConfirmModal';
 import { DatePicker } from './components/DatePicker';
 import { Auth } from './components/Auth';
+import { ProfileModal } from './components/ProfileModal';
+import { GymView } from './components/GymView';
+import { HistoryGrid } from './components/HistoryGrid';
+import useAppStore from './store/appStore';
 import { Plus, Loader2, ShieldAlert, ArrowUp } from 'lucide-react';
 import { Habit, SavingGoal } from './types';
 import { getEffectiveDateStr, getEffectiveDate, formatDateStr, calculateStreak } from './utils/dateUtils';
@@ -31,7 +35,9 @@ export default function App() {
   const { signOut } = useAuthActions();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [loadingTimeout, setLoadingTimeout] = useState(false);
-  const tabs = ['To Do List', 'Add Workspace', 'History'];
+  const tabs = ['To Do List', 'Add Workspace', 'Gym', 'History'];
+  const historyGridOpen = useAppStore((s) => s.historyGridOpen);
+  const closeHistoryGrid = useAppStore((s) => s.closeHistoryGrid);
   const [historyDate, setHistoryDate] = useState(todayStr);
 
   const [showScrollTop, setShowScrollTop] = useState(false);
@@ -495,26 +501,25 @@ export default function App() {
 
   if (isLoading) {
     return (
-      <div className="h-[100dvh] bg-black flex flex-col items-center justify-center gap-6 relative overflow-hidden">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] bg-[#1d9bf0]/10 rounded-full blur-[80px] pointer-events-none" />
+      <div className="h-[100dvh] bg-[var(--bg-page)] flex flex-col items-center justify-center gap-6 relative overflow-hidden">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] bg-[#4e55e0]/10 rounded-full blur-[80px] pointer-events-none" />
         <div className="relative">
-          <Loader2 className="w-12 h-12 text-[#1d9bf0] animate-spin" />
-          <div className="absolute inset-0 blur-xl bg-[#1d9bf0]/20 animate-pulse" />
+          <Loader2 className="w-12 h-12 text-[#4e55e0] animate-spin" />
         </div>
         <div className="text-center space-y-3 relative z-10 px-6">
           <div className="space-y-1">
-            <p className="text-[#71767b] font-black animate-pulse uppercase tracking-[0.2em] text-[10px]">Establishing Secure Link</p>
-            <p className="text-[#eff3f4] font-bold text-sm">Loading your categories...</p>
+            <p className="text-[#8a8f97] font-black animate-pulse uppercase tracking-[0.2em] text-[10px]">Establishing Secure Link</p>
+            <p className="text-[#0a0a0a] font-bold text-sm">Loading your categories...</p>
           </div>
 
           {loadingTimeout && (
             <div className="pt-4 animate-in fade-in slide-in-from-bottom-2 duration-700">
-              <p className="text-red-400 text-xs font-bold mb-3 max-w-[200px] mx-auto">
+              <p className="text-[#d65a96] text-xs font-bold mb-3 max-w-[200px] mx-auto">
                 Connection is taking longer than expected. Please check your internet.
               </p>
               <button
                 onClick={() => window.location.reload()}
-                className="bg-white/10 hover:bg-white/20 text-[#eff3f4] px-4 py-2 rounded-full text-xs font-bold border border-white/10 transition-all"
+                className="bg-white hover:bg-[#f0f1f5] text-[#0a0a0a] px-4 py-2 rounded-full text-xs font-bold border border-[#e8eaed] transition-all shadow-sm"
               >
                 Retry Connection
               </button>
@@ -529,31 +534,24 @@ export default function App() {
     return <Auth />;
   }
 
-  const inputClass = "w-full bg-[#16181c] border border-[#2f3336] px-3 py-2.5 md:py-3 rounded-xl text-[13px] md:text-[14px] text-[#eff3f4] placeholder-[#71767b] outline-none focus:border-[#1d9bf0] transition-all focus:bg-black";
-  const labelClass = "text-[9px] md:text-[10px] font-black text-[#71767b] uppercase tracking-widest mb-1.5 block px-1";
-  const submitClass = "x-button-primary w-full py-3 text-[14px] font-black rounded-xl shadow-[0_0_20px_rgba(29,155,240,0.2)]";
+  const inputClass = "w-full bg-white border border-[#e8eaed] px-3 py-2.5 md:py-3 rounded-xl text-[13px] md:text-[14px] text-[#0a0a0a] placeholder-[#8a8f97] outline-none focus:border-[#4e55e0] focus:ring-2 focus:ring-[#4e55e0]/10 transition-all";
+  const labelClass = "text-[9px] md:text-[10px] font-black text-[#8a8f97] uppercase tracking-widest mb-1.5 block px-1";
+  const submitClass = "x-button-primary w-full py-3 text-[14px] font-black rounded-xl";
 
   return (
-    <div className="h-[100dvh] flex flex-col bg-black text-white font-sans antialiased overflow-hidden relative w-full">
+    <div className="h-[100dvh] flex flex-col bg-[var(--bg-page)] text-[var(--text-primary)] font-sans antialiased overflow-hidden relative w-full">
       {/* Offline Notice */}
       {!isOnline && (
-        <div className="bg-red-500/10 border-b border-red-500/20 py-2 px-4 flex items-center gap-2 z-[100]">
-          <ShieldAlert className="w-4 h-4 text-red-500" />
-          <p className="text-[10px] md:text-[11px] font-black uppercase tracking-widest text-red-100">
+        <div className="bg-[#fff3cd] border-b border-[#f7cd63]/40 py-2 px-4 flex items-center gap-2 z-[100]">
+          <ShieldAlert className="w-4 h-4 text-[#b08d2e]" />
+          <p className="text-[10px] md:text-[11px] font-black uppercase tracking-widest text-[#7a6320]">
             Offline — Progress will sync when reconnected
           </p>
         </div>
       )}
 
-      {/* Premium Background Ambiance — Wrapped to prevent horizontal overflow */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-[#1d9bf0]/10 rounded-full blur-[120px] animate-pulse" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-[#7856ff]/10 rounded-full blur-[120px] animate-pulse" style={{ animationDelay: '1s' }} />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[30%] h-[30%] bg-[#22c55e]/5 rounded-full blur-[100px]" />
-      </div>
-
-      <main className="flex-1 overflow-y-auto relative z-10 overscroll-contain bg-black/50 overflow-x-hidden">
-        <div className="max-w-[1000px] mx-auto border-x border-[#2f3336] min-h-full bg-black shadow-2xl relative flex flex-col w-full">
+      <main className="flex-1 overflow-y-auto relative z-10 overscroll-contain overflow-x-hidden">
+        <div className="max-w-[1000px] mx-auto min-h-full bg-[var(--bg-page)] relative flex flex-col w-full">
           {activeTab === 'To Do List' && (
             <div key={activeTab}>
               <DailyHabits
@@ -603,22 +601,33 @@ export default function App() {
               />
             </div>
           )}
+          {activeTab === 'Gym' && (
+            <div key={activeTab} className="flex-1 flex flex-col min-h-0">
+              <GymView
+                tabs={tabs}
+                activeTab={activeTab}
+                onTabChange={setActiveTab}
+                onLogout={handleLogout}
+                isLoggingOut={isLoggingOut}
+              />
+            </div>
+          )}
 
 
-          {/* Floating Scroll to Top Button — Global for all tabs */}
-          <div 
-            className={`fixed bottom-16 right-6 min-[1000px]:right-[calc(50%-465px)] z-[60] transition-all duration-500 transform ${
-              showScrollTop ? 'translate-y-0 opacity-100 scale-100' : 'translate-y-10 opacity-0 scale-75 pointer-events-none'
-            }`}
-          >
-            <button
-              onClick={scrollToTop}
-              className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-xl border border-white/20 flex items-center justify-center shadow-2xl hover:bg-white/20 active:scale-95 group transition-all"
-              aria-label="Scroll to top"
-            >
-              <ArrowUp className="w-6 h-6 text-[#eff3f4] group-hover:-translate-y-1 transition-transform duration-300" />
-            </button>
-          </div>
+      {/* Floating Scroll to Top Button — Global for all tabs */}
+      <div 
+        className={`fixed bottom-16 right-6 min-[1000px]:right-[calc(50%-465px)] z-[60] transition-all duration-500 transform ${
+          showScrollTop ? 'translate-y-0 opacity-100 scale-100' : 'translate-y-10 opacity-0 scale-75 pointer-events-none'
+        }`}
+      >
+        <button
+          onClick={scrollToTop}
+          className="w-12 h-12 rounded-full bg-white border border-[#e8eaed] flex items-center justify-center shadow-lg hover:shadow-xl active:scale-95 group transition-all"
+          aria-label="Scroll to top"
+        >
+          <ArrowUp className="w-6 h-6 text-[#0a0a0a] group-hover:-translate-y-1 transition-transform duration-300" />
+        </button>
+      </div>
         </div>
       </main>
 
@@ -636,7 +645,7 @@ export default function App() {
                 {[
                   { name: 'Health', time: 'reset' },
                   { name: 'Growth', time: 'growth' },
-                  { name: 'Discipline', time: 'distraction' },
+                  { name: 'Reset', time: 'distraction' },
                   { name: 'Eliminate', time: 'any' },
                   { name: 'Boundary', time: 'spending' }
                 ].map(phase => (
@@ -644,8 +653,8 @@ export default function App() {
                     key={phase.name}
                     onClick={(e) => { e.preventDefault(); setNewHabitTime(phase.time); }}
                     className={`px-2.5 py-1.5 rounded-lg text-[9px] md:text-[10px] font-black uppercase tracking-wider transition-all border ${newHabitTime === phase.time
-                      ? 'bg-white border-white text-black shadow-[0_0_10px_rgba(255,255,255,0.2)]'
-                      : 'bg-[#16181c] border-[#2f3336] text-[#71767b] hover:border-white/30 hover:text-[#eff3f4]'
+                      ? 'bg-[#0a0a0a] border-[#0a0a0a] text-white'
+                      : 'bg-white border-[#e8eaed] text-[#8a8f97] hover:border-[#0a0a0a] hover:text-[#0a0a0a]'
                       }`}
                   >
                     {phase.name}
@@ -681,7 +690,7 @@ export default function App() {
           </div>
 
           {habitError && (
-            <div className="text-red-500 text-[11px] font-bold bg-red-500/10 border border-red-500/20 px-3 py-2.5 rounded-xl animate-fade-in flex items-center justify-center">
+            <div className="text-[#d05a96] text-[11px] font-bold bg-[#fc8fc6]/10 border border-[#fc8fc6]/30 px-3 py-2.5 rounded-xl animate-fade-in flex items-center justify-center">
               {habitError}
             </div>
           )}
@@ -712,7 +721,7 @@ export default function App() {
             </div>
           </div>
           {spendingError && (
-            <div className="text-red-500 text-[11px] font-bold bg-red-500/10 border border-red-500/20 px-3 py-2.5 rounded-xl animate-fade-in flex items-center justify-center">
+            <div className="text-[#d05a96] text-[11px] font-bold bg-[#fc8fc6]/10 border border-[#fc8fc6]/30 px-3 py-2.5 rounded-xl animate-fade-in flex items-center justify-center">
               {spendingError}
             </div>
           )}
@@ -730,6 +739,11 @@ export default function App() {
         title={confirmModal.title}
         message={confirmModal.message}
       />
+
+      <ProfileModal />
+      {historyGridOpen && (
+        <HistoryGrid habits={habits} onClose={closeHistoryGrid} />
+      )}
     </div>
   );
 }

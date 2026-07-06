@@ -2,6 +2,39 @@ import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 import { getEffectiveDateStr, getEffectiveDate } from '../utils/dateUtils';
 
+export type Theme = 'light' | 'dark';
+const THEME_KEY = 'habit_tracker_theme';
+
+function getInitialTheme(): Theme {
+  if (typeof window === 'undefined') return 'light';
+  const saved = localStorage.getItem(THEME_KEY);
+  if (saved === 'light' || saved === 'dark') return saved;
+  return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+    ? 'dark'
+    : 'light';
+}
+
+let _themeTransitionTimer: ReturnType<typeof setTimeout> | undefined;
+function applyTheme(theme: Theme, animate = false) {
+  if (typeof document === 'undefined') return;
+  const root = document.documentElement;
+  // On explicit user toggles, add a short-lived class that enables a global
+  // cross-fade of colors/backgrounds/borders across the entire app, then
+  // removes it so it never interferes with normal hover/tap transitions.
+  if (animate) {
+    root.classList.add('theme-transition');
+    if (_themeTransitionTimer) clearTimeout(_themeTransitionTimer);
+    _themeTransitionTimer = setTimeout(() => {
+      root.classList.remove('theme-transition');
+    }, 500);
+  }
+  root.setAttribute('data-theme', theme);
+}
+
+// Keep the DOM in sync on first import (the inline script in index.html
+// handles the pre-paint case; this covers hydration and HMR).
+applyTheme(getInitialTheme());
+
 interface TimeState {
   now: Date;
   todayStr: string;
@@ -54,7 +87,23 @@ interface AppStore extends TimeState, ModalState, FormState, UIState {
   closeModal: () => void;
   openConfirmModal: (title: string, message: string, onConfirm: () => void) => void;
   closeConfirmModal: () => void;
-  
+  profileModalOpen: boolean;
+  gymModalOpen: boolean;
+  openProfileModal: () => void;
+  closeProfileModal: () => void;
+  openGymModal: () => void;
+  closeGymModal: () => void;
+  historyGridOpen: boolean;
+  openHistoryGrid: () => void;
+  closeHistoryGrid: () => void;
+  nickname: string;
+  setNickname: (name: string) => void;
+
+  // Theme
+  theme: Theme;
+  setTheme: (theme: Theme) => void;
+  toggleTheme: () => void;
+
   // Form actions
   setNewHabitName: (name: string) => void;
   setNewHabitTime: (time: string) => void;
@@ -127,7 +176,12 @@ const useAppStore = create<AppStore>()(
       isOnline: typeof window !== 'undefined' ? window.navigator.onLine : true,
       searchTerm: '',
       showActionsId: null,
-      
+      profileModalOpen: false,
+      gymModalOpen: false,
+      historyGridOpen: false,
+      nickname: typeof window !== 'undefined' ? (localStorage.getItem('habit_tracker_nickname') || '') : '',
+      theme: getInitialTheme(),
+
       // Time actions - single source of truth
       setNow: (now) => {
         const todayStr = getEffectiveDateStr(now);
@@ -201,6 +255,32 @@ const useAppStore = create<AppStore>()(
       setIsOnline: (online) => set({ isOnline: online }),
       setSearchTerm: (term) => set({ searchTerm: term }),
       setShowActionsId: (id) => set({ showActionsId: id }),
+
+      // Profile & Gym
+      openProfileModal: () => set({ profileModalOpen: true }),
+      closeProfileModal: () => set({ profileModalOpen: false }),
+      openGymModal: () => set({ gymModalOpen: true }),
+      closeGymModal: () => set({ gymModalOpen: false }),
+      openHistoryGrid: () => set({ historyGridOpen: true }),
+      closeHistoryGrid: () => set({ historyGridOpen: false }),
+      setNickname: (name) => {
+        if (typeof window !== 'undefined') {
+          if (name) localStorage.setItem('habit_tracker_nickname', name);
+          else localStorage.removeItem('habit_tracker_nickname');
+        }
+        set({ nickname: name });
+      },
+
+      // Theme actions
+      setTheme: (theme) => {
+        if (typeof window !== 'undefined') localStorage.setItem(THEME_KEY, theme);
+        applyTheme(theme, true);
+        set({ theme });
+      },
+      toggleTheme: () => {
+        const next: Theme = get().theme === 'dark' ? 'light' : 'dark';
+        get().setTheme(next);
+      },
     }),
     {
       name: 'habit-tracker-store',
@@ -208,6 +288,7 @@ const useAppStore = create<AppStore>()(
       partialize: (state) => ({ 
         // Only persist UI preferences, not time-sensitive data
         activeTab: state.activeTab,
+        nickname: state.nickname,
       }),
     }
   )

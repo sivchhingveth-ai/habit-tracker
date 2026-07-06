@@ -1,8 +1,9 @@
 import React, { useMemo, useState } from 'react';
 import { Habit } from '../types';
-import { Circle, Flame, Target, Sparkles, Sun, CloudSun, Moon, Stars, ChevronDown, ChevronUp, Minus, Clock, ChevronLeft, ChevronRight, Filter, AlignLeft, Info } from 'lucide-react';
+import { Circle, Flame, Target, Sparkles, Sun, CloudSun, Moon, Stars, ChevronDown, ChevronUp, Minus, Clock, ChevronLeft, ChevronRight, Filter, AlignLeft, Info, LayoutGrid } from 'lucide-react';
 import { getEffectiveDateStr, getEffectiveDate, formatDateStr, shouldShowHabitOnDay } from '../utils/dateUtils';
 import { Tabs } from './Tabs';
+import useAppStore from '../store/appStore';
 
 interface DailyHabitsProps {
   habits: Habit[];
@@ -22,11 +23,11 @@ interface DailyHabitsProps {
 
 // Time phase definitions
 const TIME_PHASES = [
-  { key: 'reset', label: 'Health', time: 'reset', icon: Target, color: '#34c759', emoji: '🌱' },
-  { key: 'daily_rule', label: 'Eliminate', time: 'any', icon: Target, color: '#ff3b30', emoji: '🎯' },
-  { key: 'growth', label: 'Growth', time: 'growth', icon: Target, color: '#bf7af0', emoji: '🚀' },
-  { key: 'distraction', label: 'Discipline', time: 'distraction', icon: Target, color: '#1d9bf0', emoji: '🚫' },
-  { key: 'spending', label: 'Boundary', time: 'spending', icon: Target, color: '#FFD700', emoji: '💰' },
+  { key: 'reset', label: 'Health', time: 'reset', icon: Target, color: '#6fa83b', emoji: '🌱' },
+  { key: 'daily_rule', label: 'Eliminate', time: 'any', icon: Target, color: '#d05a96', emoji: '🎯' },
+  { key: 'growth', label: 'Growth', time: 'growth', icon: Target, color: '#9b5cff', emoji: '🚀' },
+  { key: 'distraction', label: 'Reset', time: 'distraction', icon: Target, color: '#4e55e0', emoji: '🚫' },
+  { key: 'spending', label: 'Boundary', time: 'spending', icon: Target, color: '#b08d2e', emoji: '💰' },
 ] as const;
 
 const getPhaseForHabit = (habit: Habit) => {
@@ -197,7 +198,7 @@ export const DailyHabits: React.FC<DailyHabitsProps> = ({
   }, [visibleHabits, totalCount, todayDate]);
 
   const activePhase = filterPhase ? TIME_PHASES.find(p => p.key === filterPhase) : null;
-  const chipColor = activePhase ? (isHistory ? '#71767b' : activePhase.color) : '#eff3f4';
+  const chipColor = activePhase ? (isHistory ? '#8a8f97' : activePhase.color) : '#0a0a0a';
   const ChipIcon = activePhase ? activePhase.icon : Target;
 
   let globalIdx = 0;
@@ -206,13 +207,13 @@ export const DailyHabits: React.FC<DailyHabitsProps> = ({
     <div className="flex flex-col relative w-full h-full">
 
       {/* Header with inline navigation + stats */}
-      <div className="sticky top-0 z-20 bg-black/80 backdrop-blur-xl border-b border-[#2f3336]">
+      <div className="sticky top-0 z-20 bg-white/90 backdrop-blur-xl border-b border-[#e8eaed]">
         <Tabs tabs={tabs} activeTab={activeTab} onTabChange={onTabChange} onLogout={onLogout} isLoggingOut={isLoggingOut} />
       </div>
 
       {/* History Date Picker */}
       {isHistory && (
-        <div className="bg-[#16181c] border-b border-[#2f3336] p-3 flex items-center justify-between gap-4">
+        <div className="bg-white border-b border-[#e8eaed] p-3 flex items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             {startDate !== todayStr ? (
               <button 
@@ -221,7 +222,7 @@ export const DailyHabits: React.FC<DailyHabitsProps> = ({
                   d.setDate(d.getDate() - 1);
                   onDateChange?.(formatDateStr(d));
                 }}
-                className="w-10 h-10 rounded-full hover:bg-white/5 flex items-center justify-center transition-colors text-[#71767b] hover:text-[#eff3f4] touch-manipulation"
+                className="w-10 h-10 rounded-full hover:bg-[#f0f1f5] flex items-center justify-center transition-colors text-[#8a8f97] hover:text-[#0a0a0a] touch-manipulation"
                 style={{ touchAction: 'manipulation' }}
               >
                 <ChevronLeft className="w-5 h-5" />
@@ -231,12 +232,12 @@ export const DailyHabits: React.FC<DailyHabitsProps> = ({
             )}
           </div>
           
-          <div className="flex flex-col items-center">
-            <span className="text-[#eff3f4] font-black text-sm">{formatDateStr(new Date(todayStr))}</span>
+          <div className="flex flex-col items-center flex-1 min-w-0">
+            <span className="text-[#0a0a0a] font-black text-sm truncate">{formatDateStr(new Date(todayStr))}</span>
             <span className="text-[#8b98a5] text-[10px] font-bold uppercase tracking-widest">{new Date(todayStr).toLocaleDateString(undefined, { weekday: 'long' })}</span>
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-1.5">
             {maxDate !== todayStr ? (
               <button 
                  onClick={() => {
@@ -244,7 +245,7 @@ export const DailyHabits: React.FC<DailyHabitsProps> = ({
                   d.setDate(d.getDate() + 1);
                   onDateChange?.(formatDateStr(d));
                 }}
-                className="w-10 h-10 rounded-full hover:bg-white/5 flex items-center justify-center transition-colors text-[#71767b] hover:text-[#eff3f4] touch-manipulation"
+                className="w-10 h-10 rounded-full hover:bg-[#f0f1f5] flex items-center justify-center transition-colors text-[#8a8f97] hover:text-[#0a0a0a] touch-manipulation"
                 style={{ touchAction: 'manipulation' }}
               >
                 <ChevronRight className="w-5 h-5" />
@@ -252,22 +253,30 @@ export const DailyHabits: React.FC<DailyHabitsProps> = ({
             ) : (
               <div className="w-10 h-10" />
             )}
+            <button
+              onClick={() => useAppStore.getState().openHistoryGrid()}
+              className="w-10 h-10 rounded-full bg-[#f0f1f5] border border-[#e8eaed] hover:bg-[#e8eaed] flex items-center justify-center transition-all text-[#0a0a0a] active:scale-95 touch-manipulation"
+              title="Show History Grid"
+              style={{ touchAction: 'manipulation' }}
+            >
+              <LayoutGrid className="w-4 h-4" />
+            </button>
           </div>
         </div>
       )}
 
       <div>
-        <div className="px-5 py-3 md:px-6 md:py-4 flex flex-col md:flex-row md:items-center justify-between gap-2 md:gap-4 border-b border-[#2f3336]">
+        <div className="px-5 py-3 md:px-6 md:py-4 flex flex-col md:flex-row md:items-center justify-between gap-2 md:gap-4 border-b border-[#e8eaed]">
           <div className="min-w-0 flex items-center gap-3">
             {/* Category Filter Button */}
             <div className="relative">
               <button
                 onClick={() => setShowCategoryDropdown(!showCategoryDropdown)}
-                className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#16181c] border border-[#2f3336] hover:bg-[#1f2126] select-none touch-manipulation"
+                className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-[#e8eaed] hover:bg-[#f8f9fb] select-none touch-manipulation"
                 style={{ touchAction: 'manipulation' }}
               >
-                <Filter className="w-3.5 h-3.5 text-[#71767b]" />
-                <span className="text-[11px] font-bold text-[#71767b] uppercase tracking-wider">
+                <Filter className="w-3.5 h-3.5 text-[#8a8f97]" />
+                <span className="text-[11px] font-bold text-[#8a8f97] uppercase tracking-wider">
                   Categories
                 </span>
               </button>
@@ -279,79 +288,73 @@ export const DailyHabits: React.FC<DailyHabitsProps> = ({
                   style={{ touchAction: 'manipulation' }}
                 >
                   {/* Glow wrapper */}
-                  <div className="relative rounded-2xl p-[1px] bg-gradient-to-b from-white/25 via-white/10 to-white/20 shadow-[0_0_40px_rgba(255,255,255,0.06),0_0_80px_rgba(255,255,255,0.03),inset_0_1px_1px_rgba(255,255,255,0.15)] overflow-hidden">
-                    {/* Full shimmer overlay */}
-                    <div className="absolute inset-0 pointer-events-none z-10">
-                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full animate-shimmer-full" />
+                  <div className="relative rounded-2xl bg-white border border-[#e8eaed] shadow-xl overflow-hidden">
+                    {/* Clean minimal header */}
+                    <div className="px-4 py-2.5 border-b border-[#e8eaed]">
+                      <span className="text-[10px] font-medium text-[#8a8f97] tracking-widest uppercase">
+                        Filter by category
+                      </span>
                     </div>
-                    {/* Inner black background */}
-                    <div className="relative bg-black rounded-2xl overflow-hidden">
-                      {/* Clean minimal header */}
-                      <div className="px-4 py-2.5 border-b border-white/[0.08]">
-                        <span className="text-[10px] font-medium text-white/40 tracking-widest uppercase">
-                          Filter by category
-                        </span>
-                      </div>
-                      
-                      {/* Category Options */}
-                      <div>
-                        {(() => {
-                          // Filter to only visible categories first
-                          const visiblePhases = TIME_PHASES.map(phase => ({
-                            ...phase,
-                            count: habits.filter(h => getPhaseForHabit(h).key === phase.key && shouldShowHabitOnDay(h.monthlyTarget, todayStr)).length
-                          })).filter(p => p.count > 0);
-                          
-                          return visiblePhases.map((phase, index) => {
-                            const PhaseIcon = phase.icon;
-                            const isLast = index === visiblePhases.length - 1;
-                            const isPriority = priorityCategory === phase.key;
-                            // In history mode, use gray colors instead of category colors
-                            const displayColor = isHistory ? '#71767b' : phase.color;
-                            return (
-                              <button
-                                key={phase.key}
-                                onClick={() => {
-                                  setShowCategoryDropdown(false);
-                                  scrollPositionRef.current = window.scrollY;
-                                  setPriorityCategory(phase.key);
-                                }}
-                                className={`w-full px-4 py-2 text-left flex items-center justify-between group transition-all duration-200 touch-manipulation animate-dropdown-item ${
-                                  !isLast ? 'border-b border-white/[0.06]' : ''
-                                } ${
-                                  isPriority ? 'bg-white/[0.06]' : 'hover:bg-white/[0.03]'
-                                }`}
-                                style={{ 
-                                  touchAction: 'manipulation',
-                                  animationDelay: `${index * 40}ms`
-                                }}
-                              >
-                                <span className="flex items-center gap-3">
-                                  <div 
-                                    className={`w-6 h-6 rounded-md flex items-center justify-center transition-all duration-200 ${
-                                      isPriority ? '' : 'bg-white/[0.05] group-hover:bg-white/[0.08]'
+                    
+                    {/* Category Options */}
+                    <div>
+                      {(() => {
+                        // Filter to only visible categories first
+                        const visiblePhases = TIME_PHASES.map(phase => ({
+                          ...phase,
+                          count: habits.filter(h => getPhaseForHabit(h).key === phase.key && shouldShowHabitOnDay(h.monthlyTarget, todayStr)).length
+                        })).filter(p => p.count > 0);
+                        
+                        return visiblePhases.map((phase, index) => {
+                          const PhaseIcon = phase.icon;
+                          const isLast = index === visiblePhases.length - 1;
+                          const isPriority = priorityCategory === phase.key;
+                          // In history mode, use gray colors instead of category colors
+                          const displayColor = isHistory ? '#8a8f97' : phase.color;
+                          return (
+                            <button
+                              key={phase.key}
+                              onClick={() => {
+                                setShowCategoryDropdown(false);
+                                scrollPositionRef.current = window.scrollY;
+                                setPriorityCategory(phase.key);
+                              }}
+                              className={`w-full px-4 py-2 text-left flex items-center justify-between group transition-all duration-200 touch-manipulation animate-dropdown-item ${
+                                !isLast ? 'border-b border-[#e8eaed]' : ''
+                              } ${
+                                isPriority ? 'bg-[#f0f1f5]' : 'hover:bg-[#f8f9fb]'
+                              }`}
+                              style={{ 
+                                touchAction: 'manipulation',
+                                animationDelay: `${index * 40}ms`
+                              }}
+                            >
+                              <span className="flex items-center gap-3">
+                                <div 
+                                  className={`w-6 h-6 rounded-md flex items-center justify-center transition-all duration-200 ${
+                                    isPriority ? '' : 'bg-[#f0f1f5] group-hover:bg-[#e8eaed]'
+                                  }`}
+                                  style={isPriority ? { backgroundColor: `${displayColor}20` } : {}}
+                                >
+                                  <PhaseIcon 
+                                    className={`w-3 h-3 transition-all duration-200 ${
+                                      isPriority ? '' : 'text-[#4a4f5a] group-hover:text-[#0a0a0a]'
                                     }`}
-                                    style={isPriority ? { backgroundColor: `${displayColor}20` } : {}}
-                                  >
-                                    <PhaseIcon 
-                                      className={`w-3 h-3 transition-all duration-200 ${
-                                        isPriority ? '' : 'text-white/50 group-hover:text-white/70'
-                                      }`}
-                                      style={isPriority ? { color: displayColor } : {}} 
-                                    />
-                                  </div>
-                                  <span 
-                                    className={`text-[13px] font-medium tracking-wide uppercase transition-colors duration-200 ${
-                                      isPriority ? '' : 'text-white/60 group-hover:text-white/80'
-                                    }`}
-                                    style={isPriority ? { color: displayColor } : {}}
-                                  >
-                                    {phase.label.toUpperCase()}
-                                  </span>
-                                </span>
+                                    style={isPriority ? { color: displayColor } : {}} 
+                                  />
+                                </div>
                                 <span 
-                                  className={`text-[12px] font-semibold px-2 py-0.5 rounded-md transition-all duration-200 ${
-                                    isPriority ? '' : 'text-white/40'
+                                  className={`text-[13px] font-medium tracking-wide uppercase transition-colors duration-200 ${
+                                    isPriority ? '' : 'text-[#4a4f5a] group-hover:text-[#0a0a0a]'
+                                  }`}
+                                  style={isPriority ? { color: displayColor } : {}}
+                                >
+                                  {phase.label.toUpperCase()}
+                                </span>
+                              </span>
+                              <span 
+                                className={`text-[12px] font-semibold px-2 py-0.5 rounded-md transition-all duration-200 ${
+                                    isPriority ? '' : 'text-[#8a8f97]'
                                   }`}
                                   style={isPriority ? { 
                                     backgroundColor: `${displayColor}20`,
@@ -364,7 +367,6 @@ export const DailyHabits: React.FC<DailyHabitsProps> = ({
                             );
                           });
                         })()}
-                      </div>
                     </div>
                   </div>
                 </div>
@@ -374,7 +376,7 @@ export const DailyHabits: React.FC<DailyHabitsProps> = ({
               {/* Real-time Date - Shown on To Do List page */}
               {!isHistory && (
                 <div className="flex items-center gap-2 ml-4">
-                  <Clock className="w-3 h-3 text-[#71767b] shrink-0" />
+                  <Clock className="w-3 h-3 text-[#8a8f97] shrink-0" />
                   <span className="text-[#8b98a5] text-[9px] md:text-[11px] font-black uppercase tracking-[0.15em]">
                     {now.toLocaleDateString('en-US', { weekday: 'short' })}, {now.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} &middot; {now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true })}
                   </span>
@@ -384,7 +386,7 @@ export const DailyHabits: React.FC<DailyHabitsProps> = ({
 
           <div className="flex items-center gap-2 md:gap-4 shrink-0">
             {/* Done Chip */}
-            <div className="bg-[#16181c] border border-[#2f3336] rounded-xl p-1.5 md:p-2 flex items-center gap-2 shadow-xl flex-1 md:flex-none justify-center md:justify-start">
+            <div className="bg-white border border-[#e8eaed] rounded-xl p-1.5 md:p-2 flex items-center gap-2 shadow-xl flex-1 md:flex-none justify-center md:justify-start">
                 <div 
                   className="w-6 h-6 md:w-8 md:h-8 rounded-lg border flex items-center justify-center transition-colors"
                   style={{ backgroundColor: `${chipColor}10`, borderColor: `${chipColor}20` }}
@@ -392,21 +394,21 @@ export const DailyHabits: React.FC<DailyHabitsProps> = ({
                   <Target className="w-3.5 h-3.5 md:w-4 md:h-4 transition-colors" style={{ color: chipColor }} />
                 </div>
               <div className="text-right pr-1">
-                <p className="text-[13px] md:text-[15px] font-black text-[#eff3f4] leading-none">
-                  {completedCount}<span className="text-[#71767b] text-[9px] md:text-[11px]">/{totalCount}</span>
+                <p className="text-[13px] md:text-[15px] font-black text-[#0a0a0a] leading-none">
+                  {completedCount}<span className="text-[#8a8f97] text-[9px] md:text-[11px]">/{totalCount}</span>
                 </p>
-                <p className="text-[7px] md:text-[8px] font-bold text-[#71767b] uppercase mt-0.5 tracking-wider">Done</p>
+                <p className="text-[7px] md:text-[8px] font-bold text-[#8a8f97] uppercase mt-0.5 tracking-wider">Done</p>
               </div>
             </div>
 
             {/* Streak Chip */}
-            <div className="bg-[#16181c] border border-[#2f3336] rounded-xl p-1.5 md:p-2 flex items-center gap-2 shadow-xl flex-1 md:flex-none justify-center md:justify-start">
+            <div className="bg-white border border-[#e8eaed] rounded-xl p-1.5 md:p-2 flex items-center gap-2 shadow-xl flex-1 md:flex-none justify-center md:justify-start">
                               <div className={`w-6 h-6 md:w-8 md:h-8 rounded-lg flex items-center justify-center ${isHistory ? 'bg-[#71767b]/10 border border-[#71767b]/20' : 'bg-[#ff6b00]/10 border border-[#ff6b00]/20'}`}>
-                <Flame className={`w-3.5 h-3.5 md:w-4 md:h-4 ${isHistory ? 'text-[#71767b]' : 'text-[#ff6b00] animate-fire'}`} />
+                <Flame className={`w-3.5 h-3.5 md:w-4 md:h-4 ${isHistory ? 'text-[#8a8f97]' : 'text-[#ff6b00] animate-fire'}`} />
               </div>
               <div className="text-right pr-1">
-                <p className="text-[13px] md:text-[15px] font-black text-[#eff3f4] leading-none">{currentStreak}</p>
-                <p className="text-[7px] md:text-[8px] font-bold text-[#71767b] uppercase mt-0.5 tracking-wider">Streak</p>
+                <p className="text-[13px] md:text-[15px] font-black text-[#0a0a0a] leading-none">{currentStreak}</p>
+                <p className="text-[7px] md:text-[8px] font-bold text-[#8a8f97] uppercase mt-0.5 tracking-wider">Streak</p>
               </div>
             </div>
           </div>
@@ -422,9 +424,9 @@ export const DailyHabits: React.FC<DailyHabitsProps> = ({
       }`} style={{ paddingBottom: 'max(8rem, env(safe-area-inset-bottom) + 4rem)' }}>
         {totalCount === 0 && (
           <div className="text-center py-16">
-            <Sparkles className="w-10 h-10 text-[#71767b]/40 mx-auto mb-4" />
-            <p className="text-[#71767b] text-base font-bold">No {activeTab} tracked yet</p>
-            <p className="text-[#71767b]/60 text-sm mt-1">Go to Add Workspace to add your first {activeTab.toLowerCase()}!</p>
+            <Sparkles className="w-10 h-10 text-[#8a8f97]/40 mx-auto mb-4" />
+            <p className="text-[#8a8f97] text-base font-bold">No {activeTab} tracked yet</p>
+            <p className="text-[#8a8f97]/60 text-sm mt-1">Go to Add Workspace to add your first {activeTab.toLowerCase()}!</p>
           </div>
         )}
 
@@ -447,16 +449,16 @@ export const DailyHabits: React.FC<DailyHabitsProps> = ({
                     </span>
                   )}
                 </div>
-                <div className="flex-1 h-px bg-[#2f3336]" />
-                <span className="text-[10px] font-black text-[#71767b] uppercase tracking-wider">
+                <div className="flex-1 h-px bg-[#e8eaed]" />
+                <span className="text-[10px] font-black text-[#8a8f97] uppercase tracking-wider">
                   {phaseHabits.length} {phaseHabits.length === 1 ? 'CATEGORY' : 'CATEGORIES'}
                 </span>
               </div>
 
               <div className="grid gap-2 md:gap-3 grid-cols-1">
                 {phaseHabits.length === 0 ? (
-                  <div className={`py-4 px-4 rounded-xl bg-[#16181c]/50 border border-[#2f3336]/50 ${expandedHistoryHabit ? 'col-span-1' : 'col-span-1 md:col-span-2'}`}>
-                    <span className="text-[11px] font-bold text-[#71767b]/60 uppercase tracking-wider">No tasks yet</span>
+                  <div className={`py-4 px-4 rounded-xl bg-[#f0f1f5] border border-[#e8eaed]/50 ${expandedHistoryHabit ? 'col-span-1' : 'col-span-1 md:col-span-2'}`}>
+                    <span className="text-[11px] font-bold text-[#8a8f97]/60 uppercase tracking-wider">No tasks yet</span>
                   </div>
                 ) : (
                   phaseHabits.map((habit) => {
@@ -473,9 +475,9 @@ export const DailyHabits: React.FC<DailyHabitsProps> = ({
                         {/* Unified Card Container */}
                         <div className={`overflow-hidden transition-all ${
                           isExpanded 
-                            ? 'border-2 border-white/30 rounded-2xl bg-[#0a0a0a] shadow-lg shadow-white/5' 
-                            : 'border border-[#4a4d54] rounded-2xl bg-[#16181c] hover:border-[#5a5d64] hover:bg-[#1f2126]'
-                        }`}>
+                            ? 'border-2 rounded-2xl bg-white shadow-lg' 
+                            : 'border border-[#e8eaed] rounded-2xl bg-white hover:border-[#d4d7dc] hover:bg-[#f8f9fb]'
+                        }`} style={isExpanded ? { borderColor: phase.color, boxShadow: `0 8px 24px ${phase.color}20` } : {}}>
                           {/* Main Card Header - Clickable to expand */}
                           <div 
                             onClick={() => setExpandedHistoryHabit(isExpanded ? null : habit.id)}
@@ -484,7 +486,7 @@ export const DailyHabits: React.FC<DailyHabitsProps> = ({
                           >
                             <div 
                               className={`w-7 h-7 md:w-8 md:h-8 rounded-full flex items-center justify-center shrink-0 border-2 ${
-                                isDone ? 'border-transparent' : 'border-[#2f3336]'
+                                isDone ? 'border-transparent' : 'border-[#e8eaed]'
                               }`}
                               style={isDone ? { backgroundColor: '#71767b' } : {}}
                             >
@@ -493,25 +495,25 @@ export const DailyHabits: React.FC<DailyHabitsProps> = ({
                                   <polyline points="20 6 9 17 4 12" />
                                 </svg>
                               ) : (
-                                <Circle className="w-4 h-4 text-[#2f3336]" />
+                                <Circle className="w-4 h-4 text-[#8a8f97]" />
                               )}
                             </div>
 
                             <div className="flex-1 text-left min-w-0">
                               <div className="flex items-center gap-2">
-                                <p className={`text-[14px] md:text-[15px] font-bold ${isExpanded ? 'whitespace-normal break-words' : 'truncate'} ${isDone ? 'text-[#71767b] opacity-60 line-through' : 'text-[#eff3f4]'}`}>
+                                <p className={`text-[14px] md:text-[15px] font-bold ${isExpanded ? 'whitespace-normal break-words' : 'truncate'} ${isDone ? 'text-[#8a8f97] opacity-60 line-through' : 'text-[#0a0a0a]'}`}>
                                   {habit.name.toUpperCase()}
                                 </p>
                                 {habit.streak > 0 && (
                                   <div className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-[#2f3336] shrink-0">
-                                    <Flame className="w-2.5 h-2.5 text-[#71767b]" />
-                                    <span className="text-[9px] font-black text-[#71767b]">{habit.streak}</span>
+                                    <Flame className="w-2.5 h-2.5 text-[#8a8f97]" />
+                                    <span className="text-[9px] font-black text-[#8a8f97]">{habit.streak}</span>
                                   </div>
                                 )}
                                 {/* Monthly Target Badge */}
                                 {habit.monthlyTarget && habit.monthlyTarget > 0 && (
                                   <div className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-[#2f3336] shrink-0">
-                                    <span className="text-[9px] font-black text-[#71767b]">
+                                    <span className="text-[9px] font-black text-[#8a8f97]">
                                       {habit.monthlyTarget}x
                                     </span>
                                   </div>
@@ -520,23 +522,23 @@ export const DailyHabits: React.FC<DailyHabitsProps> = ({
                             </div>
 
                             <div className={`shrink-0 transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}>
-                              <AlignLeft className={`w-5 h-5 transition-colors ${isExpanded ? 'text-white' : 'text-[#71767b]'}`} />
+                              <AlignLeft className={`w-5 h-5 transition-colors ${isExpanded ? 'text-[#0a0a0a]' : 'text-[#8a8f97]'}`} />
                             </div>
                           </div>
 
                           {/* Expanded Details - Read Only */}
                           {isExpanded && (
                             <div className="px-4 md:px-6 pb-4 pt-0 animate-in fade-in slide-in-from-top-4 duration-400 ease-out">
-                              <div className="h-px bg-white/10 mb-4" />
+                              <div className="h-px bg-[#f0f1f5] mb-4" />
                               
                               {/* Description Section */}
                               {habit.description && (
                                 <div className="mb-4">
                                   <div className="flex items-center gap-2 mb-2">
-                                    <Info className="w-3.5 h-3.5 text-[#71767b]" />
-                                    <span className="text-[9px] font-black text-[#71767b] uppercase tracking-widest">Info & Description</span>
+                                    <Info className="w-3.5 h-3.5 text-[#8a8f97]" />
+                                    <span className="text-[9px] font-black text-[#8a8f97] uppercase tracking-widest">Info & Description</span>
                                   </div>
-                                  <p className="text-[13px] text-[#eff3f4] leading-relaxed bg-[#16181c] rounded-xl p-3 border border-[#2f3336]">
+                                  <p className="text-[13px] text-[#0a0a0a] leading-relaxed bg-white rounded-xl p-3 border border-[#e8eaed]">
                                     {habit.description}
                                   </p>
                                 </div>
@@ -545,8 +547,8 @@ export const DailyHabits: React.FC<DailyHabitsProps> = ({
                               {/* Monthly Target Info */}
                               <div className="space-y-2 mb-4">
                                 <div className="flex items-center justify-between">
-                                  <span className="text-[9px] font-black text-[#71767b] uppercase tracking-widest">Monthly Frequency</span>
-                                  <span className="text-[11px] font-black text-[#eff3f4]">
+                                  <span className="text-[9px] font-black text-[#8a8f97] uppercase tracking-widest">Monthly Frequency</span>
+                                  <span className="text-[11px] font-black text-[#0a0a0a]">
                                     {habit.monthlyTarget === 1 ? 'Once (Day 1)' : 
                                      habit.monthlyTarget === 2 ? 'Twice (Days 1 & 15)' : 
                                      habit.monthlyTarget === 3 ? '3 times (Days 1, 11, 21)' : 
@@ -557,7 +559,7 @@ export const DailyHabits: React.FC<DailyHabitsProps> = ({
                               </div>
 
                               {/* Read Only Notice */}
-                              <div className="flex items-center justify-center gap-2 text-[#71767b]/60 pt-2 border-t border-white/5">
+                              <div className="flex items-center justify-center gap-2 text-[#8a8f97]/60 pt-2 border-t border-[#e8eaed]">
                                 <span className="text-[10px] font-bold uppercase tracking-widest">History View - Read Only</span>
                               </div>
                             </div>
@@ -581,8 +583,8 @@ export const DailyHabits: React.FC<DailyHabitsProps> = ({
                           if (!isHistory) onToggleHabit(habit.id, todayStr);
                         }}
                         className={`w-full flex items-center gap-3 md:gap-4 p-3 md:p-4 rounded-2xl transition-transform duration-100 group border-2 cursor-pointer select-none touch-manipulation active:scale-[0.98] ${isDone
-                          ? 'bg-[#16181c] border-[#71767b]/30'
-                          : 'bg-transparent border-[#2f3336] hover:bg-white/[0.02] hover:border-[#71767b]'
+                          ? 'bg-white border-[#d4d7dc]'
+                          : 'bg-transparent border-[#e8eaed] hover:bg-[#f8f9fb] hover:border-[#d4d7dc]'
                           }`}
                         style={{
                           borderColor: isDone ? undefined : `${phase.color}60`,
@@ -593,7 +595,7 @@ export const DailyHabits: React.FC<DailyHabitsProps> = ({
                         <div 
                           className={`w-7 h-7 md:w-8 md:h-8 rounded-full flex items-center justify-center shrink-0 transition-all duration-300 border-2 ${isDone
                             ? 'border-transparent scale-100 animate-check-pop'
-                            : 'border-[#2f3336] group-hover:border-[#71767b]'
+                            : 'border-[#e8eaed] group-hover:border-[#71767b]'
                             }`}
                           style={isDone ? { 
                             backgroundColor: phase.color, 
@@ -606,13 +608,13 @@ export const DailyHabits: React.FC<DailyHabitsProps> = ({
                               <polyline points="20 6 9 17 4 12" className="check-mark-path" />
                             </svg>
                           ) : (
-                            <Circle className="w-4 h-4 text-[#2f3336] group-hover:text-[#71767b] transition-colors" />
+                            <Circle className="w-4 h-4 text-[#8a8f97] group-hover:text-[#8a8f97] transition-colors" />
                           )}
                         </div>
 
                         <div className="flex-1 text-left min-w-0">
                           <div className="flex items-center gap-2">
-                            <p className={`text-[14px] md:text-[15px] font-bold transition-all duration-300 ease-in-out truncate ${isDone ? 'text-[#71767b] opacity-60 line-through' : 'text-[#eff3f4]'
+                            <p className={`text-[14px] md:text-[15px] font-bold transition-all duration-300 ease-in-out truncate ${isDone ? 'text-[#8a8f97] opacity-60 line-through' : 'text-[#0a0a0a]'
                               }`}>
                               {habit.name.toUpperCase()}
                             </p>

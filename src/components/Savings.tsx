@@ -93,12 +93,12 @@ const SavingItem: React.FC<{
       <div className="p-4 md:p-5 flex flex-col gap-3 md:gap-4">
         <div className="flex justify-between items-start gap-4">
           <div className="min-w-0 flex-1">
-            <h3 className="text-[16px] md:text-[18px] font-bold text-[#eff3f4] leading-tight mb-2">
+            <h3 className="text-[16px] md:text-[18px] font-bold text-[#0a0a0a] leading-tight mb-2">
               {s.name}
             </h3>
-            <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-white/5 border border-white/10 w-fit">
-              <Calendar className="w-2.5 h-2.5 text-[#71767b]" />
-              <span className="text-[8px] md:text-[9px] font-bold text-[#71767b] uppercase tracking-wider">
+            <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[#f0f1f5] border border-[#e8eaed] w-fit">
+              <Calendar className="w-2.5 h-2.5 text-[#8a8f97]" />
+              <span className="text-[8px] md:text-[9px] font-bold text-[#8a8f97] uppercase tracking-wider">
                 {new Date(s.startDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })} – {new Date(s.targetDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
               </span>
             </div>
@@ -111,13 +111,13 @@ const SavingItem: React.FC<{
                 }
                 setShowAddSaving(!showAddSaving);
               }}
-              className="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center bg-white/[0.05] border border-white/10 text-[#71767b] hover:text-white hover:bg-white/10 transition-all active:scale-90"
+              className="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center bg-white/[0.05] border border-[#e8eaed] text-[#8a8f97] hover:text-white hover:bg-[#f0f1f5] transition-all active:scale-90"
             >
               <Plus className="w-4 h-4 md:w-5 md:h-5" />
             </button>
             <button
               onClick={() => onDelete(s.id)}
-              className="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center bg-white/[0.05] border border-white/10 text-[#71767b] md:opacity-0 md:group-hover:opacity-100 hover:text-red-500 hover:bg-red-500/10 hover:border-red-500/20 transition-all active:scale-90"
+              className="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center bg-white/[0.05] border border-[#e8eaed] text-[#8a8f97] md:opacity-0 md:group-hover:opacity-100 hover:text-red-500 hover:bg-red-500/10 hover:border-red-500/20 transition-all active:scale-90"
             >
               <Trash2 className="w-4 h-4 md:w-5 md:h-5" />
             </button>
@@ -125,13 +125,13 @@ const SavingItem: React.FC<{
         </div>
 
         {showAddSaving && (
-          <div ref={addSavingRef} className="p-3 md:p-4 rounded-xl md:rounded-2xl bg-white/[0.03] border border-white/10 space-y-3 animate-slide-down relative z-10">
+          <div ref={addSavingRef} className="p-3 md:p-4 rounded-xl md:rounded-2xl bg-white/[0.03] border border-[#e8eaed] space-y-3 animate-slide-down relative z-10">
             <div className="relative">
               <input
                 type="text"
                 inputMode="decimal"
                 placeholder="Amount"
-                className="w-full bg-black/40 border border-[#2f3336] px-3 pr-16 py-2 rounded-xl text-sm text-white outline-none focus:border-x-blue"
+                className="w-full bg-white border border-[#e8eaed] px-3 pr-16 py-2 rounded-xl text-sm text-white outline-none focus:border-x-blue"
                 value={savingAmount}
                 onChange={e => {
                   const raw = e.target.value.replace(/,/g, '');
@@ -150,10 +150,10 @@ const SavingItem: React.FC<{
                   onClick={() => { setSavingAmount(''); setSavingError(''); }}
                   className="absolute right-8 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center rounded-full bg-[#71767b]/30 hover:bg-[#71767b]/50 transition-colors"
                 >
-                  <span className="text-[#eff3f4] text-[10px] font-bold leading-none">✕</span>
+                  <span className="text-[#0a0a0a] text-[10px] font-bold leading-none">✕</span>
                 </button>
               )}
-              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[13px] font-black text-[#71767b]">$</span>
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[13px] font-black text-[#8a8f97]">$</span>
             </div>
             {savingError && (
               <div className="text-red-500 text-[11px] font-bold bg-red-500/10 border border-red-500/20 px-3 py-2 rounded-xl animate-fade-in text-center">
@@ -171,12 +171,12 @@ const SavingItem: React.FC<{
 
         <div className="space-y-1.5 md:space-y-2">
           <div className="flex justify-between items-end gap-2">
-            <span className="text-[11px] md:text-[13px] font-black text-[#eff3f4] whitespace-nowrap">{goalPct}% Used</span>
-            <p className="text-[10px] md:text-[12px] font-medium text-[#71767b] text-right truncate">
-              <span className="text-[#00ba7c] font-black">${s.saved.toLocaleString()}</span> of <span className="text-white/40">${s.goal.toLocaleString()}</span>
+            <span className="text-[11px] md:text-[13px] font-black text-[#0a0a0a] whitespace-nowrap">{goalPct}% Used</span>
+            <p className="text-[10px] md:text-[12px] font-medium text-[#8a8f97] text-right truncate">
+              <span className="text-[#00ba7c] font-black">${s.saved.toLocaleString()}</span> of <span className="text-[#8a8f97]">${s.goal.toLocaleString()}</span>
             </p>
           </div>
-          <div className="w-full h-2 md:h-2.5 bg-white/[0.03] border border-white/20 rounded-full overflow-hidden">
+          <div className="w-full h-2 md:h-2.5 bg-white/[0.03] border border-[#d4d7dc] rounded-full overflow-hidden">
             <div
               className="h-full transition-all duration-[1200ms] ease-out relative"
               style={{
@@ -191,7 +191,7 @@ const SavingItem: React.FC<{
 
         <button
           onClick={() => setIsExpanded(!isExpanded)}
-          className="flex items-center justify-center gap-2 py-1 md:py-2 text-[10px] md:text-[11px] font-bold text-[#71767b] hover:text-[#eff3f4] uppercase tracking-wider transition-colors"
+          className="flex items-center justify-center gap-2 py-1 md:py-2 text-[10px] md:text-[11px] font-bold text-[#8a8f97] hover:text-[#0a0a0a] uppercase tracking-wider transition-colors"
         >
           {isExpanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
           {isExpanded ? 'Hide Details' : 'See Details'}
@@ -199,9 +199,9 @@ const SavingItem: React.FC<{
       </div>
 
       {isExpanded && (
-        <div className="border-t border-[#2f3336] bg-white/[0.01] animate-fade-in">
+        <div className="border-t border-[#e8eaed] bg-white/[0.01] animate-fade-in">
           <div className="p-3 md:p-4 space-y-2 md:space-y-3">
-            <p className="text-[9px] md:text-[11px] font-bold text-[#71767b] uppercase tracking-wider px-2">Spending History</p>
+            <p className="text-[9px] md:text-[11px] font-bold text-[#8a8f97] uppercase tracking-wider px-2">Spending History</p>
             <div className="max-h-[250px] md:max-h-[300px] overflow-y-auto pr-1 space-y-0.5 custom-scrollbar">
               {getDisplayDates().map(date => {
                 const amount = s.history[date] || 0;
@@ -209,7 +209,7 @@ const SavingItem: React.FC<{
                   <div key={date} className="flex items-center justify-between p-2 md:p-3 rounded-lg md:rounded-xl hover:bg-white/[0.03] transition-colors group/row">
                     <div className="flex items-center gap-2 md:gap-3">
                       <div className={`w-1.5 h-1.5 md:w-2 md:h-2 rounded-full ${amount > 0 ? 'bg-[#00ba7c]' : 'bg-[#2f3336]'}`} />
-                      <span className="text-[11px] md:text-[13px] font-bold text-[#eff3f4]">
+                      <span className="text-[11px] md:text-[13px] font-bold text-[#0a0a0a]">
                         {new Date(date).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })}
                       </span>
                     </div>
@@ -220,7 +220,7 @@ const SavingItem: React.FC<{
                           <span className="text-[11px] md:text-[13px] font-bold text-[#00ba7c]">+${amount.toLocaleString()}</span>
                         </div>
                       ) : (
-                        <span className="text-[11px] md:text-[13px] font-medium text-[#2f3336]">--</span>
+                        <span className="text-[11px] md:text-[13px] font-medium text-[#8a8f97]">--</span>
                       )}
                     </div>
                   </div>
@@ -255,13 +255,13 @@ export const Savings: React.FC<SavingsProps> = ({
     <div className="flex flex-col relative w-full h-full">
 
       {/* Header */}
-      <div className="sticky top-0 z-20 bg-black/80 backdrop-blur-xl border-b border-[#2f3336]">
+      <div className="sticky top-0 z-20 bg-white/90 backdrop-blur-xl border-b border-[#e8eaed]">
         <Tabs tabs={tabs} activeTab={activeTab} onTabChange={onTabChange} onLogout={onLogout} isLoggingOut={isLoggingOut} />
       </div>
       <div>
-        <div className="px-5 py-4 md:px-6 md:py-6 flex items-center justify-between border-b border-[#2f3336]">
+        <div className="px-5 py-4 md:px-6 md:py-6 flex items-center justify-between border-b border-[#e8eaed]">
             <div className="min-w-0">
-              <h2 className="text-[20px] md:text-[28px] font-black text-[#eff3f4] leading-tight tracking-tight">
+              <h2 className="text-[20px] md:text-[28px] font-black text-[#0a0a0a] leading-tight tracking-tight">
                 Spending
               </h2>
               <p className="text-[#8b98a5] text-[10px] md:text-[13px] font-black uppercase tracking-[0.2em] mt-1.5 truncate">
@@ -284,7 +284,7 @@ export const Savings: React.FC<SavingsProps> = ({
 
       {savings.length === 0 && (
         <div className="p-10 text-center">
-          <p className="text-[#71767b] text-base md:text-lg mb-4">No spending tracked yet.</p>
+          <p className="text-[#8a8f97] text-base md:text-lg mb-4">No spending tracked yet.</p>
         </div>
       )}
 

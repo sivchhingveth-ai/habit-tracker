@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
-import { LogOut, Loader2 } from 'lucide-react';
+import { ListChecks, Plus, Clock, Dumbbell, LogOut, Loader2, User as UserIcon, Sun, Moon } from 'lucide-react';
+import useAppStore from '../store/appStore';
 
 interface TabsProps {
   tabs: string[];
@@ -9,8 +10,19 @@ interface TabsProps {
   isLoggingOut?: boolean;
 }
 
+const TAB_ICONS: Record<string, React.ComponentType<{ className?: string; strokeWidth?: number }>> = {
+  'To Do List': ListChecks,
+  'Add Workspace': Plus,
+  'History': Clock,
+  'Gym': Dumbbell,
+};
+
 export const Tabs: React.FC<TabsProps> = ({ tabs, activeTab, onTabChange, onLogout, isLoggingOut }) => {
   const activeTabRef = useRef<HTMLButtonElement>(null);
+  const nickname = useAppStore((s) => s.nickname);
+  const openProfileModal = useAppStore((s) => s.openProfileModal);
+  const theme = useAppStore((s) => s.theme);
+  const toggleTheme = useAppStore((s) => s.toggleTheme);
 
   useEffect(() => {
     if (activeTabRef.current) {
@@ -18,42 +30,97 @@ export const Tabs: React.FC<TabsProps> = ({ tabs, activeTab, onTabChange, onLogo
     }
   }, [activeTab]);
 
+  const initial = (nickname.trim()[0] || '').toUpperCase();
+
   return (
-    <div className="border-b border-[#2f3336] bg-black sticky top-0 z-40">
-      <div className="flex h-[53px] items-center">
-        {/* Scrollable Tabs Wrapper */}
+    <div className="top-nav sticky top-0 z-40">
+      <div className="flex h-[72px] items-center">
         <div className="flex-1 min-w-0 flex h-full overflow-x-auto scrollbar-hide no-scrollbar relative">
-          <div className="flex h-full min-w-max px-4 md:px-0 md:justify-around w-full">
-            {tabs.map((tab) => (
-              <button
-                key={tab}
-                ref={activeTab === tab ? activeTabRef : null}
-                onClick={() => onTabChange(tab)}
-                className="w-[170px] md:w-auto md:min-w-[220px] md:px-14 relative flex items-center justify-center hover:bg-white/5 active:bg-white/10 transition-colors shrink-0 touch-manipulation"
-                style={{ touchAction: 'manipulation' }}
-              >
-                <div className="flex flex-col items-center justify-center h-full relative w-full">
-                  <span className={`text-[13px] md:text-[15px] transition-all font-black whitespace-nowrap ${activeTab === tab ? 'text-[#e7e9ea]' : 'text-[#71767b]'
-                    }`}>
+          <div className="flex h-full min-w-max md:min-w-0 w-full">
+            {tabs.map((tab, index) => {
+              const Icon = TAB_ICONS[tab] ?? ListChecks;
+              const isActive = activeTab === tab;
+              const isAdd = tab === 'Add Workspace';
+              const isLast = index === tabs.length - 1;
+
+              return (
+                <button
+                  key={tab}
+                  ref={isActive ? activeTabRef : null}
+                  onClick={() => onTabChange(tab)}
+                  className={`glass-hover nav-tab relative flex-1 min-w-[100px] h-full flex flex-col items-center justify-center gap-1 shrink-0 touch-manipulation group ${
+                    isActive ? 'is-active' : ''
+                  } ${isLast ? '' : 'nav-divide-r'}`}
+                  style={{ touchAction: 'manipulation' }}
+                  title={tab}
+                >
+                  {isAdd ? (
+                    <div className={`nav-add w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 group-active:scale-95 ${isActive ? 'is-active' : ''}`}>
+                      <Icon
+                        className="nav-add-icon w-5 h-5"
+                        strokeWidth={isActive ? 3 : 2}
+                      />
+                    </div>
+                  ) : (
+                    <Icon
+                      className="nav-tab-icon w-5 h-5 transition-all"
+                      strokeWidth={isActive ? 2.5 : 2}
+                    />
+                  )}
+                  <span className="nav-tab-label text-[10px] md:text-[11px] font-black uppercase tracking-wider transition-colors">
                     {tab}
                   </span>
-                  {activeTab === tab && (
-                    <div className="absolute bottom-[2px] left-1/2 -translate-x-1/2 h-[3.5px] w-[48px] md:w-[80px] bg-[#eff3f4] rounded-full shadow-[0_0_15px_rgba(255,255,255,0.6)] animate-in fade-in zoom-in-[0.8] duration-300 ease-out" />
+                  {isActive && (
+                    <div className="nav-underline absolute bottom-0 left-1/2 -translate-x-1/2 h-[3px] w-10 rounded-t-full animate-in fade-in zoom-in-50 duration-300" />
                   )}
-                </div>
-              </button>
-            ))}
+                </button>
+              );
+            })}
           </div>
         </div>
 
-        {/* Reset & Logout Controls */}
-        <div className="flex h-full border-l border-[#2f3336] shrink-0 bg-black">
+        <div className="flex h-full shrink-0 nav-divide-l">
+          <button
+            onClick={openProfileModal}
+            className="glass-hover nav-icon-btn px-3 md:px-4 h-full flex items-center gap-2 touch-manipulation"
+            title="Profile"
+            style={{ touchAction: 'manipulation' }}
+          >
+            <div
+              className="w-8 h-8 md:w-9 md:h-9 rounded-full flex items-center justify-center text-[12px] md:text-[13px] font-black text-white shrink-0"
+              style={{
+                background: 'linear-gradient(135deg, #4e55e0 0%, #7856ff 100%)',
+                boxShadow: '0 2px 8px rgba(78, 85, 224, 0.3)',
+              }}
+            >
+              {initial || <UserIcon className="w-4 h-4" />}
+            </div>
+            {nickname.trim() && (
+              <span className="hidden md:inline text-[12px] font-black uppercase tracking-wider max-w-[120px] truncate">
+                {nickname.trim()}
+              </span>
+            )}
+          </button>
+
+          <button
+            onClick={toggleTheme}
+            className="glass-hover nav-icon-btn nav-divide-l px-3 md:px-4 h-full flex items-center justify-center touch-manipulation"
+            title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+            aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+            style={{ touchAction: 'manipulation' }}
+          >
+            {theme === 'dark' ? (
+              <Sun className="w-4 h-4 md:w-5 md:h-5" strokeWidth={2.5} />
+            ) : (
+              <Moon className="w-4 h-4 md:w-5 md:h-5" strokeWidth={2.5} />
+            )}
+          </button>
 
           {onLogout && (
             <button
               onClick={onLogout}
               disabled={isLoggingOut}
-              className="px-5 h-full flex items-center justify-center text-[#71767b] hover:text-[#eff3f4] hover:bg-white/5 transition-all disabled:opacity-50 touch-manipulation"
+              className="glass-hover nav-icon-btn nav-icon-btn--danger nav-divide-l px-4 md:px-5 h-full flex items-center justify-center disabled:opacity-50 touch-manipulation"
               title="Sign Out"
               style={{ touchAction: 'manipulation' }}
             >

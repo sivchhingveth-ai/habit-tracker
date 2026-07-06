@@ -62,30 +62,30 @@ export const DatePicker: React.FC<DatePickerProps> = ({ value, onChange, classNa
         onClick={() => setIsOpen(!isOpen)}
         className={`w-full flex items-center justify-between text-left ${className}`}
       >
-        <span className={value ? 'text-[#eff3f4]' : 'text-[#71767b]'}>{formatDisplay()}</span>
-        <CalendarIcon className="w-4 h-4 text-[#71767b]" />
+        <span className={value ? 'text-[#0a0a0a]' : 'text-[#8a8f97]'}>{formatDisplay()}</span>
+        <CalendarIcon className="w-4 h-4 text-[#8a8f97]" />
       </button>
 
       {isOpen && createPortal(
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsOpen(false)} />
-          <div className="relative bg-[#16181c] border border-[#2f3336] p-4 rounded-2xl shadow-2xl w-[280px] animate-fade-in">
+          <div className="relative bg-white border border-[#e8eaed] p-4 rounded-2xl shadow-2xl w-[280px] animate-fade-in">
             {/* Header */}
             <div className="flex items-center justify-between mb-4">
               <button
                 type="button"
                 onClick={(e) => { e.preventDefault(); shiftMonth(-1); }}
-                className="p-1.5 rounded-xl hover:bg-white/10 text-[#71767b] hover:text-[#eff3f4] transition-colors"
+                className="p-1.5 rounded-xl hover:bg-[#f0f1f5] text-[#8a8f97] hover:text-[#0a0a0a] transition-colors"
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
-              <span className="text-[14px] font-bold text-[#eff3f4]">
+              <span className="text-[14px] font-bold text-[#0a0a0a]">
                 {viewDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
               </span>
               <button
                 type="button"
                 onClick={(e) => { e.preventDefault(); shiftMonth(1); }}
-                className="p-1.5 rounded-xl hover:bg-white/10 text-[#71767b] hover:text-[#eff3f4] transition-colors"
+                className="p-1.5 rounded-xl hover:bg-[#f0f1f5] text-[#8a8f97] hover:text-[#0a0a0a] transition-colors"
               >
                 <ChevronRight className="w-4 h-4" />
               </button>
@@ -94,7 +94,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({ value, onChange, classNa
             {/* Days of Week */}
             <div className="grid grid-cols-7 mb-2">
               {['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'].map(d => (
-                <div key={d} className="text-center text-[10px] font-black text-[#71767b] uppercase tracking-widest">{d}</div>
+                <div key={d} className="text-center text-[10px] font-black text-[#8a8f97] uppercase tracking-widest">{d}</div>
               ))}
             </div>
 
@@ -115,10 +115,10 @@ export const DatePicker: React.FC<DatePickerProps> = ({ value, onChange, classNa
                     onClick={(e) => { e.preventDefault(); handleSelect(day); }}
                     className={`w-8 h-8 mx-auto flex items-center justify-center rounded-full text-[13px] font-medium transition-all ${
                       isSelected
-                        ? 'bg-[#1d9bf0] text-white font-bold shadow-[0_0_12px_rgba(29,155,240,0.4)]'
+                        ? 'bg-[#4e55e0] text-white font-bold shadow-[0_0_12px_rgba(29,155,240,0.4)]'
                         : isToday
-                          ? 'bg-white/10 text-[#1d9bf0] font-bold'
-                          : 'text-[#eff3f4] hover:bg-white/10'
+                          ? 'bg-[#f0f1f5] text-[#4e55e0] font-bold'
+                          : 'text-[#0a0a0a] hover:bg-[#f0f1f5]'
                     }`}
                   >
                     {day}
