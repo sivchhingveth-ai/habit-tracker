@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-export type SoundPreset = 'chime' | 'bell' | 'beep' | 'soft' | 'digital' | 'off';
+export type SoundPreset = 'chime' | 'bell' | 'beep' | 'soft' | 'digital' | 'ascending' | 'fanfare' | 'pulse' | 'crystal' | 'deep' | 'off';
 
 export const SOUND_LABELS: Record<SoundPreset, string> = {
   chime: 'Chime',
@@ -8,6 +8,11 @@ export const SOUND_LABELS: Record<SoundPreset, string> = {
   beep: 'Beep',
   soft: 'Soft',
   digital: 'Digital',
+  ascending: 'Rising',
+  fanfare: 'Fanfare',
+  pulse: 'Pulse',
+  crystal: 'Crystal',
+  deep: 'Deep',
   off: 'Off',
 };
 
@@ -96,6 +101,41 @@ export function playSound(preset: SoundPreset, volume: number) {
         playTone(1500, now + 0.3, 0.15, 'square', 0.4);
         playTone(1500, now + 0.5, 0.15, 'square', 0.4);
         playTone(2000, now + 0.7, 0.3, 'square', 0.5);
+        break;
+      case 'ascending':
+        playTone(440, now, 0.15, 'sine', 0.5);
+        playTone(554, now + 0.15, 0.15, 'sine', 0.6);
+        playTone(659, now + 0.3, 0.15, 'sine', 0.7);
+        playTone(880, now + 0.45, 0.3, 'sine', 0.8);
+        break;
+      case 'fanfare':
+        playTone(523, now, 0.12, 'sawtooth', 0.3);
+        playTone(659, now + 0.12, 0.12, 'sawtooth', 0.35);
+        playTone(784, now + 0.24, 0.12, 'sawtooth', 0.4);
+        playTone(1047, now + 0.36, 0.4, 'sawtooth', 0.5);
+        playTone(784, now + 0.36, 0.4, 'sine', 0.3);
+        break;
+      case 'pulse':
+        playTone(800, now, 0.08, 'square', 0.35);
+        playTone(800, now + 0.15, 0.08, 'square', 0.35);
+        playTone(1000, now + 0.3, 0.08, 'square', 0.4);
+        playTone(1000, now + 0.45, 0.08, 'square', 0.4);
+        playTone(1200, now + 0.6, 0.08, 'square', 0.45);
+        playTone(1200, now + 0.75, 0.08, 'square', 0.45);
+        playTone(1500, now + 0.9, 0.3, 'square', 0.5);
+        break;
+      case 'crystal':
+        playTone(2000, now, 0.2, 'sine', 0.25);
+        playTone(2500, now + 0.1, 0.2, 'sine', 0.2);
+        playTone(3000, now + 0.2, 0.15, 'sine', 0.15);
+        playTone(2000, now + 0.4, 0.25, 'sine', 0.2);
+        playTone(3000, now + 0.55, 0.3, 'sine', 0.15);
+        break;
+      case 'deep':
+        playTone(120, now, 0.5, 'sine', 0.8);
+        playTone(150, now + 0.3, 0.5, 'sine', 0.6);
+        playTone(180, now + 0.6, 0.6, 'sine', 0.5);
+        playTone(240, now + 1.0, 0.8, 'sine', 0.4);
         break;
     }
   } catch { /* silent fail */ }
