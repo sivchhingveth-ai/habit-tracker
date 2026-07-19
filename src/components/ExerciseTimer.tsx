@@ -46,6 +46,19 @@ interface ExerciseTimerProps {
   onExerciseDetail?: (exerciseName: string, duration: string) => void;
 }
 
+function speak(text: string) {
+  if (!window.speechSynthesis) return;
+  const u = new SpeechSynthesisUtterance(text);
+  u.rate = 0.95;
+  u.pitch = 0.8;
+  u.volume = 1;
+  const voices = window.speechSynthesis.getVoices();
+  const male = voices.find((v) => v.name.toLowerCase().includes('male') || v.name.toLowerCase().includes('daniel') || v.name.toLowerCase().includes('james'));
+  if (male) u.voice = male;
+  window.speechSynthesis.cancel();
+  window.speechSynthesis.speak(u);
+}
+
 const RADIUS = 80;
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 
@@ -91,6 +104,9 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
           setPhase('rest-done');
           return 0;
         }
+        if (prev === 4) speak('3');
+        if (prev === 3) speak('2');
+        if (prev === 2) speak('1');
         return prev - 1;
       });
     }, 1000);
@@ -102,11 +118,12 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
     if (countdownNum <= 0) {
       setPhase('active');
       setIsRunning(true);
+      if (!isRest) speak(`${exerciseName}, ${duration}`);
       return;
     }
     const t = setTimeout(() => setCountdownNum((n) => n - 1), 1000);
     return () => clearTimeout(t);
-  }, [phase, countdownNum]);
+  }, [phase, countdownNum, isRest, exerciseName, duration]);
 
   useEffect(() => {
     if (phase !== 'ready' || !isRest) return;
