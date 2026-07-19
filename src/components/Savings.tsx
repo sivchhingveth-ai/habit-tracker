@@ -255,7 +255,7 @@ export const Savings: React.FC<SavingsProps> = ({
     <div className="flex flex-col relative w-full h-full">
 
       {/* Header */}
-      <div className="sticky top-0 z-20 bg-white/90 backdrop-blur-xl border-b border-[#e8eaed]">
+      <div className="sticky top-0 z-20">
         <Tabs tabs={tabs} activeTab={activeTab} onTabChange={onTabChange} onLogout={onLogout} isLoggingOut={isLoggingOut} />
       </div>
       <div>

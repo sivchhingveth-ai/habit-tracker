@@ -407,7 +407,7 @@ const DailyHabitsInner: React.FC<DailyHabitsProps> = ({
         <Tabs tabs={tabs} activeTab={activeTab} onTabChange={onTabChange} onLogout={onLogout} isLoggingOut={isLoggingOut} />
       </div>
 
-      <div className="sticky top-0 z-10 sub-nav">
+      <div className="sticky top-[60px] sm:top-[64px] md:top-[68px] z-10 sub-nav">
         <div className="px-3 py-2 sm:px-5 sm:py-3 md:px-6 md:py-4 flex flex-wrap items-center justify-between gap-2 md:gap-4 border-b border-[var(--border-soft)]">
           <div className="min-w-0 flex items-center gap-3">
             <div className="relative">

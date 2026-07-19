@@ -36,7 +36,7 @@ export const GymView: React.FC<GymViewProps> = ({
 
   return (
     <div className="flex flex-col relative w-full h-full">
-      <div className="sticky top-0 z-20 bg-white/80 backdrop-blur-xl border-b border-[#e8eaed]">
+      <div className="sticky top-0 z-20">
         <Tabs
           tabs={tabs}
           activeTab={activeTab}

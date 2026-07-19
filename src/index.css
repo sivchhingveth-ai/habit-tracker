@@ -296,51 +296,74 @@ html[data-theme="dark"] .top-nav {
   background-color: rgba(10, 11, 15, 0.6);
 }
 
-.top-nav .nav-divide-r { border-right: 1px solid var(--border-medium); }
-.top-nav .nav-divide-l { border-left: 1px solid var(--border-medium); }
-
 /* Tab icon + label: muted by default, primary on hover/active */
 .top-nav .nav-tab-icon,
 .top-nav .nav-tab-label {
   color: var(--text-muted);
-  transition: color 0.2s ease;
+  transition: color 0.15s ease;
 }
 .top-nav .nav-tab:hover .nav-tab-icon,
-.top-nav .nav-tab:hover .nav-tab-label,
+.top-nav .nav-tab:hover .nav-tab-label {
+  color: var(--text-secondary);
+}
 .top-nav .nav-tab.is-active .nav-tab-icon,
 .top-nav .nav-tab.is-active .nav-tab-label {
   color: var(--text-primary);
 }
 
+/* Active tab subtle background */
+.top-nav .nav-tab.is-active {
+  background-color: var(--glass-fill);
+}
+
 /* Active-tab underline */
 .top-nav .nav-underline {
   background-color: var(--text-primary);
-  box-shadow: 0 1px 8px color-mix(in srgb, var(--text-primary) 45%, transparent);
+  box-shadow: 0 1px 4px color-mix(in srgb, var(--text-primary) 25%, transparent);
 }
 
-/* Add Habit circular button */
-.top-nav .nav-add {
-  background-color: var(--text-primary);
-  border: 1px solid transparent;
+/* Add Habit — outline style, not filled circle */
+.top-nav .nav-add-icon-wrap {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  border: 1.5px solid var(--border-medium);
+  background: transparent;
+  transition: all 0.15s ease;
 }
-.top-nav .nav-add .nav-add-icon {
-  color: var(--bg-card);
-  transition: color 0.3s ease;
+html[data-theme="dark"] .top-nav .nav-add-icon-wrap {
+  border-color: var(--border-soft);
 }
-.top-nav .nav-add.is-active {
-  background-color: var(--text-primary);
-  border-color: transparent;
-  box-shadow: var(--shadow-md);
+.top-nav .nav-tab:hover .nav-add-icon-wrap {
+  border-color: var(--text-muted);
+  background: var(--glass-fill);
 }
-.top-nav .nav-add.is-active .nav-add-icon { color: var(--bg-card); }
+.top-nav .nav-tab.is-active .nav-add-icon-wrap {
+  border-color: var(--text-primary);
+  background: var(--glass-fill-strong);
+}
+.top-nav .nav-add-icon-wrap .nav-tab-icon {
+  color: var(--text-muted);
+}
+.top-nav .nav-tab:hover .nav-add-icon-wrap .nav-tab-icon {
+  color: var(--text-secondary);
+}
+.top-nav .nav-tab.is-active .nav-add-icon-wrap .nav-tab-icon {
+  color: var(--text-primary);
+}
 
 /* Right-side icon buttons (profile / theme / logout) */
 .top-nav .nav-icon-btn {
   color: var(--text-muted);
-  transition: color 0.2s ease;
+  transition: color 0.15s ease, background-color 0.15s ease;
 }
-.top-nav .nav-icon-btn:hover { color: var(--text-primary); }
-.top-nav .nav-icon-btn--danger:hover { color: var(--accent-deep); }
+.top-nav .nav-icon-btn:hover {
+  color: var(--text-primary);
+  background-color: var(--glass-fill);
+}
+.top-nav .nav-icon-btn--danger:hover {
+  color: var(--accent-deep);
+}
 
 /* ============================================================
    SUB NAV — sticky glass bar directly beneath .top-nav

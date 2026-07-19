@@ -36,44 +36,50 @@ export const Tabs: React.FC<TabsProps> = ({ tabs, activeTab, onTabChange, onLogo
 
   return (
     <div className="top-nav sticky top-0 z-40">
-      <div className="flex h-[72px] items-center">
+      <div className="flex h-[60px] sm:h-[64px] md:h-[68px] items-center">
+        {/* Tab group */}
         <div className="flex-1 min-w-0 flex h-full overflow-x-auto scrollbar-hide no-scrollbar relative">
-          <div className="flex h-full min-w-max md:min-w-0 w-full">
-            {tabs.map((tab, index) => {
+          <div className="flex h-full min-w-max md:min-w-0 w-full items-center">
+            {tabs.map((tab) => {
               const Icon = TAB_ICONS[tab] ?? ListChecks;
               const isActive = activeTab === tab;
               const isAdd = tab === 'Add Habit';
-              const isLast = index === tabs.length - 1;
 
               return (
                 <button
                   key={tab}
                   ref={isActive ? activeTabRef : null}
                   onClick={() => onTabChange(tab)}
-                  className={`glass-hover nav-tab relative flex-1 min-w-[70px] sm:min-w-[90px] md:min-w-[100px] h-full flex flex-col items-center justify-center gap-0.5 sm:gap-1 shrink-0 touch-manipulation group ${
+                  className={`nav-tab relative h-full flex items-center justify-center gap-1.5 sm:gap-2 shrink-0 touch-manipulation group px-3 sm:px-4 md:px-5 ${
                     isActive ? 'is-active' : ''
-                  } ${isLast ? '' : 'nav-divide-r'}`}
+                  }`}
                   style={{ touchAction: 'manipulation' }}
                   title={tab}
                 >
                   {isAdd ? (
-                    <div className="nav-add w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-all duration-300 group-active:scale-95 is-active">
-                    <Icon
-                      className="nav-add-icon w-4 h-4 sm:w-5 sm:h-5"
-                      strokeWidth={3}
-                    />
+                    <div className="nav-add-icon-wrap flex items-center justify-center">
+                      <Icon
+                        className="nav-tab-icon w-[18px] h-[18px] sm:w-5 sm:h-5 transition-all"
+                        strokeWidth={isActive ? 2.5 : 2}
+                      />
                     </div>
                   ) : (
                     <Icon
-                      className="nav-tab-icon w-4 h-4 sm:w-5 sm:h-5 transition-all"
+                      className="nav-tab-icon w-[18px] h-[18px] sm:w-5 sm:h-5 transition-all"
                       strokeWidth={isActive ? 2.5 : 2}
                     />
                   )}
-                  <span className="nav-tab-label text-[10px] md:text-[11px] font-black uppercase tracking-wider transition-colors">
+                  <span className={`nav-tab-label text-[10px] sm:text-[11px] font-semibold tracking-wide transition-colors hidden sm:inline ${
+                    isActive ? 'font-bold' : ''
+                  }`}>
                     {tab}
                   </span>
+                  {/* Mobile: icon only, no label */}
+                  <span className="nav-tab-label sm:hidden text-[9px] font-semibold tracking-wide transition-colors">
+                    {isAdd ? '' : tab.split(' ')[0]}
+                  </span>
                   {isActive && (
-                    <div className="nav-underline absolute bottom-0 left-1/2 -translate-x-1/2 h-[3px] w-10 rounded-t-full animate-in fade-in zoom-in-50 duration-300" />
+                    <div className="nav-underline absolute bottom-0 left-1/2 -translate-x-1/2 h-[2px] w-6 sm:w-8 rounded-t-full" />
                   )}
                 </button>
               );
@@ -81,16 +87,16 @@ export const Tabs: React.FC<TabsProps> = ({ tabs, activeTab, onTabChange, onLogo
           </div>
         </div>
 
-        <div className="flex h-full shrink-0 nav-divide-l">
+        {/* Action group */}
+        <div className="flex h-full shrink-0 items-center">
+          {/* Profile */}
           <button
             onClick={openProfileModal}
-            className="glass-hover nav-icon-btn px-2 sm:px-3 md:px-4 h-full flex items-center gap-1.5 sm:gap-2 touch-manipulation"
+            className="nav-icon-btn px-2.5 sm:px-3 h-full flex items-center justify-center touch-manipulation"
             title="Profile"
             style={{ touchAction: 'manipulation' }}
           >
-            <div
-              className="w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 rounded-full bg-[var(--bg-soft)] border border-[var(--border-soft)] flex items-center justify-center shrink-0 overflow-hidden"
-            >
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[var(--bg-soft)] border border-[var(--border-soft)] flex items-center justify-center shrink-0 overflow-hidden transition-all">
               {avatarSrc(avatar) ? (
                 <img
                   src={avatarSrc(avatar)}
@@ -99,44 +105,41 @@ export const Tabs: React.FC<TabsProps> = ({ tabs, activeTab, onTabChange, onLogo
                   draggable={false}
                 />
               ) : (
-                <span className="text-[12px] md:text-[13px] font-bold text-[var(--text-primary)]">
-                  {initial || <UserIcon className="w-4 h-4 text-[var(--text-muted)]" />}
+                <span className="text-[11px] font-bold text-[var(--text-primary)]">
+                  {initial || <UserIcon className="w-3.5 h-3.5 text-[var(--text-muted)]" />}
                 </span>
               )}
             </div>
-            {nickname.trim() && (
-              <span className="hidden md:inline text-[12px] font-black uppercase tracking-wider max-w-[120px] truncate">
-                {nickname.trim()}
-              </span>
-            )}
           </button>
 
+          {/* Theme */}
           <button
             onClick={toggleTheme}
-            className="glass-hover nav-icon-btn nav-divide-l px-2 sm:px-3 md:px-4 h-full flex items-center justify-center touch-manipulation"
+            className="nav-icon-btn px-2.5 sm:px-3 h-full flex items-center justify-center touch-manipulation"
             title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
             aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
             style={{ touchAction: 'manipulation' }}
           >
             {theme === 'dark' ? (
-              <Sun className="w-4 h-4 md:w-5 md:h-5" strokeWidth={2.5} />
+              <Sun className="w-4 h-4 sm:w-[18px] sm:h-[18px]" strokeWidth={2} />
             ) : (
-              <Moon className="w-4 h-4 md:w-5 md:h-5" strokeWidth={2.5} />
+              <Moon className="w-4 h-4 sm:w-[18px] sm:h-[18px]" strokeWidth={2} />
             )}
           </button>
 
+          {/* Logout */}
           {onLogout && (
             <button
               onClick={onLogout}
               disabled={isLoggingOut}
-              className="glass-hover nav-icon-btn nav-icon-btn--danger nav-divide-l px-3 sm:px-4 md:px-5 h-full flex items-center justify-center disabled:opacity-50 touch-manipulation"
+              className="nav-icon-btn nav-icon-btn--danger px-2.5 sm:px-3 md:px-4 h-full flex items-center justify-center disabled:opacity-50 touch-manipulation"
               title="Sign Out"
               style={{ touchAction: 'manipulation' }}
             >
               {isLoggingOut ? (
-                <Loader2 className="w-4 h-4 md:w-5 h-5 animate-spin" />
+                <Loader2 className="w-4 h-4 sm:w-[18px] sm:h-[18px] animate-spin" />
               ) : (
-                <LogOut className="w-4 h-4 md:w-5 h-5" />
+                <LogOut className="w-4 h-4 sm:w-[18px] sm:h-[18px]" />
               )}
             </button>
           )}

@@ -125,7 +125,7 @@ export const DailyHabits: React.FC<DailyHabitsProps> = ({
 
   return (
     <div className="flex flex-col relative w-full h-full">
-      <div className="sticky top-0 z-20 bg-black/80 backdrop-blur-xl border-b border-[#2f3336]">
+      <div className="sticky top-0 z-20">
         <Tabs tabs={tabs} activeTab={activeTab} onTabChange={(tab) => useAppStore.getState().setActiveTab(tab)} onLogout={onLogout} isLoggingOut={isLoggingOut} />
       </div>
 
