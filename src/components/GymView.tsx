@@ -316,17 +316,57 @@ export const GymView: React.FC<GymViewProps> = ({
 
                     if (isRest) {
                       const BreakIcon = isRepeat ? Repeat : Timer;
+                      exerciseNumber += 1;
+                      const isCompleted = completedExercises.has(i);
+                      const isCurrentlyActive = activeTimer?.exerciseIndex === i && activeTimer?.workoutId === activeWorkout.id;
+
                       return (
-                        <div key={i} className="flex items-center gap-2.5 py-1">
-                          <div className="flex-1 border-t border-dashed border-[var(--border-medium)]" />
-                          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-dashed border-[var(--border-medium)] bg-[var(--bg-soft)] shrink-0">
-                            <BreakIcon className="w-3 h-3 text-[var(--text-muted)]" strokeWidth={2.5} />
-                            <span className="text-[9px] md:text-[10px] font-black uppercase tracking-wider text-[var(--text-muted)] whitespace-nowrap">
-                              {ex.name} · {ex.duration}
-                            </span>
+                        <button
+                          key={i}
+                          onClick={() => handleExerciseClick(i, ex)}
+                          className={`w-full flex items-center gap-3 p-2.5 rounded-xl border transition-all text-left ${
+                            isCurrentlyActive
+                              ? 'border-[var(--brand)] bg-[var(--brand-soft)] shadow-sm'
+                              : isCompleted
+                              ? 'border-[var(--success-deep)]/30 bg-[var(--success-deep)]/5'
+                              : 'bg-[var(--bg-soft)] border-dashed border-[var(--border-medium)] hover:border-[var(--border-soft)] hover:shadow-sm'
+                          }`}
+                        >
+                          <div
+                            className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
+                            style={{
+                              background: isCompleted
+                                ? 'var(--success-deep)'
+                                : `${timerColor}12`,
+                            }}
+                          >
+                            <BreakIcon
+                              className={`w-3.5 h-3.5 ${isCompleted ? 'text-white' : 'text-[var(--text-muted)]'}`}
+                              strokeWidth={2.5}
+                            />
                           </div>
-                          <div className="flex-1 border-t border-dashed border-[var(--border-medium)]" />
-                        </div>
+                          <div className="flex-1 min-w-0">
+                            <p className={`text-[12px] font-bold truncate ${
+                              isCompleted ? 'text-[var(--text-muted)] line-through' : 'text-[var(--text-secondary)]'
+                            }`}>
+                              {isRepeat ? 'Repeat' : 'Rest'}
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-2 shrink-0">
+                            {isCompleted && (
+                              <span className="text-[9px] font-black text-[var(--success-deep)] uppercase tracking-wider">Done</span>
+                            )}
+                            <div
+                              className="px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider whitespace-nowrap"
+                              style={{
+                                backgroundColor: isCompleted ? 'var(--success-deep)' : `${timerColor}18`,
+                                color: isCompleted ? '#fff' : timerColor,
+                              }}
+                            >
+                              {ex.duration}
+                            </div>
+                          </div>
+                        </button>
                       );
                     }
 
