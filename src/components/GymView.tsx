@@ -1,9 +1,10 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { Sparkles, User, Play, Check, Plus, Pencil, Trash2, Dumbbell, Info } from 'lucide-react';
+import { Sparkles, User, Play, Check, Plus, Pencil, Trash2, Dumbbell, Info, Trophy } from 'lucide-react';
 import { Tabs } from './Tabs';
 import { ExerciseTimer } from './ExerciseTimer';
 import { ExerciseDetail } from './ExerciseDetail';
 import { AddWorkoutModal } from './AddWorkoutModal';
+import { PlanView } from './PlanView';
 import { WORKOUTS, Gender, Level, Workout, Exercise } from '../utils/workouts';
 import { getCustomWorkouts, deleteCustomWorkout } from '../utils/customWorkouts';
 
@@ -40,6 +41,7 @@ export const GymView: React.FC<GymViewProps> = ({
   const [selectedWorkoutId, setSelectedWorkoutId] = useState<string | null>(null);
   const [detailExercise, setDetailExercise] = useState<{ index: number; exercise: Exercise } | null>(null);
   const [workoutStarted, setWorkoutStarted] = useState(false);
+  const [gymView, setGymView] = useState<'workouts' | 'plan'>('workouts');
 
   const refreshCustom = useCallback(() => {
     setCustomWorkouts(getCustomWorkouts());
@@ -131,6 +133,27 @@ export const GymView: React.FC<GymViewProps> = ({
     setCompletedExercises(new Set());
   }, []);
 
+  const handleStartPlanWorkout = useCallback((exercises: Exercise[], name: string) => {
+    const workout: Workout = {
+      id: 'plan-day',
+      title: name,
+      tagline: '',
+      duration: `${exercises.length * 30}s`,
+      level: 'beginner',
+      gender: gender,
+      exercises: exercises.flatMap((e) => [e, { name: 'Rest', duration: '10 sec' }]),
+      tip: '',
+    };
+    setSelectedWorkoutId(null);
+    setActiveTimer({
+      exerciseIndex: 0,
+      exercise: workout.exercises[0],
+      workoutId: workout.id,
+    });
+    setCompletedExercises(new Set());
+    setWorkoutStarted(false);
+  }, [gender]);
+
   const handleDeleteWorkout = (id: string) => {
     deleteCustomWorkout(id);
     refreshCustom();
@@ -177,6 +200,32 @@ export const GymView: React.FC<GymViewProps> = ({
             </button>
           </div>
 
+          {/* View toggle */}
+          <div className="flex gap-2">
+            <button
+              onClick={() => setGymView('workouts')}
+              className={`flex-1 py-2 rounded-xl text-[12px] font-bold transition-all ${
+                gymView === 'workouts' ? 'bg-[var(--brand)] text-white' : 'bg-[var(--bg-soft)] text-[var(--text-muted)]'
+              }`}
+            >
+              <Dumbbell className="w-3.5 h-3.5 inline mr-1" />
+              Workouts
+            </button>
+            <button
+              onClick={() => setGymView('plan')}
+              className={`flex-1 py-2 rounded-xl text-[12px] font-bold transition-all ${
+                gymView === 'plan' ? 'bg-[var(--brand)] text-white' : 'bg-[var(--bg-soft)] text-[var(--text-muted)]'
+              }`}
+            >
+              <Trophy className="w-3.5 h-3.5 inline mr-1" />
+              Plan
+            </button>
+          </div>
+
+          {gymView === 'plan' ? (
+            <PlanView onStartWorkout={handleStartPlanWorkout} />
+          ) : (
+          <>
           {/* Custom Workouts Section */}
           {customWorkouts.length > 0 && (
             <div>
@@ -453,6 +502,8 @@ export const GymView: React.FC<GymViewProps> = ({
           <p className="text-[10px] text-[var(--text-muted)] font-medium text-center px-2 leading-relaxed pt-2">
             Warm up for 3 minutes before starting. Stop immediately if you feel sharp pain.
           </p>
+          </>
+          )}
         </div>
       </div>
 
