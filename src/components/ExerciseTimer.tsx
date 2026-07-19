@@ -111,9 +111,9 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
   useEffect(() => {
     if (phase !== 'ready' || !isRest) return;
     const t = setTimeout(() => {
-      setPhase('countdown');
-      setCountdownNum(3);
-    }, 800);
+      setPhase('active');
+      setIsRunning(true);
+    }, 300);
     return () => clearTimeout(t);
   }, [phase, isRest]);
 
