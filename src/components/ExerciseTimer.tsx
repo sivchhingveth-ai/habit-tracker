@@ -34,6 +34,7 @@ interface ExerciseTimerProps {
   duration: string;
   color: string;
   onComplete: () => void;
+  onClose?: () => void;
   onNext?: () => void;
   onPrevious?: () => void;
   nextExercise?: { name: string; duration: string } | null;
@@ -147,7 +148,7 @@ const RADIUS = 80;
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 
 export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
-  exerciseName, duration, color, onComplete, onNext, onPrevious,
+  exerciseName, duration, color, onComplete, onClose, onNext, onPrevious,
   nextExercise, previousExercise, exerciseNumber, totalExercises,
   isRest = false, allExercises = [], currentIndex = 0, onExerciseDetail, autoStart = false, restDuration = 30,
 }) => {
@@ -261,7 +262,7 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
   const handlePause = () => setIsRunning(false);
   const handleResume = () => setIsRunning(true);
   const handleReset = () => { clearTimer(); setRemaining(totalSeconds); setMaxSeconds(totalSeconds); setIsRunning(false); setIsDone(false); setPhase('ready'); };
-  const handleClose = () => { clearTimer(); onComplete(); };
+  const handleClose = () => { clearTimer(); onClose?.() || onComplete(); };
   const handleSkip = () => { clearTimer(); speak('Rest'); onComplete(); };
   const handlePrevious = () => { clearTimer(); onPrevious?.(); };
   const handleAddTime = () => {
