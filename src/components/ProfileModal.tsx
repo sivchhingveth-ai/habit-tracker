@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { User as UserIcon, Sun, Moon, Check } from 'lucide-react';
+import { User as UserIcon, Sun, Moon, Check, Volume2, VolumeX, Timer } from 'lucide-react';
 import useAppStore from '../store/appStore';
 import { Modal } from './Modal';
 import { AVATARS, avatarSrc } from '../utils/avatars';
+import { useTimerSettings, SOUND_LABELS, SoundPreset, playSound } from '../utils/timerSettings';
 
 export const ProfileModal: React.FC = () => {
   const profileModalOpen = useAppStore((s) => s.profileModalOpen);
@@ -15,6 +16,7 @@ export const ProfileModal: React.FC = () => {
   const setTheme = useAppStore((s) => s.setTheme);
   const [draft, setDraft] = useState(nickname);
   const [draftAvatar, setDraftAvatar] = useState(avatar);
+  const { settings: timerSettings, update: updateTimer } = useTimerSettings();
 
   React.useEffect(() => {
     if (profileModalOpen) {
@@ -167,6 +169,84 @@ export const ProfileModal: React.FC = () => {
           </div>
           <p className="text-[10px] text-[var(--text-muted)] font-semibold mt-1.5 px-1">
             Switch between light and dark mode. Your choice is saved on this device.
+          </p>
+        </div>
+
+        {/* Timer Settings */}
+        <div>
+          <label className={labelClass}>Gym Timer</label>
+          <div className="p-3 rounded-2xl bg-[var(--bg-soft)] border border-[var(--border-soft)] space-y-3">
+            {/* Sound Preset */}
+            <div>
+              <p className="text-[9px] font-black text-[var(--text-muted)] uppercase tracking-widest mb-2 flex items-center gap-1.5">
+                <Timer className="w-3 h-3" />
+                Ring Tone
+              </p>
+              <div className="grid grid-cols-3 gap-1.5">
+                {(Object.keys(SOUND_LABELS) as SoundPreset[]).map((preset) => (
+                  <button
+                    key={preset}
+                    type="button"
+                    onClick={() => updateTimer({ sound: preset })}
+                    className={`px-2 py-2 rounded-lg text-[10px] font-bold transition-all active:scale-95 ${
+                      timerSettings.sound === preset
+                        ? 'bg-[var(--text-primary)] text-[var(--bg-card)]'
+                        : 'bg-[var(--bg-card)] text-[var(--text-muted)] hover:text-[var(--text-primary)] border border-[var(--border-soft)]'
+                    }`}
+                  >
+                    {SOUND_LABELS[preset]}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Volume */}
+            <div>
+              <div className="flex items-center justify-between mb-1.5">
+                <p className="text-[9px] font-black text-[var(--text-muted)] uppercase tracking-widest">Volume</p>
+                <span className="text-[10px] font-bold text-[var(--text-primary)]">{timerSettings.volume}%</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <VolumeX className="w-3 h-3 text-[var(--text-muted)] shrink-0" />
+                <input
+                  type="range"
+                  min={0}
+                  max={100}
+                  value={timerSettings.volume}
+                  onChange={(e) => updateTimer({ volume: Number(e.target.value) })}
+                  className="flex-1 h-1.5 rounded-full appearance-none bg-[var(--border-soft)] cursor-pointer accent-[var(--text-primary)]"
+                />
+                <Volume2 className="w-3 h-3 text-[var(--text-muted)] shrink-0" />
+              </div>
+            </div>
+
+            {/* Tick toggle */}
+            <div className="flex items-center justify-between">
+              <p className="text-[9px] font-black text-[var(--text-muted)] uppercase tracking-widest">Countdown Ticks</p>
+              <button
+                type="button"
+                onClick={() => updateTimer({ tickEnabled: !timerSettings.tickEnabled })}
+                className={`relative w-9 h-5 rounded-full transition-all ${
+                  timerSettings.tickEnabled ? 'bg-[var(--text-primary)]' : 'bg-[var(--border-medium)]'
+                }`}
+              >
+                <div className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow-sm transition-all ${
+                  timerSettings.tickEnabled ? 'left-[18px]' : 'left-0.5'
+                }`} />
+              </button>
+            </div>
+
+            {/* Preview */}
+            <button
+              type="button"
+              onClick={() => playSound(timerSettings.sound, timerSettings.volume)}
+              className="w-full py-2 rounded-lg text-[10px] font-bold text-[var(--text-muted)] bg-[var(--bg-card)] border border-[var(--border-soft)] hover:text-[var(--text-primary)] transition-all active:scale-[0.98]"
+            >
+              Preview Sound
+            </button>
+          </div>
+          <p className="text-[10px] text-[var(--text-muted)] font-semibold mt-1.5 px-1">
+            Configure the gym exercise timer sound and volume.
           </p>
         </div>
 

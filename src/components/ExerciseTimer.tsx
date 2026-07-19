@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Play, Pause, X, RotateCcw } from 'lucide-react';
+import { useTimerSettings, playSound, playTick } from '../utils/timerSettings';
 
 function parseDuration(str: string): number {
   const s = str.toLowerCase().trim();
@@ -21,45 +22,6 @@ function formatTime(total: number): string {
   return m > 0 ? `${m}:${String(s).padStart(2, '0')}` : `${s}`;
 }
 
-function playRing() {
-  try {
-    const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
-    const playTone = (freq: number, startTime: number, dur: number) => {
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = 'sine';
-      osc.frequency.value = freq;
-      gain.gain.setValueAtTime(0.3, startTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, startTime + dur);
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start(startTime);
-      osc.stop(startTime + dur);
-    };
-    const now = ctx.currentTime;
-    playTone(880, now, 0.15);
-    playTone(1100, now + 0.18, 0.15);
-    playTone(880, now + 0.36, 0.15);
-    playTone(1100, now + 0.54, 0.25);
-  } catch { /* silent fail */ }
-}
-
-function playTick() {
-  try {
-    const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.type = 'sine';
-    osc.frequency.value = 600;
-    gain.gain.setValueAtTime(0.08, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.05);
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.start(ctx.currentTime);
-    osc.stop(ctx.currentTime + 0.05);
-  } catch { /* silent fail */ }
-}
-
 interface ExerciseTimerProps {
   exerciseName: string;
   duration: string;
@@ -78,6 +40,7 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
   const [isRunning, setIsRunning] = useState(false);
   const [isDone, setIsDone] = useState(false);
   const intervalRef = useRef<number | null>(null);
+  const { settings } = useTimerSettings();
 
   const clearTimer = useCallback(() => {
     if (intervalRef.current !== null) {
@@ -86,9 +49,7 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
     }
   }, []);
 
-  useEffect(() => {
-    return clearTimer;
-  }, [clearTimer]);
+  useEffect(() => { return clearTimer; }, [clearTimer]);
 
   useEffect(() => {
     if (!isRunning || isDone) return;
@@ -98,20 +59,18 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
           clearTimer();
           setIsDone(true);
           setIsRunning(false);
-          playRing();
+          playSound(settings.sound, settings.volume);
           return 0;
         }
-        if (prev <= 4) playTick();
+        if (prev <= 4 && settings.tickEnabled) playTick(settings.volume);
         return prev - 1;
       });
     }, 1000);
     return clearTimer;
-  }, [isRunning, isDone, clearTimer]);
+  }, [isRunning, isDone, clearTimer, settings]);
 
   const progress = 1 - remaining / totalSeconds;
   const strokeDashoffset = CIRCUMFERENCE * (1 - progress);
-  const minutes = Math.floor(remaining / 60);
-  const seconds = remaining % 60;
 
   const handleStart = () => { setIsDone(false); setIsRunning(true); };
   const handlePause = () => setIsRunning(false);
