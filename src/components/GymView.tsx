@@ -65,11 +65,18 @@ export const GymView: React.FC<GymViewProps> = ({
   }, [activeWorkout]);
 
   const handleTimerComplete = useCallback(() => {
-    if (activeTimer) {
+    if (activeTimer && activeWorkout) {
       setCompletedExercises((prev) => new Set(prev).add(activeTimer.exerciseIndex));
-      setActiveTimer(null);
+      // Auto-start the next exercise (or rest) after current completes
+      const nextIndex = activeTimer.exerciseIndex + 1;
+      if (nextIndex < activeWorkout.exercises.length) {
+        const nextEx = activeWorkout.exercises[nextIndex];
+        setActiveTimer({ exerciseIndex: nextIndex, exercise: nextEx, workoutId: activeWorkout.id });
+      } else {
+        setActiveTimer(null);
+      }
     }
-  }, [activeTimer]);
+  }, [activeTimer, activeWorkout]);
 
   const handleStartWorkout = useCallback(() => {
     setCompletedExercises(new Set());
