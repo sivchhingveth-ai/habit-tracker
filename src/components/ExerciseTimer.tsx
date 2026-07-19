@@ -47,11 +47,71 @@ interface ExerciseTimerProps {
   autoStart?: boolean;
 }
 
+function cleanForSpeech(text: string): string {
+  return text
+    .replace(/-/g, ' ')
+    .replace(/\(/g, '')
+    .replace(/\)/g, '')
+    .replace(/\//g, ' or ')
+    .replace(/\bUps\b/gi, 'ups')
+    .replace(/\bPush\b/gi, 'push')
+    .replace(/\bPull\b/gi, 'pull')
+    .replace(/\bSquat\b/gi, 'squat')
+    .replace(/\bPlank\b/gi, 'plank')
+    .replace(/\bBurpee\b/gi, 'burpee')
+    .replace(/\bLunge\b/gi, 'lunge')
+    .replace(/\bBridge\b/gi, 'bridge')
+    .replace(/\bDip\b/gi, 'dip')
+    .replace(/\bHold\b/gi, 'hold')
+    .replace(/\bJack\b/gi, 'jack')
+    .replace(/\bClimber\b/gi, 'climber')
+    .replace(/\bTap\b/gi, 'tap')
+    .replace(/\bJump\b/gi, 'jump')
+    .replace(/\bSkater\b/gi, 'skater')
+    .replace(/\bMarch\b/gi, 'march')
+    .replace(/\bStretch\b/gi, 'stretch')
+    .replace(/\bKickback\b/gi, 'kickback')
+    .replace(/\bRow\b/gi, 'row')
+    .replace(/\bRaise\b/gi, 'raise')
+    .replace(/\bBend\b/gi, 'bend')
+    .replace(/\bHinge\b/gi, 'hinge')
+    .replace(/\bStand\b/gi, 'stand')
+    .replace(/\bWall\b/gi, 'wall')
+    .replace(/\bRegular\b/gi, 'regular')
+    .replace(/\bWide[\s-]*Grip\b/gi, 'wide grip')
+    .replace(/\bIncline\b/gi, 'incline')
+    .replace(/\bKnee\b/gi, 'knee')
+    .replace(/\bDiamond\b/gi, 'diamond')
+    .replace(/\bArcher\b/gi, 'archer')
+    .replace(/\bBulgarian\b/gi, 'bulgarian')
+    .replace(/\bPistol\b/gi, 'pistol')
+    .replace(/\bForearm\b/gi, 'forearm')
+    .replace(/\bSumo\b/gi, 'sumo')
+    .replace(/\bReverse\b/gi, 'reverse')
+    .replace(/\bWalking\b/gi, 'walking')
+    .replace(/\bStanding\b/gi, 'standing')
+    .replace(/\bSide\b/gi, 'side')
+    .replace(/\bGlute\b/gi, 'glute')
+    .replace(/\bCat[\s-]*Cow\b/gi, 'cat cow')
+    .replace(/\bShoulder\b/gi, 'shoulder')
+    .replace(/\bMountain\b/gi, 'mountain')
+    .replace(/\bTricep\b/gi, 'tricep')
+    .replace(/\bCalf\b/gi, 'calf')
+    .replace(/\bSplayed\b/gi, 'splayed')
+    .replace(/\bCross[\s-]*Leg\b/gi, 'cross leg')
+    .replace(/\bHip\b/gi, 'hip')
+    .replace(/\bRepeat\b/gi, 'repeat')
+    .replace(/\bRest\b/gi, 'rest')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
 function speak(text: string) {
   if (!window.speechSynthesis) return;
   window.speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(text);
-  u.rate = 0.9;
+  const cleaned = cleanForSpeech(text);
+  const u = new SpeechSynthesisUtterance(cleaned);
+  u.rate = 0.85;
   u.pitch = 0.7;
   u.volume = 1;
   const voices = window.speechSynthesis.getVoices();
@@ -146,12 +206,14 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
   }, [phase, isRest, isDone, exerciseName, duration]);
 
   useEffect(() => {
-    if (phase !== 'ready' || autoStart || isRest) return;
-    const t = setTimeout(() => {
-      setPhase('countdown');
-      setCountdownNum(3);
-    }, 500);
-    return () => clearTimeout(t);
+    if (phase !== 'ready' || isRest) return;
+    if (autoStart) {
+      const t = setTimeout(() => {
+        setPhase('countdown');
+        setCountdownNum(3);
+      }, 300);
+      return () => clearTimeout(t);
+    }
   }, [phase, autoStart, isRest]);
 
   const progress = Math.min(Math.max(1 - remaining / maxSeconds, 0), 1);
