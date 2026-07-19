@@ -411,7 +411,7 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
                 <circle
                   cx="90" cy="90" r={RADIUS} fill="transparent" stroke="#fff" strokeWidth="8"
                   strokeDasharray={CIRCUMFERENCE} strokeDashoffset={strokeDashoffset}
-                  strokeLinecap="round" className="transition-all duration-1000 ease-linear"
+                  strokeLinecap="round" className="transition-[stroke-dashoffset] duration-200 ease-linear"
                 />
               </svg>
               <div className="absolute inset-0 flex items-center justify-center">
@@ -542,7 +542,7 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
                       strokeDasharray={CIRCUMFERENCE}
                       strokeDashoffset={strokeDashoffset}
                       strokeLinecap="round"
-                      className="transition-all duration-1000 ease-linear"
+                      className="transition-[stroke-dashoffset] duration-200 ease-linear"
                       style={{ filter: isRest ? 'none' : `drop-shadow(0 0 8px ${accentColor}40)` }}
                     />
                   </svg>
