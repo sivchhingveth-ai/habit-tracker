@@ -157,14 +157,13 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
   const [maxSeconds, setMaxSeconds] = useState(totalSeconds);
   const [isRunning, setIsRunning] = useState(false);
   const [isDone, setIsDone] = useState(false);
-  const [phase, setPhase] = useState<'countdown' | 'ready' | 'active' | 'finishing' | 'rest-done'>('ready');
+  const [phase, setPhase] = useState<'countdown' | 'ready' | 'active' | 'rest-done'>('ready');
   const [countdownNum, setCountdownNum] = useState(3);
-  const [finishNum, setFinishNum] = useState(3);
   const [addedFlash, setAddedFlash] = useState(false);
   const intervalRef = useRef<number | null>(null);
   const flashRef = useRef<number | null>(null);
   const startRef = useRef<number>(0);
-  const spokenRef = useRef<{ twenty: boolean; ten: boolean }>({ twenty: false, ten: false });
+  const spokenRef = useRef<{ twenty: boolean; ten: boolean; three: boolean; two: boolean; one: boolean }>({ twenty: false, ten: false, three: false, two: false, one: false });
   const quote = REST_QUOTES[Math.floor(Math.random() * REST_QUOTES.length)];
 
   const clearTimer = useCallback(() => {
@@ -184,7 +183,7 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
   useEffect(() => {
     if (!isRunning || isDone) return;
     startRef.current = Date.now();
-    spokenRef.current = { twenty: false, ten: false };
+    spokenRef.current = { twenty: false, ten: false, three: false, two: false, one: false };
     const tick = () => {
       const elapsed = (Date.now() - startRef.current) / 1000;
       const left = Math.max(0, totalSeconds - Math.floor(elapsed));
@@ -198,32 +197,32 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
           spokenRef.current.ten = true;
           speak('10 seconds left');
         }
+        if (!spokenRef.current.three && left === 3) {
+          spokenRef.current.three = true;
+          speak('3');
+        }
+        if (!spokenRef.current.two && left === 2) {
+          spokenRef.current.two = true;
+          speak('2');
+        }
+        if (!spokenRef.current.one && left === 1) {
+          spokenRef.current.one = true;
+          speak('1');
+        }
       }
       if (left <= 0) {
         clearTimer();
         if (isRest) {
           onComplete();
         } else {
-          setPhase('finishing');
-          setFinishNum(3);
+          speak('Rest');
+          onComplete();
         }
       }
     };
     intervalRef.current = window.setInterval(tick, 250);
     return clearTimer;
   }, [isRunning, isDone, clearTimer, onComplete, isRest, totalSeconds]);
-
-  useEffect(() => {
-    if (phase !== 'finishing') return;
-    if (finishNum <= 0) {
-      speak('Rest');
-      onComplete();
-      return;
-    }
-    speak(String(finishNum));
-    const t = setTimeout(() => setFinishNum((n) => n - 1), 1000);
-    return () => clearTimeout(t);
-  }, [phase, finishNum, onComplete]);
 
   useEffect(() => {
     if (phase !== 'countdown') return;
@@ -239,11 +238,10 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
 
   useEffect(() => {
     if (phase !== 'ready' || !isRest) return;
-    speak('Rest');
     const t = setTimeout(() => {
       setPhase('active');
       setIsRunning(true);
-    }, 1200);
+    }, 300);
     return () => clearTimeout(t);
   }, [phase, isRest]);
 
@@ -272,7 +270,7 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
   const handleStart = () => { setPhase('countdown'); setCountdownNum(3); setIsDone(false); setIsRunning(false); };
   const handlePause = () => setIsRunning(false);
   const handleResume = () => setIsRunning(true);
-  const handleReset = () => { clearTimer(); setRemaining(totalSeconds); setMaxSeconds(totalSeconds); setIsRunning(false); setIsDone(false); setPhase('ready'); startRef.current = Date.now(); spokenRef.current = { twenty: false, ten: false }; };
+  const handleReset = () => { clearTimer(); setRemaining(totalSeconds); setMaxSeconds(totalSeconds); setIsRunning(false); setIsDone(false); setPhase('ready'); startRef.current = Date.now(); spokenRef.current = { twenty: false, ten: false, three: false, two: false, one: false }; };
   const handleClose = () => { clearTimer(); onClose?.() || onComplete(); };
   const handleSkip = () => { clearTimer(); speak('Rest'); onComplete(); };
   const handlePrevious = () => { clearTimer(); onPrevious?.(); };
@@ -332,20 +330,6 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
               style={{ color: accentColor }}
             >
               {countdownNum === 0 ? 'Go!' : countdownNum}
-            </span>
-          </div>
-        ) : phase === 'finishing' ? (
-          /* Exercise finishing — 3-2-1 before rest */
-          <div className="flex flex-col items-center gap-4 animate-slide-up">
-            <p className="text-[13px] font-bold tracking-widest uppercase" style={{ color: 'var(--text-muted)' }}>
-              Getting ready for rest
-            </p>
-            <span
-              className="text-[80px] sm:text-[96px] font-black leading-none tabular-nums animate-pop-in"
-              key={finishNum}
-              style={{ color: accentColor }}
-            >
-              {finishNum === 0 ? 'Rest!' : finishNum}
             </span>
           </div>
         ) : phase === 'ready' && isRest ? (
