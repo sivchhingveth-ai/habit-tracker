@@ -186,16 +186,15 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
     if (!isRunning || isDone) return;
     startRef.current = Date.now();
     spokenRef.current = { half: false, ten: false, three: false, two: false, one: false, restHalf: false };
-    const halfMark = Math.round(totalSeconds / 2 / 5) * 5;
     const tick = () => {
       const elapsed = (Date.now() - startRef.current) / 1000;
       const left = Math.max(0, totalSeconds - Math.floor(elapsed));
       setRemaining(left);
       if (!isRest) {
         const elapsedWhole = Math.floor(elapsed);
-        if (!spokenRef.current.half && elapsedWhole >= totalSeconds - halfMark) {
+        if (!spokenRef.current.half && elapsedWhole >= totalSeconds - 20) {
           spokenRef.current.half = true;
-          speak(`${halfMark} seconds left`);
+          speak('20 seconds left');
         }
         if (!spokenRef.current.ten && elapsedWhole >= totalSeconds - 10) {
           spokenRef.current.ten = true;
