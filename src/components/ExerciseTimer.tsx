@@ -108,6 +108,15 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
     return () => clearTimeout(t);
   }, [phase, countdownNum]);
 
+  useEffect(() => {
+    if (phase !== 'ready' || !isRest) return;
+    const t = setTimeout(() => {
+      setPhase('countdown');
+      setCountdownNum(3);
+    }, 800);
+    return () => clearTimeout(t);
+  }, [phase, isRest]);
+
   const progress = Math.min(Math.max(1 - remaining / maxSeconds, 0), 1);
   const strokeDashoffset = CIRCUMFERENCE * (1 - progress);
 
@@ -173,51 +182,98 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
               {countdownNum === 0 ? 'Go!' : countdownNum}
             </span>
           </div>
+        ) : phase === 'ready' && isRest ? (
+          /* Rest ready — auto-starts */
+          <div className="flex flex-col items-center gap-4 animate-slide-up">
+            <p className="text-[13px] font-bold tracking-widest uppercase" style={{ color: 'rgba(255,255,255,0.6)' }}>
+              Rest
+            </p>
+            <span className="text-[72px] sm:text-[80px] font-black leading-none tabular-nums" style={{ color: '#fff' }}>
+              {formatTime(remaining)}
+            </span>
+          </div>
         ) : phase === 'ready' ? (
-          /* Ready state */
+          /* Exercise ready state */
           <div className="flex flex-col items-center gap-6 animate-slide-up">
-            <p className="text-[14px] font-bold tracking-wide" style={{ color: isRest ? 'rgba(255,255,255,0.7)' : 'var(--text-muted)' }}>
-              {isRest ? 'Take a break' : 'Ready to go!'}
+            <p className="text-[14px] font-bold tracking-wide" style={{ color: 'var(--text-muted)' }}>
+              Ready to go!
             </p>
             <h2
               className="text-[22px] sm:text-[26px] font-black text-center leading-tight tracking-tight"
-              style={{ color: isRest ? '#fff' : 'var(--text-primary)' }}
+              style={{ color: 'var(--text-primary)' }}
             >
               {exerciseName}
             </h2>
-            {!isRest && (
-              <p className="text-[13px] font-medium" style={{ color: 'var(--text-muted)' }}>
-                {duration}
-              </p>
-            )}
-            {isRest && (
-              <p className="text-[13px] font-medium text-center max-w-[280px] leading-relaxed" style={{ color: 'rgba(255,255,255,0.7)' }}>
-                "{quote}"
-              </p>
-            )}
-
-            {/* Start button */}
+            <p className="text-[13px] font-medium" style={{ color: 'var(--text-muted)' }}>
+              {duration}
+            </p>
             <button
               onClick={handleStart}
               className="mt-4 w-full max-w-[280px] h-14 rounded-2xl flex items-center justify-center gap-3 text-[15px] font-bold transition-all active:scale-[0.97] shadow-lg"
-              style={{
-                backgroundColor: isRest ? '#fff' : accentColor,
-                color: isRest ? accentColor : '#fff',
-              }}
+              style={{ backgroundColor: accentColor, color: '#fff' }}
             >
               <Play className="w-5 h-5" fill="currentColor" />
               Start
             </button>
           </div>
+        ) : isRest && !isDone ? (
+          /* Active rest state — the main rest screen */
+          <div className="flex flex-col items-center gap-5 w-full animate-slide-up">
+            <p className="text-[13px] font-bold tracking-widest uppercase" style={{ color: 'rgba(255,255,255,0.6)' }}>
+              Rest
+            </p>
+
+            {/* Timer ring */}
+            <div className="relative w-[180px] h-[180px] sm:w-[200px] sm:h-[200px]">
+              <svg className="w-full h-full -rotate-90" viewBox="0 0 180 180">
+                <circle cx="90" cy="90" r={RADIUS} fill="transparent" stroke="rgba(255,255,255,0.15)" strokeWidth="8" />
+                <circle
+                  cx="90" cy="90" r={RADIUS} fill="transparent" stroke="#fff" strokeWidth="8"
+                  strokeDasharray={CIRCUMFERENCE} strokeDashoffset={strokeDashoffset}
+                  strokeLinecap="round" className="transition-all duration-1000 ease-linear"
+                />
+              </svg>
+              <div className="absolute inset-0 flex items-center justify-center">
+                <span className="text-[48px] sm:text-[56px] font-black leading-none tabular-nums" style={{ color: '#fff' }}>
+                  {formatTime(remaining)}
+                </span>
+              </div>
+            </div>
+
+            {/* +20s and Skip */}
+            <div className="flex items-center gap-3 mt-2">
+              <div className="relative">
+                <button
+                  onClick={handleAddTime}
+                  className="h-12 px-6 rounded-full flex items-center justify-center gap-2 text-[14px] font-bold transition-all active:scale-95"
+                  style={{ backgroundColor: 'rgba(255,255,255,0.2)', color: '#fff' }}
+                >
+                  <Plus className="w-4 h-4" />
+                  +20s
+                </button>
+                {addedFlash && (
+                  <span className="absolute -top-7 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-full text-[11px] font-black whitespace-nowrap animate-slide-down" style={{ backgroundColor: 'rgba(255,255,255,0.3)', color: '#fff' }}>
+                    +20s
+                  </span>
+                )}
+              </div>
+              <button
+                onClick={handleSkip}
+                className="h-12 px-6 rounded-full flex items-center justify-center gap-2 text-[14px] font-bold transition-all active:scale-95"
+                style={{ backgroundColor: '#fff', color: accentColor }}
+              >
+                Skip
+              </button>
+            </div>
+          </div>
         ) : (
-          /* Active / Done state */
+          /* Active / Done state (exercise) */
           <div className="flex flex-col items-center gap-5 w-full">
-            {/* Exercise name */}
             <h2
               className="text-[18px] sm:text-[20px] font-black text-center leading-tight tracking-tight"
-              style={{ color: isRest ? '#fff' : 'var(--text-primary)' }}
+              style={{ color: 'var(--text-primary)' }}
             >
-              {isDone ? (isRest ? 'Rest Complete!' : 'Well Done!') : exerciseName}
+              {isDone ? 'Well Done!' : exerciseName}
             </h2>
 
             {isDone && allExercises.length > 0 ? (
@@ -451,25 +507,52 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
           className="px-6 pb-8 pt-4 safe-area-bottom"
           style={{ borderTop: isRest ? '1px solid rgba(255,255,255,0.1)' : '1px solid var(--border-soft)' }}
         >
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: isRest ? 'rgba(255,255,255,0.5)' : 'var(--text-muted)' }}>
-                Next
-              </p>
-              <p className="text-[14px] font-bold" style={{ color: isRest ? '#fff' : 'var(--text-primary)' }}>
-                {nextExercise.name}
-              </p>
+          {isRest ? (
+            /* Rest: show next exercise with illustration */
+            <div className="flex flex-col gap-3">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: 'rgba(255,255,255,0.5)' }}>
+                    Next {exerciseNumber && totalExercises ? `${exerciseNumber + 1}/${totalExercises}` : ''}
+                  </p>
+                  <p className="text-[15px] font-black" style={{ color: '#fff' }}>
+                    {nextExercise.name}
+                  </p>
+                </div>
+                <div className="px-3 py-1.5 rounded-full text-[12px] font-bold" style={{ backgroundColor: 'rgba(255,255,255,0.15)', color: '#fff' }}>
+                  {nextExercise.duration}
+                </div>
+              </div>
+              {/* Silhouette preview */}
+              <div className="w-full h-[140px] rounded-2xl flex items-center justify-center" style={{ backgroundColor: 'rgba(255,255,255,0.1)' }}>
+                <svg width="80" height="120" viewBox="0 0 120 160" fill="none">
+                  <circle cx="60" cy="22" r="14" fill="#fff" opacity="0.5" />
+                  <rect x="48" y="36" width="24" height="50" rx="8" fill="#fff" opacity="0.4" />
+                  <rect x="28" y="40" width="18" height="8" rx="4" fill="#fff" opacity="0.35" transform="rotate(-15 28 44)" />
+                  <rect x="74" y="40" width="18" height="8" rx="4" fill="#fff" opacity="0.35" transform="rotate(15 74 44)" />
+                  <rect x="44" y="86" width="10" height="44" rx="5" fill="#fff" opacity="0.35" transform="rotate(-5 44 86)" />
+                  <rect x="66" y="86" width="10" height="44" rx="5" fill="#fff" opacity="0.35" transform="rotate(5 66 86)" />
+                  <rect x="38" y="128" width="16" height="6" rx="3" fill="#fff" opacity="0.3" />
+                  <rect x="66" y="128" width="16" height="6" rx="3" fill="#fff" opacity="0.3" />
+                </svg>
+              </div>
             </div>
-            <div
-              className="px-3 py-1.5 rounded-full text-[12px] font-bold"
-              style={{
-                backgroundColor: isRest ? 'rgba(255,255,255,0.15)' : `${color}15`,
-                color: isRest ? '#fff' : color,
-              }}
-            >
-              {nextExercise.duration}
+          ) : (
+            /* Exercise: simple next preview */
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: 'var(--text-muted)' }}>
+                  Next
+                </p>
+                <p className="text-[14px] font-bold" style={{ color: 'var(--text-primary)' }}>
+                  {nextExercise.name}
+                </p>
+              </div>
+              <div className="px-3 py-1.5 rounded-full text-[12px] font-bold" style={{ backgroundColor: `${color}15`, color }}>
+                {nextExercise.duration}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       )}
     </div>
