@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { User as UserIcon, Sun, Moon, Check, Volume2, VolumeX, Timer } from 'lucide-react';
+import { User as UserIcon, Sun, Moon, Check, Volume2, VolumeX, Timer, ChevronRight, Play } from 'lucide-react';
 import useAppStore from '../store/appStore';
 import { Modal } from './Modal';
 import { AVATARS, avatarSrc } from '../utils/avatars';
@@ -16,198 +16,221 @@ export const ProfileModal: React.FC = () => {
   const setTheme = useAppStore((s) => s.setTheme);
   const [draft, setDraft] = useState(nickname);
   const [draftAvatar, setDraftAvatar] = useState(avatar);
+  const [showAllAvatars, setShowAllAvatars] = useState(false);
   const { settings: timerSettings, update: updateTimer } = useTimerSettings();
 
   React.useEffect(() => {
     if (profileModalOpen) {
       setDraft(nickname);
       setDraftAvatar(avatar);
+      setShowAllAvatars(false);
     }
   }, [profileModalOpen, nickname, avatar]);
 
   const initial = (draft.trim()[0] || '').toUpperCase() || '?';
   const selectedSrc = avatarSrc(draftAvatar);
-  const labelClass = "text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-1.5 block px-1";
+  const visibleAvatars = showAllAvatars ? AVATARS : AVATARS.slice(0, 12);
 
   return (
     <Modal isOpen={profileModalOpen} onClose={closeProfileModal} title="Profile">
-      <div className="space-y-5 px-1 pb-2">
-        {/* Preview */}
-        <div className="flex items-center gap-3 sm:gap-4 pt-2">
-          <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl bg-[var(--bg-soft)] border border-[var(--border-soft)] flex items-center justify-center shrink-0 overflow-hidden shadow-lg">
-            {selectedSrc ? (
-              <img
-                src={selectedSrc}
-                alt="Selected avatar"
-                className="w-full h-full object-contain"
-                draggable={false}
-              />
-            ) : initial === '?' ? (
-              <UserIcon className="w-7 h-7 text-[var(--text-muted)]" />
-            ) : (
-              <span className="text-2xl font-black text-[var(--text-primary)]">{initial}</span>
-            )}
+      <div className="space-y-3 pb-2">
+        {/* ─── Section 1: Identity Card ─────────────────────── */}
+        <div className="rounded-2xl border border-[var(--border-soft)] overflow-hidden">
+          {/* Preview + Nickname */}
+          <div className="p-4 flex items-center gap-4 bg-[var(--bg-tint)]">
+            <div className="w-14 h-14 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-soft)] flex items-center justify-center shrink-0 overflow-hidden shadow-sm">
+              {selectedSrc ? (
+                <img src={selectedSrc} alt="Avatar" className="w-full h-full object-contain" draggable={false} />
+              ) : initial === '?' ? (
+                <UserIcon className="w-6 h-6 text-[var(--text-muted)]" />
+              ) : (
+                <span className="text-xl font-black text-[var(--text-primary)]">{initial}</span>
+              )}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-[15px] font-bold text-[var(--text-primary)] truncate">
+                {draft.trim() || 'Add a nickname'}
+              </p>
+              <p className="text-[11px] text-[var(--text-muted)] font-medium mt-0.5">
+                Athlete profile
+              </p>
+            </div>
           </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-[var(--text-primary)] font-bold text-base truncate">
-              {draft.trim() || 'Add a nickname'}
-            </p>
-            <p className="text-[var(--text-muted)] text-[11px] font-semibold uppercase tracking-wider mt-0.5">
-              Athlete profile
-            </p>
+
+          {/* Nickname Input */}
+          <div className="px-4 py-3 border-t border-[var(--border-soft)]">
+            <label className="text-[11px] font-semibold text-[var(--text-muted)] mb-1.5 block">Nickname</label>
+            <input
+              className="w-full bg-[var(--bg-card)] border border-[var(--border-soft)] px-3 py-2 rounded-xl text-[14px] text-[var(--text-primary)] placeholder-[var(--text-muted)] outline-none focus:border-[var(--brand)] focus:ring-2 focus:ring-[var(--brand-medium)] transition-all"
+              placeholder="e.g. Beast Mode"
+              value={draft}
+              onChange={(e) => setDraft(e.target.value)}
+              maxLength={24}
+              autoComplete="off"
+              autoCorrect="off"
+              spellCheck={false}
+            />
           </div>
         </div>
 
-        {/* Avatar Grid */}
-        <div>
-          <label className={labelClass}>Avatar</label>
-          <div className="grid grid-cols-5 sm:grid-cols-6 md:grid-cols-8 gap-1.5 sm:gap-2 p-2 sm:p-2.5 rounded-2xl bg-[var(--bg-soft)] border border-[var(--border-soft)]">
-            {/* Initial option */}
+        {/* ─── Section 2: Avatar Picker ─────────────────────── */}
+        <div className="rounded-2xl border border-[var(--border-soft)] overflow-hidden">
+          <div className="px-4 py-3 flex items-center justify-between bg-[var(--bg-tint)]">
+            <div className="flex items-center gap-2.5">
+              <div className="w-7 h-7 rounded-lg bg-[var(--bg-card)] border border-[var(--border-soft)] flex items-center justify-center overflow-hidden shrink-0">
+                {selectedSrc ? (
+                  <img src={selectedSrc} alt="" className="w-full h-full object-contain" draggable={false} />
+                ) : (
+                  <span className="text-[10px] font-bold text-[var(--text-primary)]">{initial}</span>
+                )}
+              </div>
+              <span className="text-[13px] font-semibold text-[var(--text-primary)]">Avatar</span>
+            </div>
             <button
               type="button"
-              onClick={() => setDraftAvatar('')}
-              aria-pressed={!draftAvatar}
-              title="Use your initial"
-              className={`relative aspect-square rounded-xl flex items-center justify-center transition-all active:scale-95 ${
-                !draftAvatar
-                  ? 'bg-[var(--bg-card)] border-2 border-[var(--brand)] shadow-[0_0_12px_var(--brand-medium)]'
-                  : 'bg-[var(--bg-card)] border border-[var(--border-soft)] hover:border-[var(--border-medium)]'
-              }`}
+              onClick={() => setShowAllAvatars(!showAllAvatars)}
+              className="text-[11px] font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
             >
-              {initial === '?' ? (
-                <UserIcon className="w-5 h-5 text-[var(--text-muted)]" />
-              ) : (
-                <span className="text-sm font-bold text-[var(--text-primary)]">{initial}</span>
-              )}
-              {!draftAvatar && (
-                <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[var(--brand)] flex items-center justify-center shadow">
-                  <Check className="w-2.5 h-2.5 text-white" strokeWidth={4} />
-                </span>
-              )}
+              {showAllAvatars ? 'Show less' : `Show all (${AVATARS.length})`}
             </button>
-
-            {/* PNG avatars */}
-            {AVATARS.map(({ id, src, label }) => {
-              const active = draftAvatar === id;
-              return (
-                <button
-                  key={id}
-                  type="button"
-                  onClick={() => setDraftAvatar(id)}
-                  aria-pressed={active}
-                  title={label}
-                  className={`relative aspect-square rounded-xl flex items-center justify-center transition-all active:scale-95 overflow-hidden ${
-                    active
-                      ? 'bg-[var(--bg-card)] border-2 border-[var(--brand)] shadow-[0_0_12px_var(--brand-medium)]'
-                      : 'bg-[var(--bg-card)] border border-[var(--border-soft)] hover:border-[var(--border-medium)]'
-                  }`}
-                >
-                  <img
-                    src={src}
-                    alt={label}
-                    className="w-[85%] h-[85%] object-contain"
-                    draggable={false}
-                  />
-                  {active && (
-                    <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[var(--brand)] flex items-center justify-center shadow">
-                      <Check className="w-2.5 h-2.5 text-white" strokeWidth={4} />
-                    </span>
-                  )}
-                </button>
-              );
-            })}
           </div>
-          <p className="text-[10px] text-[var(--text-muted)] font-semibold mt-1.5 px-1">
-            Pick an avatar, or use your initial.
-          </p>
-        </div>
 
-        {/* Nickname */}
-        <div>
-          <label className={labelClass}>Nickname</label>
-          <input
-            className="w-full bg-[var(--bg-card)] border border-[var(--border-soft)] px-3 py-2.5 rounded-xl text-[14px] text-[var(--text-primary)] placeholder-[var(--text-muted)] outline-none focus:border-[var(--brand)] focus:ring-2 focus:ring-[var(--brand-medium)] transition-all"
-            placeholder="e.g. Beast Mode"
-            value={draft}
-            onChange={(e) => setDraft(e.target.value)}
-            maxLength={24}
-            autoComplete="off"
-            autoCorrect="off"
-            spellCheck={false}
-          />
-          <p className="text-[10px] text-[var(--text-muted)] font-semibold mt-1.5 px-1">
-            Up to 24 characters. Used to greet you across the app.
-          </p>
-        </div>
+          <div className="p-3">
+            <div className="grid grid-cols-6 sm:grid-cols-8 gap-1.5">
+              {/* Initial option */}
+              <button
+                type="button"
+                onClick={() => setDraftAvatar('')}
+                aria-pressed={!draftAvatar}
+                title="Use your initial"
+                className={`relative aspect-square rounded-xl flex items-center justify-center transition-all active:scale-95 ${
+                  !draftAvatar
+                    ? 'bg-[var(--brand-soft)] border-2 border-[var(--brand)]'
+                    : 'bg-[var(--bg-soft)] border border-[var(--border-soft)] hover:border-[var(--border-medium)]'
+                }`}
+              >
+                {initial === '?' ? (
+                  <UserIcon className="w-4 h-4 text-[var(--text-muted)]" />
+                ) : (
+                  <span className="text-xs font-bold text-[var(--text-primary)]">{initial}</span>
+                )}
+                {!draftAvatar && (
+                  <span className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-[var(--brand)] flex items-center justify-center">
+                    <Check className="w-2 h-2 text-white" strokeWidth={4} />
+                  </span>
+                )}
+              </button>
 
-        {/* Theme */}
-        <div>
-          <label className={labelClass}>Appearance</label>
-          <div className="grid grid-cols-2 gap-2 p-1 rounded-2xl bg-[var(--bg-soft)] border border-[var(--border-soft)]">
-            {([
-              { value: 'light' as const, label: 'Light', Icon: Sun },
-              { value: 'dark' as const, label: 'Dark', Icon: Moon },
-            ]).map(({ value, label, Icon }) => {
-              const active = theme === value;
-              return (
-                <button
-                  key={value}
-                  type="button"
-                  onClick={() => setTheme(value)}
-                  aria-pressed={active}
-                  className={`flex items-center justify-center gap-2 py-2.5 rounded-xl text-[13px] font-bold transition-all ${
-                    active
-                      ? 'bg-[var(--bg-card)] text-[var(--text-primary)] shadow-sm'
-                      : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'
-                  }`}
-                >
-                  <Icon className="w-4 h-4" strokeWidth={2.5} />
-                  {label}
-                </button>
-              );
-            })}
+              {/* PNG avatars */}
+              {visibleAvatars.map(({ id, src, label }) => {
+                const active = draftAvatar === id;
+                return (
+                  <button
+                    key={id}
+                    type="button"
+                    onClick={() => setDraftAvatar(id)}
+                    aria-pressed={active}
+                    title={label}
+                    className={`relative aspect-square rounded-xl flex items-center justify-center transition-all active:scale-95 overflow-hidden ${
+                      active
+                        ? 'bg-[var(--brand-soft)] border-2 border-[var(--brand)]'
+                        : 'bg-[var(--bg-soft)] border border-[var(--border-soft)] hover:border-[var(--border-medium)]'
+                    }`}
+                  >
+                    <img src={src} alt={label} className="w-[80%] h-[80%] object-contain" draggable={false} />
+                    {active && (
+                      <span className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-[var(--brand)] flex items-center justify-center">
+                        <Check className="w-2 h-2 text-white" strokeWidth={4} />
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
           </div>
-          <p className="text-[10px] text-[var(--text-muted)] font-semibold mt-1.5 px-1">
-            Switch between light and dark mode. Your choice is saved on this device.
-          </p>
         </div>
 
-        {/* Timer Settings */}
-        <div>
-          <label className={labelClass}>Gym Timer</label>
-          <div className="p-3 rounded-2xl bg-[var(--bg-soft)] border border-[var(--border-soft)] space-y-3">
-            {/* Sound Preset */}
-            <div>
-              <p className="text-[9px] font-black text-[var(--text-muted)] uppercase tracking-widest mb-2 flex items-center gap-1.5">
-                <Timer className="w-3 h-3" />
-                Ring Tone
-              </p>
+        {/* ─── Section 3: Appearance ────────────────────────── */}
+        <div className="rounded-2xl border border-[var(--border-soft)] overflow-hidden">
+          <div className="p-4 bg-[var(--bg-tint)]">
+            <span className="text-[13px] font-semibold text-[var(--text-primary)]">Appearance</span>
+          </div>
+          <div className="p-3">
+            <div className="grid grid-cols-2 gap-2">
+              {([
+                { value: 'light' as const, label: 'Light', Icon: Sun, desc: 'Clean and bright' },
+                { value: 'dark' as const, label: 'Dark', Icon: Moon, desc: 'Easy on the eyes' },
+              ]).map(({ value, label, Icon, desc }) => {
+                const active = theme === value;
+                return (
+                  <button
+                    key={value}
+                    type="button"
+                    onClick={() => setTheme(value)}
+                    aria-pressed={active}
+                    className={`flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all ${
+                      active
+                        ? 'bg-[var(--brand)] text-white shadow-sm'
+                        : 'bg-[var(--bg-soft)] text-[var(--text-secondary)] hover:bg-[var(--border-soft)] border border-[var(--border-soft)]'
+                    }`}
+                  >
+                    <Icon className={`w-4 h-4 shrink-0 ${active ? 'text-white' : ''}`} strokeWidth={2} />
+                    <div>
+                      <p className={`text-[13px] font-bold ${active ? 'text-white' : 'text-[var(--text-primary)]'}`}>{label}</p>
+                      <p className={`text-[10px] ${active ? 'text-white/70' : 'text-[var(--text-muted)]'}`}>{desc}</p>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
+        {/* ─── Section 4: Gym Timer ─────────────────────────── */}
+        <div className="rounded-2xl border border-[var(--border-soft)] overflow-hidden">
+          <div className="p-4 bg-[var(--bg-tint)] flex items-center gap-2">
+            <Timer className="w-3.5 h-3.5 text-[var(--text-muted)]" />
+            <span className="text-[13px] font-semibold text-[var(--text-primary)]">Gym Timer</span>
+          </div>
+
+          <div className="divide-y divide-[var(--border-soft)]">
+            {/* Ring Tone */}
+            <div className="p-4">
+              <p className="text-[11px] font-semibold text-[var(--text-muted)] mb-2">Ring Tone</p>
               <div className="grid grid-cols-3 gap-1.5">
                 {(Object.keys(SOUND_LABELS) as SoundPreset[]).map((preset) => (
                   <button
                     key={preset}
                     type="button"
                     onClick={() => updateTimer({ sound: preset })}
-                    className={`px-2 py-2 rounded-lg text-[10px] font-bold transition-all active:scale-95 ${
+                    className={`px-2 py-2 rounded-lg text-[11px] font-semibold transition-all active:scale-95 ${
                       timerSettings.sound === preset
                         ? 'bg-[var(--text-primary)] text-[var(--bg-card)]'
-                        : 'bg-[var(--bg-card)] text-[var(--text-muted)] hover:text-[var(--text-primary)] border border-[var(--border-soft)]'
+                        : 'bg-[var(--bg-soft)] text-[var(--text-muted)] hover:text-[var(--text-primary)] border border-[var(--border-soft)]'
                     }`}
                   >
                     {SOUND_LABELS[preset]}
                   </button>
                 ))}
               </div>
+              <button
+                type="button"
+                onClick={() => playSound(timerSettings.sound, timerSettings.volume)}
+                className="mt-2.5 w-full py-1.5 rounded-lg text-[10px] font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-soft)] transition-all flex items-center justify-center gap-1.5"
+              >
+                <Play className="w-3 h-3" fill="currentColor" />
+                Preview
+              </button>
             </div>
 
             {/* Volume */}
-            <div>
-              <div className="flex items-center justify-between mb-1.5">
-                <p className="text-[9px] font-black text-[var(--text-muted)] uppercase tracking-widest">Volume</p>
-                <span className="text-[10px] font-bold text-[var(--text-primary)]">{timerSettings.volume}%</span>
+            <div className="p-4">
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-[11px] font-semibold text-[var(--text-muted)]">Volume</p>
+                <span className="text-[12px] font-bold text-[var(--text-primary)] tabular-nums">{timerSettings.volume}%</span>
               </div>
-              <div className="flex items-center gap-2">
-                <VolumeX className="w-3 h-3 text-[var(--text-muted)] shrink-0" />
+              <div className="flex items-center gap-3">
+                <VolumeX className="w-3.5 h-3.5 text-[var(--text-muted)] shrink-0" />
                 <input
                   type="range"
                   min={0}
@@ -216,41 +239,34 @@ export const ProfileModal: React.FC = () => {
                   onChange={(e) => updateTimer({ volume: Number(e.target.value) })}
                   className="flex-1 h-1.5 rounded-full appearance-none bg-[var(--border-soft)] cursor-pointer accent-[var(--text-primary)]"
                 />
-                <Volume2 className="w-3 h-3 text-[var(--text-muted)] shrink-0" />
+                <Volume2 className="w-3.5 h-3.5 text-[var(--text-muted)] shrink-0" />
               </div>
             </div>
 
-            {/* Tick toggle */}
-            <div className="flex items-center justify-between">
-              <p className="text-[9px] font-black text-[var(--text-muted)] uppercase tracking-widest">Countdown Ticks</p>
+            {/* Countdown Ticks */}
+            <div className="p-4 flex items-center justify-between">
+              <div>
+                <p className="text-[11px] font-semibold text-[var(--text-muted)]">Countdown Ticks</p>
+                <p className="text-[10px] text-[var(--text-muted)]/60 mt-0.5">Tick sound for last 3 seconds</p>
+              </div>
               <button
                 type="button"
                 onClick={() => updateTimer({ tickEnabled: !timerSettings.tickEnabled })}
-                className={`relative w-9 h-5 rounded-full transition-all ${
-                  timerSettings.tickEnabled ? 'bg-[var(--text-primary)]' : 'bg-[var(--border-medium)]'
+                className={`relative w-11 h-6 rounded-full transition-all duration-200 ${
+                  timerSettings.tickEnabled ? 'bg-[var(--brand)]' : 'bg-[var(--border-medium)]'
                 }`}
+                role="switch"
+                aria-checked={timerSettings.tickEnabled}
               >
-                <div className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow-sm transition-all ${
-                  timerSettings.tickEnabled ? 'left-[18px]' : 'left-0.5'
+                <div className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow-md transition-all duration-200 ${
+                  timerSettings.tickEnabled ? 'left-[22px]' : 'left-0.5'
                 }`} />
               </button>
             </div>
-
-            {/* Preview */}
-            <button
-              type="button"
-              onClick={() => playSound(timerSettings.sound, timerSettings.volume)}
-              className="w-full py-2 rounded-lg text-[10px] font-bold text-[var(--text-muted)] bg-[var(--bg-card)] border border-[var(--border-soft)] hover:text-[var(--text-primary)] transition-all active:scale-[0.98]"
-            >
-              Preview Sound
-            </button>
           </div>
-          <p className="text-[10px] text-[var(--text-muted)] font-semibold mt-1.5 px-1">
-            Configure the gym exercise timer sound and volume.
-          </p>
         </div>
 
-        {/* Save */}
+        {/* ─── Save Button ──────────────────────────────────── */}
         <button
           onClick={() => {
             setNickname(draft.trim().slice(0, 24));
