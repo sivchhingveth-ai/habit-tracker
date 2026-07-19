@@ -8,9 +8,9 @@ import { WORKOUTS, Gender, Level, Workout, Exercise } from '../utils/workouts';
 import { getCustomWorkouts, deleteCustomWorkout } from '../utils/customWorkouts';
 
 const LEVELS: { key: Level; label: string; color: string; bg: string; text: string; restSec: number }[] = [
-  { key: 'beginner', label: 'Beginner', color: '#8b9a7b', bg: '#8b9a7b', text: '#ffffff', restSec: 25 },
-  { key: 'intermediate', label: 'Intermediate', color: '#5a6577', bg: '#5a6577', text: '#ffffff', restSec: 20 },
-  { key: 'advanced', label: 'Advanced', color: '#8b3a3a', bg: '#8b3a3a', text: '#ffffff', restSec: 15 },
+  { key: 'beginner', label: 'Beginner', color: '#8b9a7b', bg: '#8b9a7b', text: '#ffffff', restSec: 10 },
+  { key: 'intermediate', label: 'Intermediate', color: '#5a6577', bg: '#5a6577', text: '#ffffff', restSec: 10 },
+  { key: 'advanced', label: 'Advanced', color: '#8b3a3a', bg: '#8b3a3a', text: '#ffffff', restSec: 10 },
 ];
 
 const PHASE_COLORS: Record<Gender, string> = {

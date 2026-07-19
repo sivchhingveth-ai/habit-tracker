@@ -212,8 +212,7 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
           speak('1');
         }
       } else {
-        const restHalfMark = Math.round(totalSeconds / 2 / 5) * 5;
-        if (!spokenRef.current.restHalf && elapsed >= totalSeconds - restHalfMark && nextExercise) {
+        if (!spokenRef.current.restHalf && elapsed >= 1 && nextExercise) {
           spokenRef.current.restHalf = true;
           speak(`Next is ${cleanForSpeech(nextExercise.name)}, ${speakDuration(nextExercise.duration)}`);
         }
