@@ -199,11 +199,11 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
           const pct = prev / totalSeconds;
           if (!spokenRef.current.half && pct <= 0.5) {
             spokenRef.current.half = true;
-            speak(`${Math.round(prev)} seconds`);
+            speak(`${Math.round(prev)} seconds left`);
           }
           if (!spokenRef.current.quarter && pct <= 0.25) {
             spokenRef.current.quarter = true;
-            speak(`${Math.round(prev)} seconds`);
+            speak(`${Math.round(prev)} seconds left`);
           }
         }
         return prev - 1;
