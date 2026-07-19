@@ -355,16 +355,17 @@ export const GymView: React.FC<GymViewProps> = ({
               <div className="p-3 space-y-1.5">
                 {(() => {
                   let exerciseNumber = 0;
-                  return activeWorkout.exercises
+                  const filtered = activeWorkout.exercises
                     .filter((ex) => {
                       const n = ex.name.toLowerCase();
                       return !n.includes('rest') && !n.includes('repeat');
-                    })
-                    .map((ex) => {
+                    });
+                  return filtered.map((ex, filteredIdx) => {
                       const originalIndex = activeWorkout.exercises.indexOf(ex);
                       exerciseNumber += 1;
                       const isCompleted = completedExercises.has(originalIndex);
                       const isCurrentlyActive = activeTimer?.exerciseIndex === originalIndex && activeTimer?.workoutId === activeWorkout.id;
+                      const nextFiltered = filteredIdx < filtered.length - 1 ? filtered[filteredIdx + 1] : null;
 
                       return (
                         <button
@@ -401,6 +402,11 @@ export const GymView: React.FC<GymViewProps> = ({
                             </p>
                             {ex.reps && (
                               <p className="text-[10px] md:text-[11px] text-[var(--text-muted)] font-medium mt-0.5 truncate">{ex.reps}</p>
+                            )}
+                            {nextFiltered && (
+                              <p className="text-[10px] md:text-[11px] text-[var(--text-muted)] font-medium mt-0.5 truncate opacity-60">
+                                Next: {nextFiltered.name}
+                              </p>
                             )}
                           </div>
                           <div className="flex items-center gap-1.5 shrink-0">
