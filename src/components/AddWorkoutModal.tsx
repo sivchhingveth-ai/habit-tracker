@@ -115,19 +115,20 @@ export const AddWorkoutModal: React.FC<AddWorkoutModalProps> = ({
         </div>
 
         {/* Level + Gender */}
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <label className="text-[11px] font-semibold text-[var(--text-secondary)] mb-1.5 block">Level</label>
-            <div className="flex gap-1.5">
+            <div className="grid grid-cols-3 gap-1.5">
               {LEVELS.map((l) => (
                 <button
                   key={l.key}
                   onClick={() => setLevel(l.key)}
-                  className={`flex-1 py-2 rounded-xl text-[12px] font-semibold transition-all active:scale-95 ${
+                  className={`py-2.5 rounded-xl text-[11px] sm:text-[12px] font-semibold transition-all active:scale-95 touch-manipulation ${
                     level === l.key
                       ? 'bg-[var(--accent)] text-white shadow-md'
                       : 'bg-[var(--bg-soft)] text-[var(--text-secondary)] hover:bg-[var(--border-medium)]'
                   }`}
+                  style={{ touchAction: 'manipulation' }}
                 >
                   {l.label}
                 </button>
@@ -141,11 +142,12 @@ export const AddWorkoutModal: React.FC<AddWorkoutModalProps> = ({
                 <button
                   key={g}
                   onClick={() => setGender(g)}
-                  className={`flex-1 py-2 rounded-xl text-[12px] font-semibold capitalize transition-all active:scale-95 ${
+                  className={`flex-1 py-2.5 rounded-xl text-[12px] font-semibold capitalize transition-all active:scale-95 touch-manipulation ${
                     gender === g
                       ? 'bg-[var(--accent)] text-white shadow-md'
                       : 'bg-[var(--bg-soft)] text-[var(--text-secondary)] hover:bg-[var(--border-medium)]'
                   }`}
+                  style={{ touchAction: 'manipulation' }}
                 >
                   {g}
                 </button>
@@ -164,8 +166,8 @@ export const AddWorkoutModal: React.FC<AddWorkoutModalProps> = ({
           </div>
           <div className="space-y-2">
             {exercises.map((ex, i) => (
-              <div key={i} className="flex items-start gap-2 group">
-                <span className="w-5 h-5 rounded-lg bg-[var(--bg-soft)] flex items-center justify-center text-[10px] font-bold text-[var(--text-muted)] mt-2.5 shrink-0">
+              <div key={i} className="flex items-start gap-1.5 sm:gap-2 group">
+                <span className="w-6 h-6 rounded-lg bg-[var(--bg-soft)] flex items-center justify-center text-[10px] font-bold text-[var(--text-muted)] mt-2 shrink-0">
                   {i + 1}
                 </span>
                 <div className="flex-1 grid grid-cols-1 sm:grid-cols-[1fr_90px_80px] gap-1.5">
@@ -190,17 +192,18 @@ export const AddWorkoutModal: React.FC<AddWorkoutModalProps> = ({
                 </div>
                 <button
                   onClick={() => removeExercise(i)}
-                  className="w-11 h-11 rounded-lg flex items-center justify-center text-[var(--text-muted)] hover:text-red-500 hover:bg-red-500/10 transition-all mt-1.5 md:opacity-0 md:group-hover:opacity-100 active:scale-90 touch-manipulation"
+                  className="w-11 h-11 rounded-lg flex items-center justify-center text-[var(--text-muted)] hover:text-red-500 hover:bg-red-500/10 transition-all shrink-0 active:scale-90 touch-manipulation md:opacity-0 md:group-hover:opacity-100"
                   style={{ touchAction: 'manipulation' }}
                 >
-                  <X className="w-3 h-3" />
+                  <X className="w-4 h-4" />
                 </button>
               </div>
             ))}
           </div>
           <button
             onClick={addExercise}
-            className="w-full mt-2 py-2 rounded-xl border border-dashed border-[var(--border-medium)] text-[12px] font-semibold text-[var(--text-secondary)] hover:border-[var(--accent)] hover:text-[var(--accent)] hover:bg-[var(--accent)]/5 transition-all active:scale-[0.98]"
+            className="w-full mt-2 py-3 rounded-xl border border-dashed border-[var(--border-medium)] text-[12px] font-semibold text-[var(--text-secondary)] hover:border-[var(--accent)] hover:text-[var(--accent)] hover:bg-[var(--accent)]/5 transition-all active:scale-[0.98] touch-manipulation"
+            style={{ touchAction: 'manipulation' }}
           >
             + Add Exercise
           </button>
