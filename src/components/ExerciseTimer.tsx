@@ -163,7 +163,7 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
   const intervalRef = useRef<number | null>(null);
   const flashRef = useRef<number | null>(null);
   const startRef = useRef<number>(0);
-  const spokenRef = useRef<{ half: boolean; ten: boolean; three: boolean; two: boolean; one: boolean }>({ half: false, ten: false, three: false, two: false, one: false });
+  const spokenRef = useRef<{ half: boolean; ten: boolean; three: boolean; two: boolean; one: boolean; restHalf: boolean }>({ half: false, ten: false, three: false, two: false, one: false, restHalf: false });
   const quote = REST_QUOTES[Math.floor(Math.random() * REST_QUOTES.length)];
 
   const clearTimer = useCallback(() => {
@@ -183,7 +183,7 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
   useEffect(() => {
     if (!isRunning || isDone) return;
     startRef.current = Date.now();
-    spokenRef.current = { half: false, ten: false, three: false, two: false, one: false };
+    spokenRef.current = { half: false, ten: false, three: false, two: false, one: false, restHalf: false };
     const halfMark = Math.round(totalSeconds / 2 / 5) * 5;
     const tick = () => {
       const elapsed = (Date.now() - startRef.current) / 1000;
@@ -211,6 +211,12 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
           spokenRef.current.one = true;
           speak('1');
         }
+      } else {
+        const restHalfMark = Math.round(totalSeconds / 2 / 5) * 5;
+        if (!spokenRef.current.restHalf && elapsed >= totalSeconds - restHalfMark && nextExercise) {
+          spokenRef.current.restHalf = true;
+          speak(`Next is ${cleanForSpeech(nextExercise.name)}, ${speakDuration(nextExercise.duration)}`);
+        }
       }
       if (left <= 0) {
         clearTimer();
@@ -224,7 +230,7 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
     };
     intervalRef.current = window.setInterval(tick, 250);
     return clearTimer;
-  }, [isRunning, isDone, clearTimer, onComplete, isRest, totalSeconds]);
+  }, [isRunning, isDone, clearTimer, onComplete, isRest, totalSeconds, nextExercise]);
 
   useEffect(() => {
     if (phase !== 'countdown') return;
@@ -272,7 +278,7 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
   const handleStart = () => { setPhase('countdown'); setCountdownNum(3); setIsDone(false); setIsRunning(false); };
   const handlePause = () => setIsRunning(false);
   const handleResume = () => setIsRunning(true);
-  const handleReset = () => { clearTimer(); setRemaining(totalSeconds); setMaxSeconds(totalSeconds); setIsRunning(false); setIsDone(false); setPhase('ready'); startRef.current = Date.now(); spokenRef.current = { half: false, ten: false, three: false, two: false, one: false }; };
+  const handleReset = () => { clearTimer(); setRemaining(totalSeconds); setMaxSeconds(totalSeconds); setIsRunning(false); setIsDone(false); setPhase('ready'); startRef.current = Date.now(); spokenRef.current = { half: false, ten: false, three: false, two: false, one: false, restHalf: false }; };
   const handleClose = () => { clearTimer(); if (onClose) { onClose(); } else { onComplete(); } };
   const handleSkip = () => { clearTimer(); if (onNext) { onNext(); } else { onComplete(); } };
   const handlePrevious = () => { clearTimer(); onPrevious?.(); };
