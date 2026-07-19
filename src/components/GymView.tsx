@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { Sparkles, User, Timer, Repeat, Play, Check, Plus, Pencil, Trash2, Dumbbell, Info } from 'lucide-react';
+import { Sparkles, User, Play, Check, Plus, Pencil, Trash2, Dumbbell, Info } from 'lucide-react';
 import { Tabs } from './Tabs';
 import { ExerciseTimer } from './ExerciseTimer';
 import { ExerciseDetail } from './ExerciseDetail';
@@ -8,14 +8,14 @@ import { WORKOUTS, Gender, Level, Workout, Exercise } from '../utils/workouts';
 import { getCustomWorkouts, deleteCustomWorkout } from '../utils/customWorkouts';
 
 const LEVELS: { key: Level; label: string; color: string; bg: string; text: string }[] = [
-  { key: 'beginner', label: 'Beginner', color: '#6fa83b', bg: '#b8eb6c', text: '#3d5d1c' },
-  { key: 'intermediate', label: 'Intermediate', color: '#4e55e0', bg: '#4e55e0', text: '#ffffff' },
-  { key: 'advanced', label: 'Advanced', color: '#d05a96', bg: '#fc8fc6', text: '#6b1a40' },
+  { key: 'beginner', label: 'Beginner', color: '#8b9a7b', bg: '#8b9a7b', text: '#ffffff' },
+  { key: 'intermediate', label: 'Intermediate', color: '#5a6577', bg: '#5a6577', text: '#ffffff' },
+  { key: 'advanced', label: 'Advanced', color: '#8b3a3a', bg: '#8b3a3a', text: '#ffffff' },
 ];
 
 const PHASE_COLORS: Record<Gender, string> = {
-  men: '#4e55e0',
-  women: '#d05a96',
+  men: '#5a6577',
+  women: '#8b3a3a',
 };
 
 interface ActiveTimer {
@@ -340,49 +340,55 @@ export const GymView: React.FC<GymViewProps> = ({
               <div className="p-3 space-y-1.5">
                 {(() => {
                   let exerciseNumber = 0;
-                  return activeWorkout.exercises.map((ex, i) => {
-                    const isRepeat = ex.name.toLowerCase().includes('repeat');
-                    const isRest = isRepeat || ex.name.toLowerCase().includes('rest');
-
-                    if (isRest) {
-                      const BreakIcon = isRepeat ? Repeat : Timer;
+                  return activeWorkout.exercises
+                    .filter((ex) => {
+                      const n = ex.name.toLowerCase();
+                      return !n.includes('rest') && !n.includes('repeat');
+                    })
+                    .map((ex) => {
+                      const originalIndex = activeWorkout.exercises.indexOf(ex);
                       exerciseNumber += 1;
-                      const isCompleted = completedExercises.has(i);
-                      const isCurrentlyActive = activeTimer?.exerciseIndex === i && activeTimer?.workoutId === activeWorkout.id;
+                      const isCompleted = completedExercises.has(originalIndex);
+                      const isCurrentlyActive = activeTimer?.exerciseIndex === originalIndex && activeTimer?.workoutId === activeWorkout.id;
 
                       return (
                         <button
-                          key={i}
-                          onClick={() => handleExerciseClick(i, ex)}
-                          className={`w-full flex items-center gap-3 p-2.5 rounded-xl border transition-all text-left ${
+                          key={originalIndex}
+                          onClick={() => handleExerciseClick(originalIndex, ex)}
+                          className={`w-full flex items-center gap-3 p-3 rounded-xl border transition-all text-left ${
                             isCurrentlyActive
                               ? 'border-[var(--brand)] bg-[var(--brand-soft)] shadow-sm'
                               : isCompleted
                               ? 'border-[var(--success-deep)]/30 bg-[var(--success-deep)]/5'
-                              : 'bg-[var(--bg-soft)] border-dashed border-[var(--border-medium)] hover:border-[var(--border-soft)] hover:shadow-sm'
+                              : 'bg-[var(--bg-soft)] border-transparent hover:border-[var(--border-soft)] hover:shadow-sm'
                           }`}
                         >
                           <div
-                            className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
+                            className="w-9 h-9 rounded-xl flex items-center justify-center text-[12px] font-black shrink-0"
                             style={{
                               background: isCompleted
                                 ? 'var(--success-deep)'
-                                : `${timerColor}12`,
+                                : `linear-gradient(135deg, ${timerColor}28 0%, ${timerColor}10 100%)`,
+                              color: isCompleted ? '#fff' : timerColor,
                             }}
                           >
-                            <BreakIcon
-                              className={`w-3.5 h-3.5 ${isCompleted ? 'text-white' : 'text-[var(--text-muted)]'}`}
-                              strokeWidth={2.5}
-                            />
+                            {isCompleted ? (
+                              <Check className="w-4 h-4" strokeWidth={3} />
+                            ) : (
+                              exerciseNumber
+                            )}
                           </div>
                           <div className="flex-1 min-w-0">
-                            <p className={`text-[12px] font-bold truncate ${
-                              isCompleted ? 'text-[var(--text-muted)] line-through' : 'text-[var(--text-secondary)]'
+                            <p className={`text-[13px] md:text-[14px] font-bold truncate ${
+                              isCompleted ? 'text-[var(--text-muted)] line-through' : 'text-[var(--text-primary)]'
                             }`}>
-                              {isRepeat ? 'Repeat' : 'Rest'}
+                              {ex.name}
                             </p>
+                            {ex.reps && (
+                              <p className="text-[10px] md:text-[11px] text-[var(--text-muted)] font-medium mt-0.5 truncate">{ex.reps}</p>
+                            )}
                           </div>
-                          <div className="flex items-center gap-2 shrink-0">
+                          <div className="flex items-center gap-1.5 shrink-0">
                             {isCompleted && (
                               <span className="text-[9px] font-black text-[var(--success-deep)] uppercase tracking-wider">Done</span>
                             )}
@@ -395,76 +401,17 @@ export const GymView: React.FC<GymViewProps> = ({
                             >
                               {ex.duration}
                             </div>
+                            <button
+                              onClick={(e) => { e.stopPropagation(); setDetailExercise({ index: originalIndex, exercise: ex }); }}
+                              className="w-7 h-7 rounded-lg flex items-center justify-center transition-all active:scale-90 hover:bg-[var(--bg-hover)]"
+                              title="Exercise details"
+                            >
+                              <Info className="w-3.5 h-3.5" style={{ color: 'var(--text-muted)' }} />
+                            </button>
                           </div>
                         </button>
                       );
-                    }
-
-                    exerciseNumber += 1;
-                    const isCompleted = completedExercises.has(i);
-                    const isCurrentlyActive = activeTimer?.exerciseIndex === i && activeTimer?.workoutId === activeWorkout.id;
-
-                    return (
-                      <button
-                        key={i}
-                        onClick={() => handleExerciseClick(i, ex)}
-                        className={`w-full flex items-center gap-3 p-3 rounded-xl border transition-all text-left ${
-                          isCurrentlyActive
-                            ? 'border-[var(--brand)] bg-[var(--brand-soft)] shadow-sm'
-                            : isCompleted
-                            ? 'border-[var(--success-deep)]/30 bg-[var(--success-deep)]/5'
-                            : 'bg-[var(--bg-soft)] border-transparent hover:border-[var(--border-soft)] hover:shadow-sm'
-                        }`}
-                      >
-                        <div
-                          className="w-9 h-9 rounded-xl flex items-center justify-center text-[12px] font-black shrink-0"
-                          style={{
-                            background: isCompleted
-                              ? 'var(--success-deep)'
-                              : `linear-gradient(135deg, ${timerColor}28 0%, ${timerColor}10 100%)`,
-                            color: isCompleted ? '#fff' : timerColor,
-                          }}
-                        >
-                          {isCompleted ? (
-                            <Check className="w-4 h-4" strokeWidth={3} />
-                          ) : (
-                            exerciseNumber
-                          )}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className={`text-[13px] md:text-[14px] font-bold truncate ${
-                            isCompleted ? 'text-[var(--text-muted)] line-through' : 'text-[var(--text-primary)]'
-                          }`}>
-                            {ex.name}
-                          </p>
-                          {ex.reps && (
-                            <p className="text-[10px] md:text-[11px] text-[var(--text-muted)] font-medium mt-0.5 truncate">{ex.reps}</p>
-                          )}
-                        </div>
-                        <div className="flex items-center gap-1.5 shrink-0">
-                          {isCompleted && (
-                            <span className="text-[9px] font-black text-[var(--success-deep)] uppercase tracking-wider">Done</span>
-                          )}
-                          <div
-                            className="px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider whitespace-nowrap"
-                            style={{
-                              backgroundColor: isCompleted ? 'var(--success-deep)' : `${timerColor}18`,
-                              color: isCompleted ? '#fff' : timerColor,
-                            }}
-                          >
-                            {ex.duration}
-                          </div>
-                          <button
-                            onClick={(e) => { e.stopPropagation(); setDetailExercise({ index: i, exercise: ex }); }}
-                            className="w-7 h-7 rounded-lg flex items-center justify-center transition-all active:scale-90 hover:bg-[var(--bg-hover)]"
-                            title="Exercise details"
-                          >
-                            <Info className="w-3.5 h-3.5" style={{ color: 'var(--text-muted)' }} />
-                          </button>
-                        </div>
-                      </button>
-                    );
-                  });
+                    });
                 })()}
               </div>
 
