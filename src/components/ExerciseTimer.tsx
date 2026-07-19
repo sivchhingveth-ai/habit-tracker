@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Play, Pause, X, RotateCcw, SkipForward, SkipBack, Plus, Timer } from 'lucide-react';
-import { useTimerSettings, playSound, playTick } from '../utils/timerSettings';
 
 function parseDuration(str: string): number {
   const s = str.toLowerCase().trim();
@@ -57,11 +56,11 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
   const [maxSeconds, setMaxSeconds] = useState(totalSeconds);
   const [isRunning, setIsRunning] = useState(false);
   const [isDone, setIsDone] = useState(false);
-  const [phase, setPhase] = useState<'ready' | 'active' | 'rest-done'>('ready');
+  const [phase, setPhase] = useState<'countdown' | 'ready' | 'active' | 'rest-done'>('ready');
+  const [countdownNum, setCountdownNum] = useState(3);
   const [addedFlash, setAddedFlash] = useState(false);
   const intervalRef = useRef<number | null>(null);
   const flashRef = useRef<number | null>(null);
-  const { settings } = useTimerSettings();
   const quote = REST_QUOTES[Math.floor(Math.random() * REST_QUOTES.length)];
 
   const clearTimer = useCallback(() => {
@@ -87,20 +86,29 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
           setIsDone(true);
           setIsRunning(false);
           setPhase('rest-done');
-          playSound(settings.sound, settings.volume);
           return 0;
         }
-        if (prev <= 4 && settings.tickEnabled) playTick(settings.volume);
         return prev - 1;
       });
     }, 1000);
     return clearTimer;
-  }, [isRunning, isDone, clearTimer, settings]);
+  }, [isRunning, isDone, clearTimer]);
+
+  useEffect(() => {
+    if (phase !== 'countdown') return;
+    if (countdownNum <= 0) {
+      setPhase('active');
+      setIsRunning(true);
+      return;
+    }
+    const t = setTimeout(() => setCountdownNum((n) => n - 1), 1000);
+    return () => clearTimeout(t);
+  }, [phase, countdownNum]);
 
   const progress = Math.min(Math.max(1 - remaining / maxSeconds, 0), 1);
   const strokeDashoffset = CIRCUMFERENCE * (1 - progress);
 
-  const handleStart = () => { setPhase('active'); setIsDone(false); setIsRunning(true); };
+  const handleStart = () => { setPhase('countdown'); setCountdownNum(3); setIsDone(false); setIsRunning(false); };
   const handlePause = () => setIsRunning(false);
   const handleResume = () => setIsRunning(true);
   const handleReset = () => { clearTimer(); setRemaining(totalSeconds); setMaxSeconds(totalSeconds); setIsRunning(false); setIsDone(false); setPhase('ready'); };
@@ -146,7 +154,24 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
 
       {/* Main content */}
       <div className="flex-1 flex flex-col items-center justify-center px-6">
-        {phase === 'ready' ? (
+        {phase === 'countdown' ? (
+          /* 3-2-1 Countdown */
+          <div className="flex flex-col items-center gap-4">
+            <h2
+              className="text-[22px] sm:text-[26px] font-black text-center leading-tight tracking-tight"
+              style={{ color: isRest ? '#fff' : 'var(--text-primary)' }}
+            >
+              {exerciseName}
+            </h2>
+            <span
+              className="text-[80px] sm:text-[96px] font-black leading-none tabular-nums animate-pop-in"
+              key={countdownNum}
+              style={{ color: isRest ? '#fff' : accentColor }}
+            >
+              {countdownNum === 0 ? 'Go!' : countdownNum}
+            </span>
+          </div>
+        ) : phase === 'ready' ? (
           /* Ready state */
           <div className="flex flex-col items-center gap-6 animate-slide-up">
             <p className="text-[14px] font-bold tracking-wide" style={{ color: isRest ? 'rgba(255,255,255,0.7)' : 'var(--text-muted)' }}>
