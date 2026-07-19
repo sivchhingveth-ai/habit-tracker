@@ -44,6 +44,7 @@ export const GymView: React.FC<GymViewProps> = ({
   const [editingWorkout, setEditingWorkout] = useState<Workout | null>(null);
   const [selectedWorkoutId, setSelectedWorkoutId] = useState<string | null>(null);
   const [detailExercise, setDetailExercise] = useState<{ index: number; exercise: Exercise } | null>(null);
+  const [cameFromRest, setCameFromRest] = useState(false);
 
   const refreshCustom = useCallback(() => {
     setCustomWorkouts(getCustomWorkouts());
@@ -69,8 +70,10 @@ export const GymView: React.FC<GymViewProps> = ({
   const handleTimerComplete = useCallback(() => {
     if (!activeTimer || !activeWorkout) return;
     setCompletedExercises((prev) => new Set(prev).add(activeTimer.exerciseIndex));
+    const wasRest = activeTimer.exercise.name.toLowerCase().includes('rest') || activeTimer.exercise.name.toLowerCase().includes('repeat');
     const nextIdx = activeTimer.exerciseIndex + 1;
     if (nextIdx < activeWorkout.exercises.length) {
+      setCameFromRest(wasRest);
       setActiveTimer({
         exerciseIndex: nextIdx,
         exercise: activeWorkout.exercises[nextIdx],
@@ -499,6 +502,7 @@ export const GymView: React.FC<GymViewProps> = ({
               const idx = activeWorkout.exercises.findIndex((e) => e.name === name);
               if (idx >= 0) setDetailExercise({ index: idx, exercise: activeWorkout.exercises[idx] });
             }}
+            autoStart={cameFromRest && !isRestType}
           />
         );
       })()}

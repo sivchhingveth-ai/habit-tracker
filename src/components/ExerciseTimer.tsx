@@ -44,18 +44,21 @@ interface ExerciseTimerProps {
   allExercises?: { name: string; duration: string }[];
   currentIndex?: number;
   onExerciseDetail?: (exerciseName: string, duration: string) => void;
+  autoStart?: boolean;
 }
 
 function speak(text: string) {
   if (!window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
   const u = new SpeechSynthesisUtterance(text);
-  u.rate = 0.95;
-  u.pitch = 0.8;
+  u.rate = 0.9;
+  u.pitch = 0.7;
   u.volume = 1;
   const voices = window.speechSynthesis.getVoices();
-  const male = voices.find((v) => v.name.toLowerCase().includes('male') || v.name.toLowerCase().includes('daniel') || v.name.toLowerCase().includes('james'));
-  if (male) u.voice = male;
-  window.speechSynthesis.cancel();
+  const preferred = voices.find((v) => v.name.includes('Daniel'));
+  const male = voices.find((v) => v.name.toLowerCase().includes('male'));
+  const english = voices.find((v) => v.lang.startsWith('en') && v.name.toLowerCase().includes('english'));
+  u.voice = preferred || male || english || voices[0];
   window.speechSynthesis.speak(u);
 }
 
@@ -65,7 +68,7 @@ const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
   exerciseName, duration, color, onComplete, onNext, onPrevious,
   nextExercise, previousExercise, exerciseNumber, totalExercises,
-  isRest = false, allExercises = [], currentIndex = 0, onExerciseDetail,
+  isRest = false, allExercises = [], currentIndex = 0, onExerciseDetail, autoStart = false,
 }) => {
   const totalSeconds = parseDuration(duration);
   const [remaining, setRemaining] = useState(totalSeconds);
@@ -118,12 +121,12 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
     if (countdownNum <= 0) {
       setPhase('active');
       setIsRunning(true);
-      if (!isRest) speak(`${exerciseName}, ${duration}`);
       return;
     }
+    speak(String(countdownNum));
     const t = setTimeout(() => setCountdownNum((n) => n - 1), 1000);
     return () => clearTimeout(t);
-  }, [phase, countdownNum, isRest, exerciseName, duration]);
+  }, [phase, countdownNum]);
 
   useEffect(() => {
     if (phase !== 'ready' || !isRest) return;
@@ -133,6 +136,23 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
     }, 300);
     return () => clearTimeout(t);
   }, [phase, isRest]);
+
+  useEffect(() => {
+    if (phase !== 'active' || isRest || isDone) return;
+    const t = setTimeout(() => {
+      speak(`${exerciseName}, ${duration}`);
+    }, 400);
+    return () => clearTimeout(t);
+  }, [phase, isRest, isDone, exerciseName, duration]);
+
+  useEffect(() => {
+    if (phase !== 'ready' || autoStart || isRest) return;
+    const t = setTimeout(() => {
+      setPhase('countdown');
+      setCountdownNum(3);
+    }, 500);
+    return () => clearTimeout(t);
+  }, [phase, autoStart, isRest]);
 
   const progress = Math.min(Math.max(1 - remaining / maxSeconds, 0), 1);
   const strokeDashoffset = CIRCUMFERENCE * (1 - progress);
