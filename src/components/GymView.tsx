@@ -509,6 +509,10 @@ export const GymView: React.FC<GymViewProps> = ({
             exerciseNumber={isRestType ? undefined : currentNonRest}
             totalExercises={isRestType ? undefined : nonRestCount}
             isRest={isRestType}
+            allExercises={activeWorkout.exercises
+              .filter((ex) => !ex.name.toLowerCase().includes('rest') && !ex.name.toLowerCase().includes('repeat'))
+              .map((ex) => ({ name: ex.name, duration: ex.duration }))}
+            currentIndex={currentNonRest - 1}
           />
         );
       })()}

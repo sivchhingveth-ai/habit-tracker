@@ -41,6 +41,8 @@ interface ExerciseTimerProps {
   exerciseNumber?: number;
   totalExercises?: number;
   isRest?: boolean;
+  allExercises?: { name: string; duration: string }[];
+  currentIndex?: number;
 }
 
 const RADIUS = 80;
@@ -49,7 +51,7 @@ const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
   exerciseName, duration, color, onComplete, onNext, onPrevious,
   nextExercise, previousExercise, exerciseNumber, totalExercises,
-  isRest = false,
+  isRest = false, allExercises = [], currentIndex = 0,
 }) => {
   const totalSeconds = parseDuration(duration);
   const [remaining, setRemaining] = useState(totalSeconds);
@@ -122,7 +124,6 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
     if (flashRef.current) clearTimeout(flashRef.current);
     flashRef.current = window.setTimeout(() => setAddedFlash(false), 800);
   };
-  const handleFinish = () => { clearTimer(); onComplete(); };
 
   const accentColor = isRest ? '#4e8ef7' : color;
   const isLightBg = !isRest;
@@ -209,7 +210,7 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
           </div>
         ) : (
           /* Active / Done state */
-          <div className="flex flex-col items-center gap-5">
+          <div className="flex flex-col items-center gap-5 w-full">
             {/* Exercise name */}
             <h2
               className="text-[18px] sm:text-[20px] font-black text-center leading-tight tracking-tight"
@@ -218,50 +219,117 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
               {isDone ? (isRest ? 'Rest Complete!' : 'Well Done!') : exerciseName}
             </h2>
 
-            {/* Timer ring */}
-            <div className="relative w-[200px] h-[200px] sm:w-[240px] sm:h-[240px]">
-              <svg className="w-full h-full -rotate-90" viewBox="0 0 180 180">
-                <circle
-                  cx="90" cy="90" r={RADIUS}
-                  fill="transparent"
-                  stroke={isRest ? 'rgba(255,255,255,0.15)' : 'var(--border-soft)'}
-                  strokeWidth="8"
-                />
-                <circle
-                  cx="90" cy="90" r={RADIUS}
-                  fill="transparent"
-                  stroke={isDone ? (isRest ? '#fff' : 'var(--success-deep)') : '#fff'}
-                  strokeWidth="8"
-                  strokeDasharray={CIRCUMFERENCE}
-                  strokeDashoffset={strokeDashoffset}
-                  strokeLinecap="round"
-                  className="transition-all duration-1000 ease-linear"
-                  style={{ filter: isRest ? 'none' : `drop-shadow(0 0 8px ${accentColor}40)` }}
-                />
-              </svg>
-              <div className="absolute inset-0 flex flex-col items-center justify-center">
-                {isDone ? (
-                  <span className="text-[32px] sm:text-[40px] font-black" style={{ color: isRest ? '#fff' : 'var(--success-deep)' }}>
-                    {isRest ? '✓' : 'Done!'}
-                  </span>
-                ) : (
-                  <span className="text-[48px] sm:text-[56px] font-black leading-none tabular-nums" style={{ color: isRest ? '#fff' : 'var(--text-primary)' }}>
-                    {formatTime(remaining)}
-                  </span>
-                )}
-              </div>
-            </div>
+            {isDone && allExercises.length > 0 ? (
+              /* Exercise list view */
+              <div className="w-full max-w-[360px] flex-1 overflow-y-auto -mx-2 px-2 pb-4">
+                <div className="flex flex-col gap-1.5">
+                  {allExercises.map((ex, i) => {
+                    const completed = i < currentIndex;
+                    const current = i === currentIndex;
+                    return (
+                      <div
+                        key={i}
+                        className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all"
+                        style={{
+                          backgroundColor: current
+                            ? isRest ? 'rgba(255,255,255,0.2)' : `${accentColor}15`
+                            : 'transparent',
+                        }}
+                      >
+                        {/* Status indicator */}
+                        <div
+                          className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-[11px] font-bold"
+                          style={{
+                            backgroundColor: completed
+                              ? isRest ? 'rgba(255,255,255,0.25)' : `${accentColor}20`
+                              : current
+                                ? isRest ? '#fff' : accentColor
+                                : isRest ? 'rgba(255,255,255,0.1)' : 'var(--bg-soft)',
+                            color: completed
+                              ? isRest ? '#fff' : accentColor
+                              : current
+                                ? '#fff'
+                                : isRest ? 'rgba(255,255,255,0.4)' : 'var(--text-muted)',
+                          }}
+                        >
+                          {completed ? '✓' : i + 1}
+                        </div>
 
-            {/* Progress text */}
-            {!isDone && (
-              <p className="text-[12px] font-bold tracking-wider" style={{ color: isRest ? 'rgba(255,255,255,0.6)' : 'var(--text-muted)' }}>
-                {Math.round(progress * 100)}% COMPLETE
-              </p>
+                        {/* Name + duration */}
+                        <div className="flex-1 min-w-0">
+                          <p
+                            className="text-[13px] font-bold truncate leading-tight"
+                            style={{
+                              color: completed
+                                ? isRest ? 'rgba(255,255,255,0.6)' : 'var(--text-muted)'
+                                : isRest ? '#fff' : 'var(--text-primary)',
+                              textDecoration: completed ? 'line-through' : 'none',
+                            }}
+                          >
+                            {ex.name}
+                          </p>
+                          <p
+                            className="text-[11px] font-medium tabular-nums"
+                            style={{
+                              color: completed
+                                ? isRest ? 'rgba(255,255,255,0.4)' : 'var(--text-muted)'
+                                : isRest ? 'rgba(255,255,255,0.7)' : accentColor,
+                            }}
+                          >
+                            {ex.duration}
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            ) : (
+              /* Timer ring */
+              <>
+                <div className="relative w-[200px] h-[200px] sm:w-[240px] sm:h-[240px]">
+                  <svg className="w-full h-full -rotate-90" viewBox="0 0 180 180">
+                    <circle
+                      cx="90" cy="90" r={RADIUS}
+                      fill="transparent"
+                      stroke={isRest ? 'rgba(255,255,255,0.15)' : 'var(--border-soft)'}
+                      strokeWidth="8"
+                    />
+                    <circle
+                      cx="90" cy="90" r={RADIUS}
+                      fill="transparent"
+                      stroke={isDone ? (isRest ? '#fff' : 'var(--success-deep)') : '#fff'}
+                      strokeWidth="8"
+                      strokeDasharray={CIRCUMFERENCE}
+                      strokeDashoffset={strokeDashoffset}
+                      strokeLinecap="round"
+                      className="transition-all duration-1000 ease-linear"
+                      style={{ filter: isRest ? 'none' : `drop-shadow(0 0 8px ${accentColor}40)` }}
+                    />
+                  </svg>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center">
+                    {isDone ? (
+                      <span className="text-[32px] sm:text-[40px] font-black" style={{ color: isRest ? '#fff' : 'var(--success-deep)' }}>
+                        {isRest ? '✓' : 'Done!'}
+                      </span>
+                    ) : (
+                      <span className="text-[48px] sm:text-[56px] font-black leading-none tabular-nums" style={{ color: isRest ? '#fff' : 'var(--text-primary)' }}>
+                        {formatTime(remaining)}
+                      </span>
+                    )}
+                  </div>
+                </div>
+                {!isDone && (
+                  <p className="text-[12px] font-bold tracking-wider" style={{ color: isRest ? 'rgba(255,255,255,0.6)' : 'var(--text-muted)' }}>
+                    {Math.round(progress * 100)}% COMPLETE
+                  </p>
+                )}
+              </>
             )}
 
             {/* Controls */}
             {isDone ? (
-              <div className="flex flex-col items-center gap-3 w-full max-w-[280px] mt-2">
+              <div className="flex flex-col items-center gap-3 w-full max-w-[320px] mt-2">
                 {nextExercise && (
                   <button
                     onClick={onNext}
@@ -272,18 +340,19 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
                     }}
                   >
                     <SkipForward className="w-5 h-5" />
-                    Next: {nextExercise.name}
+                    Continue
                   </button>
                 )}
                 <button
-                  onClick={handleFinish}
+                  onClick={handleReset}
                   className="w-full h-12 rounded-2xl flex items-center justify-center gap-2 text-[14px] font-bold transition-all active:scale-[0.97]"
                   style={{
                     backgroundColor: isRest ? 'rgba(255,255,255,0.15)' : 'var(--bg-soft)',
                     color: isRest ? '#fff' : 'var(--text-primary)',
                   }}
                 >
-                  Finish Workout
+                  <RotateCcw className="w-4 h-4" />
+                  Restart
                 </button>
               </div>
             ) : (
