@@ -3,7 +3,7 @@ import { Sparkles, User, Timer, Repeat, Play, Check, Plus, Pencil, Trash2, Dumbb
 import { Tabs } from './Tabs';
 import { ExerciseTimer } from './ExerciseTimer';
 import { AddWorkoutModal } from './AddWorkoutModal';
-import { WORKOUTS, WORKOUT_QUOTES, Gender, Level, Workout, Exercise } from '../utils/workouts';
+import { WORKOUTS, Gender, Level, Workout, Exercise } from '../utils/workouts';
 import { getCustomWorkouts, deleteCustomWorkout } from '../utils/customWorkouts';
 
 const LEVELS: { key: Level; label: string; color: string; bg: string; text: string }[] = [
@@ -48,8 +48,6 @@ export const GymView: React.FC<GymViewProps> = ({
   }, []);
 
   useEffect(() => { refreshCustom(); }, [refreshCustom]);
-
-  const quote = WORKOUT_QUOTES[Math.floor(Math.random() * WORKOUT_QUOTES.length)];
 
   const builtinWorkout: Workout | undefined = WORKOUTS.find(
     (w) => w.gender === gender && w.level === level
@@ -137,14 +135,6 @@ export const GymView: React.FC<GymViewProps> = ({
             >
               <Plus className="w-4 h-4" strokeWidth={3} />
             </button>
-          </div>
-
-          {/* Quote */}
-          <div className="p-4 rounded-2xl border border-[var(--border-soft)] bg-gradient-to-br from-[#f7cd63]/15 to-[#fc8fc6]/10 flex items-start gap-3">
-            <Sparkles className="w-4 h-4 text-[#b08d2e] shrink-0 mt-0.5" />
-            <p className="text-[13px] md:text-[14px] text-[var(--text-primary)] font-bold leading-snug italic">
-              "{quote}"
-            </p>
           </div>
 
           {/* Custom Workouts Section */}
