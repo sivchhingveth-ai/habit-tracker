@@ -61,7 +61,7 @@ export function playSound(preset: SoundPreset, volume: number) {
       const gain = ctx.createGain();
       osc.type = type;
       osc.frequency.value = freq;
-      gain.gain.setValueAtTime(vol * 0.3 * volMul, startTime);
+      gain.gain.setValueAtTime(vol * 0.6 * volMul, startTime);
       gain.gain.exponentialRampToValueAtTime(0.001, startTime + dur);
       osc.connect(gain);
       gain.connect(ctx.destination);
@@ -148,7 +148,7 @@ export function playTick(volume: number) {
     const gain = ctx.createGain();
     osc.type = 'sine';
     osc.frequency.value = 600;
-    const vol = (volume / 100) * 0.25;
+    const vol = (volume / 100) * 0.5;
     gain.gain.setValueAtTime(vol, ctx.currentTime);
     gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.05);
     osc.connect(gain);
