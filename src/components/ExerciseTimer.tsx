@@ -276,11 +276,14 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
   const handleSkip = () => { clearTimer(); speak('Rest'); onComplete(); };
   const handlePrevious = () => { clearTimer(); onPrevious?.(); };
   const handleAddTime = () => {
+    if (flashRef.current) return;
     setRemaining((p) => p + 20);
     setMaxSeconds((p) => p + 20);
     setAddedFlash(true);
-    if (flashRef.current) clearTimeout(flashRef.current);
-    flashRef.current = window.setTimeout(() => setAddedFlash(false), 800);
+    flashRef.current = window.setTimeout(() => {
+      setAddedFlash(false);
+      flashRef.current = null;
+    }, 800);
   };
 
   const accentColor = isRest ? 'var(--brand)' : color;
