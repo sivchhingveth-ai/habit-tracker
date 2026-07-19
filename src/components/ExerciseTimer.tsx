@@ -585,14 +585,14 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
                   <SkipBack className="w-4 h-4" style={{ color: 'var(--text-primary)' }} />
                 </button>
 
-                {/* Restart (was Pause) */}
+                {/* Restart (Pause icon) */}
                 <button
                   onClick={handleReset}
                   className="flex-1 h-14 rounded-2xl flex items-center justify-center gap-2 text-[15px] font-bold transition-all active:scale-[0.97] shadow-lg"
                   style={{ backgroundColor: '#fff', color: accentColor }}
                 >
-                  <RotateCcw className="w-5 h-5" />
-                  Restart
+                  <Pause className="w-5 h-5" fill="currentColor" />
+                  Pause
                 </button>
 
                 {/* Skip */}
