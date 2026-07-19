@@ -2,6 +2,7 @@ let audioCtx: AudioContext | null = null;
 let isPlaying = false;
 let gainNode: GainNode | null = null;
 let intervalId: number | null = null;
+let generation = 0;
 
 function getCtx(): AudioContext {
   if (!audioCtx) audioCtx = new AudioContext();
@@ -67,6 +68,7 @@ export function startMusic() {
   const ctx = getCtx();
   if (ctx.state === 'suspended') ctx.resume();
 
+  generation++;
   gainNode = ctx.createGain();
   gainNode.gain.value = 0.5;
   gainNode.connect(ctx.destination);
@@ -78,6 +80,7 @@ export function startMusic() {
   const beatMs = (60 / bpm) * 1000;
 
   intervalId = window.setInterval(() => {
+    if (!isPlaying) return;
     const now = ctx.currentTime;
     const step = beat % 16;
 
@@ -99,15 +102,12 @@ export function startMusic() {
 export function stopMusic() {
   if (!isPlaying) return;
   isPlaying = false;
-  if (intervalId) clearInterval(intervalId);
-  intervalId = null;
+  generation++;
+  if (intervalId) { clearInterval(intervalId); intervalId = null; }
   if (gainNode) {
-    gainNode.gain.setValueAtTime(gainNode.gain.value, audioCtx?.currentTime ?? 0);
-    gainNode.gain.exponentialRampToValueAtTime(0.001, (audioCtx?.currentTime ?? 0) + 0.3);
+    try { gainNode.disconnect(); } catch {}
+    gainNode = null;
   }
-  setTimeout(() => {
-    if (gainNode) { gainNode.disconnect(); gainNode = null; }
-  }, 400);
 }
 
 export function setMusicVolume(v: number) {

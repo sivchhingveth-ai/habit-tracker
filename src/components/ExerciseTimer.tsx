@@ -295,10 +295,10 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
   const handleStart = () => { setPhase('countdown'); setCountdownNum(3); setIsDone(false); setIsRunning(false); };
   const handlePause = () => setIsRunning(false);
   const handleResume = () => setIsRunning(true);
-  const handleReset = () => { clearTimer(); setRemaining(totalSeconds); setMaxSeconds(totalSeconds); setIsRunning(false); setIsDone(false); setPhase('ready'); startRef.current = Date.now(); spokenRef.current = { half: false, ten: false, three: false, two: false, one: false, restHalf: false }; };
+  const handleReset = () => { clearTimer(); stopMusic(); setRemaining(totalSeconds); setMaxSeconds(totalSeconds); setIsRunning(false); setIsDone(false); setPhase('ready'); startRef.current = Date.now(); spokenRef.current = { half: false, ten: false, three: false, two: false, one: false, restHalf: false }; };
   const handleClose = () => { clearTimer(); stopMusic(); if (onClose) { onClose(); } else { onComplete(); } };
   const handleSkip = () => { clearTimer(); stopMusic(); if (onNext) { onNext(); } else { onComplete(); } };
-  const handlePrevious = () => { clearTimer(); onPrevious?.(); };
+  const handlePrevious = () => { clearTimer(); stopMusic(); onPrevious?.(); };
   const handleAddTime = () => {
     if (flashRef.current) return;
     startRef.current -= 20000;

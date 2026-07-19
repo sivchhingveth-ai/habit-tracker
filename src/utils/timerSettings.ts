@@ -50,10 +50,17 @@ export function useTimerSettings() {
 }
 
 // ─── Sound playback ───────────────────────────────────────────
+let _sharedCtx: AudioContext | null = null;
+function getAudioCtx(): AudioContext {
+  if (!_sharedCtx) _sharedCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+  if (_sharedCtx.state === 'suspended') _sharedCtx.resume();
+  return _sharedCtx;
+}
+
 export function playSound(preset: SoundPreset, volume: number) {
   if (preset === 'off') return;
   try {
-    const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+    const ctx = getAudioCtx();
     const vol = volume / 100;
 
     const playTone = (freq: number, startTime: number, dur: number, type: OscillatorType = 'sine', volMul = 1) => {
@@ -143,7 +150,7 @@ export function playSound(preset: SoundPreset, volume: number) {
 
 export function playTick(volume: number) {
   try {
-    const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+    const ctx = getAudioCtx();
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
     osc.type = 'sine';

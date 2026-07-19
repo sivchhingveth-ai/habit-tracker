@@ -49,6 +49,11 @@ export const EXERCISE_DETAILS: Record<string, ExerciseDetail> = {
     commonMistakes: ['Elbows flaring too wide', 'Sagging hips', 'Half reps'],
     musclesWorked: 'Chest, shoulders, triceps, core',
   },
+  'Push-Ups (knee or full)': {
+    description: 'Perform push-ups from your knees or toes. Keep a straight body line, lower your chest, and push back up with controlled tempo.',
+    commonMistakes: ['Flaring elbows', 'Sagging hips', 'Going too fast'],
+    musclesWorked: 'Chest, shoulders, triceps, core',
+  },
   'Bodyweight Squats': {
     description: 'Stand with feet shoulder-width apart. Lower your hips back and down as if sitting in a chair, then drive through your heels to stand.',
     commonMistakes: ['Knees caving inward', 'Rising onto toes', 'Rounding the lower back'],

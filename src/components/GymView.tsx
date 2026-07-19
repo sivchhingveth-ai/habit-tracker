@@ -13,11 +13,6 @@ const LEVELS: { key: Level; label: string; color: string; bg: string; text: stri
   { key: 'advanced', label: 'Advanced', color: '#8b3a3a', bg: '#8b3a3a', text: '#ffffff', restSec: 10 },
 ];
 
-const PHASE_COLORS: Record<Gender, string> = {
-  men: '#5a6577',
-  women: '#8b3a3a',
-};
-
 interface ActiveTimer {
   exerciseIndex: number;
   exercise: Exercise;

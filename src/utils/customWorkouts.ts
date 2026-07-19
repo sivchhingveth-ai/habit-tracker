@@ -15,7 +15,7 @@ export const getCustomWorkouts = (): Workout[] => {
 };
 
 export const saveCustomWorkouts = (workouts: Workout[]) => {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(workouts));
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(workouts)); } catch { /* ignore */ }
 };
 
 export const addCustomWorkout = (w: Omit<Workout, 'id'>): Workout => {
