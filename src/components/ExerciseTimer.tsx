@@ -573,47 +573,27 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
               </div>
             ) : (
               <div className="flex items-center gap-3 w-full max-w-[280px] mt-2">
-                {/* Reset */}
+                {/* Previous */}
                 <button
-                  onClick={handleReset}
+                  onClick={handlePrevious}
                   className="w-12 h-12 rounded-xl flex items-center justify-center transition-all active:scale-90"
                   style={{
                     backgroundColor: 'var(--bg-soft)',
                   }}
-                  title="Reset"
+                  title="Previous"
                 >
-                  <RotateCcw className="w-4 h-4" style={{ color: 'var(--text-primary)' }} />
+                  <SkipBack className="w-4 h-4" style={{ color: 'var(--text-primary)' }} />
                 </button>
 
-                {/* Play/Pause */}
-                {isRunning ? (
-                  <button
-                    onClick={handlePause}
-                    className="flex-1 h-14 rounded-2xl flex items-center justify-center gap-2 text-[15px] font-bold transition-all active:scale-[0.97] shadow-lg"
-                    style={{ backgroundColor: '#fff', color: accentColor }}
-                  >
-                    <Pause className="w-5 h-5" fill="currentColor" />
-                    Pause
-                  </button>
-                ) : remaining < totalSeconds ? (
-                  <button
-                    onClick={handleResume}
-                    className="flex-1 h-14 rounded-2xl flex items-center justify-center gap-2 text-[15px] font-bold transition-all active:scale-[0.97] shadow-lg"
-                    style={{ backgroundColor: '#fff', color: accentColor }}
-                  >
-                    <Play className="w-5 h-5" fill="currentColor" />
-                    Resume
-                  </button>
-                ) : (
-                  <button
-                    onClick={handleStart}
-                    className="flex-1 h-14 rounded-2xl flex items-center justify-center gap-2 text-[15px] font-bold transition-all active:scale-[0.97] shadow-lg"
-                    style={{ backgroundColor: '#fff', color: accentColor }}
-                  >
-                    <Play className="w-5 h-5" fill="currentColor" />
-                    Start
-                  </button>
-                )}
+                {/* Restart (was Pause) */}
+                <button
+                  onClick={handleReset}
+                  className="flex-1 h-14 rounded-2xl flex items-center justify-center gap-2 text-[15px] font-bold transition-all active:scale-[0.97] shadow-lg"
+                  style={{ backgroundColor: '#fff', color: accentColor }}
+                >
+                  <RotateCcw className="w-5 h-5" />
+                  Restart
+                </button>
 
                 {/* Skip */}
                 {nextExercise && (
