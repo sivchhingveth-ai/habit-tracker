@@ -163,7 +163,7 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
   const intervalRef = useRef<number | null>(null);
   const flashRef = useRef<number | null>(null);
   const startRef = useRef<number>(0);
-  const spokenRef = useRef<{ twenty: boolean; ten: boolean; three: boolean; two: boolean; one: boolean }>({ twenty: false, ten: false, three: false, two: false, one: false });
+  const spokenRef = useRef<{ half: boolean; ten: boolean; three: boolean; two: boolean; one: boolean }>({ half: false, ten: false, three: false, two: false, one: false });
   const quote = REST_QUOTES[Math.floor(Math.random() * REST_QUOTES.length)];
 
   const clearTimer = useCallback(() => {
@@ -183,15 +183,16 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
   useEffect(() => {
     if (!isRunning || isDone) return;
     startRef.current = Date.now();
-    spokenRef.current = { twenty: false, ten: false, three: false, two: false, one: false };
+    spokenRef.current = { half: false, ten: false, three: false, two: false, one: false };
+    const halfMark = Math.round(totalSeconds / 2 / 5) * 5;
     const tick = () => {
       const elapsed = (Date.now() - startRef.current) / 1000;
       const left = Math.max(0, totalSeconds - Math.floor(elapsed));
       setRemaining(left);
       if (!isRest) {
-        if (!spokenRef.current.twenty && left <= 20 && left > 10) {
-          spokenRef.current.twenty = true;
-          speak('20 seconds left');
+        if (!spokenRef.current.half && left <= halfMark && left > 10) {
+          spokenRef.current.half = true;
+          speak(`${halfMark} seconds left`);
         }
         if (!spokenRef.current.ten && left <= 10 && left > 3) {
           spokenRef.current.ten = true;
@@ -270,9 +271,9 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
   const handleStart = () => { setPhase('countdown'); setCountdownNum(3); setIsDone(false); setIsRunning(false); };
   const handlePause = () => setIsRunning(false);
   const handleResume = () => setIsRunning(true);
-  const handleReset = () => { clearTimer(); setRemaining(totalSeconds); setMaxSeconds(totalSeconds); setIsRunning(false); setIsDone(false); setPhase('ready'); startRef.current = Date.now(); spokenRef.current = { twenty: false, ten: false, three: false, two: false, one: false }; };
+  const handleReset = () => { clearTimer(); setRemaining(totalSeconds); setMaxSeconds(totalSeconds); setIsRunning(false); setIsDone(false); setPhase('ready'); startRef.current = Date.now(); spokenRef.current = { half: false, ten: false, three: false, two: false, one: false }; };
   const handleClose = () => { clearTimer(); onClose?.() || onComplete(); };
-  const handleSkip = () => { clearTimer(); speak('Rest'); onComplete(); };
+  const handleSkip = () => { clearTimer(); onComplete(); };
   const handlePrevious = () => { clearTimer(); onPrevious?.(); };
   const handleAddTime = () => {
     if (flashRef.current) return;
