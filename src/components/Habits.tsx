@@ -375,11 +375,11 @@ export const Habits: React.FC<HabitsProps> = ({
         </div>
       </div>
 
-      <div className="px-5 md:px-6 py-2 space-y-4 pb-8 md:pb-20 text-[var(--text-primary)] animate-slide-up duration-[400ms]">
-        <div className="flex flex-col gap-8 pb-20 md:pb-32 mt-0 text-[var(--text-primary)]" style={{ paddingBottom: 'max(5rem, env(safe-area-inset-bottom))' }}>
+      <div className="px-3 sm:px-5 md:px-6 py-2 space-y-3 sm:space-y-4 pb-6 sm:pb-8 md:pb-20 text-[var(--text-primary)] animate-slide-up duration-[400ms]">
+        <div className="flex flex-col gap-6 sm:gap-8 pb-20 md:pb-32 mt-0 text-[var(--text-primary)]" style={{ paddingBottom: 'max(5rem, env(safe-area-inset-bottom))' }}>
           {Object.entries(groupedByPhase).length === 0 && (
-            <div className="text-center py-16 bg-[var(--bg-card)] border border-dashed border-[var(--border-soft)] rounded-3xl">
-              <TrendingUp className="w-10 h-10 text-[var(--text-muted)]/40 mx-auto mb-4" />
+            <div className="text-center py-10 sm:py-16 bg-[var(--bg-card)] border border-dashed border-[var(--border-soft)] rounded-3xl">
+              <TrendingUp className="w-8 h-8 sm:w-10 sm:h-10 text-[var(--text-muted)]/40 mx-auto mb-3 sm:mb-4" />
               <p className="text-[var(--text-muted)] text-base font-bold">No categories tracked yet</p>
               <p className="text-[var(--text-muted)]/60 text-sm mt-1">Click "Add Habit" to start your journey!</p>
             </div>
@@ -387,12 +387,12 @@ export const Habits: React.FC<HabitsProps> = ({
             const { phase, habits: phaseHabits } = phaseGroup as { phase: typeof TIME_PHASES[number]; habits: Habit[] };
 
             return (
-              <div key={phaseKey} className="space-y-4">
+              <div key={phaseKey} className="space-y-3 sm:space-y-4">
                 {/* Phase Header - Compacted */}
-                <div className="flex items-center gap-3 px-0.5">
-                  <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: phase.color }} />
-                    <span className="text-[11px] md:text-[13px] font-black uppercase tracking-[0.2em]" style={{ color: phase.color }}>
+                <div className="flex items-center gap-2 sm:gap-3 px-0.5">
+                  <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+                    <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full shrink-0" style={{ backgroundColor: phase.color }} />
+                    <span className="text-[10px] sm:text-[11px] md:text-[13px] font-black uppercase tracking-[0.2em]" style={{ color: phase.color }}>
                       {phase.label}
                     </span>
                     <div className="h-px w-8 section-divider hidden md:block" />
@@ -403,7 +403,7 @@ export const Habits: React.FC<HabitsProps> = ({
                   <div className="flex-1 h-px section-divider-fade" />
                 </div>
 
-                <div className="grid gap-3 md:gap-4 grid-cols-1">
+                <div className="grid gap-2 sm:gap-3 md:gap-4 grid-cols-1">
                   {phaseHabits.map(habit => {
                     const totalMonthly = days.filter(d => habit.history[d.dateStr]).length;
                     const daysInCurrentMonth = days.length;
@@ -436,9 +436,9 @@ export const Habits: React.FC<HabitsProps> = ({
                         />
 
                         {/* Card Front Content */}
-                        <div className="flex flex-row items-center justify-between p-4 md:p-6 relative z-10 w-full">
-                          <div className="flex items-center gap-4 flex-1 min-w-0">
-                            <div className="relative w-12 h-12 shrink-0">
+                        <div className="flex flex-row items-center justify-between p-3 sm:p-4 md:p-6 relative z-10 w-full">
+                          <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
+                            <div className="relative w-10 h-10 sm:w-12 sm:h-12 shrink-0">
                               <svg className="w-full h-full -rotate-90" viewBox="0 0 48 48">
                                 <circle cx="24" cy="24" r="21" fill="transparent" style={{ stroke: 'var(--border-soft)' }} strokeWidth="4" />
                                 <circle
@@ -454,12 +454,12 @@ export const Habits: React.FC<HabitsProps> = ({
                                 />
                               </svg>
                               <div className="absolute inset-0 flex items-center justify-center">
-                                <span className="text-[10px] md:text-[11px] font-black" style={{ color: phase.color }}>{completionRate}%</span>
+                                <span className="text-[9px] sm:text-[10px] md:text-[11px] font-black" style={{ color: phase.color }}>{completionRate}%</span>
                               </div>
                             </div>
 
                             <div className="min-w-0">
-                              <h4 className={`text-[15px] md:text-[17px] font-black text-[var(--text-primary)] uppercase tracking-tight transition-all ${
+                              <h4 className={`text-[14px] sm:text-[15px] md:text-[17px] font-black text-[var(--text-primary)] uppercase tracking-tight transition-all ${
                                 isExpanded ? 'whitespace-normal break-words' : 'truncate'
                               }`}>
                                   {toTitleCase(habit.name)}
@@ -475,7 +475,7 @@ export const Habits: React.FC<HabitsProps> = ({
                           </div>
 
                           <div className="flex items-center gap-2 relative z-10">
-                            <div className={`card-toggle w-9 h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-all duration-300 ${isExpanded ? 'is-active' : ''}`}>
+                            <div className={`card-toggle w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-all duration-300 ${isExpanded ? 'is-active' : ''}`}>
                               <AlignLeft className="w-4 h-4 md:w-[18px] md:h-[18px] transition-transform duration-300" />
                             </div>
                           </div>
@@ -483,7 +483,7 @@ export const Habits: React.FC<HabitsProps> = ({
 
                         {/* Expanded Content */}
                         {isExpanded && (
-                          <div className="px-4 md:px-6 pb-6 pt-1 animate-in fade-in zoom-in-95 slide-in-from-top-4 duration-400 ease-out relative z-10 w-full max-w-full overflow-hidden">
+                          <div className="px-3 sm:px-4 md:px-6 pb-4 sm:pb-6 pt-1 animate-in fade-in zoom-in-95 slide-in-from-top-4 duration-400 ease-out relative z-10 w-full max-w-full overflow-hidden">
                             <div className="h-px bg-[var(--border-soft)] mb-6" />
 
                             <div className="space-y-4">

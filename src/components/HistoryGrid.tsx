@@ -85,13 +85,13 @@ export const HistoryGrid: React.FC<HistoryGridProps> = ({ habits, onClose }) => 
   return (
     <div className="fixed inset-0 z-[100] bg-[var(--bg-page)] overflow-y-auto custom-scrollbar animate-slide-up">
       <div className="sticky top-0 z-10 bg-[var(--bg-card)]/90 backdrop-blur-xl border-b border-[var(--border-soft)]">
-        <div className="max-w-[1000px] mx-auto px-4 py-3 flex items-center justify-between gap-3">
-          <div className="flex items-center gap-3 min-w-0">
-            <div className="w-10 h-10 rounded-full bg-[var(--bg-soft)] border border-[var(--border-soft)] flex items-center justify-center shrink-0">
-              <LayoutGrid className="w-4 h-4 text-[var(--text-primary)]" />
+        <div className="max-w-[1000px] mx-auto px-3 sm:px-4 py-2.5 sm:py-3 flex items-center justify-between gap-2 sm:gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[var(--bg-soft)] border border-[var(--border-soft)] flex items-center justify-center shrink-0">
+              <LayoutGrid className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[var(--text-primary)]" />
             </div>
             <div className="min-w-0">
-              <h2 className="text-[15px] md:text-[17px] font-black text-[var(--text-primary)] tracking-tight leading-none">
+              <h2 className="text-[14px] sm:text-[15px] md:text-[17px] font-black text-[var(--text-primary)] tracking-tight leading-none">
                 History Grid
               </h2>
               <p className="text-[10px] text-[var(--text-muted)] font-bold uppercase tracking-widest mt-1">
@@ -101,7 +101,7 @@ export const HistoryGrid: React.FC<HistoryGridProps> = ({ habits, onClose }) => 
           </div>
           <button
             onClick={onClose}
-            className="w-9 h-9 rounded-full flex items-center justify-center bg-[var(--bg-soft)] border border-[var(--border-soft)] hover:bg-[var(--border-soft)] active:scale-95 transition-all shrink-0 touch-manipulation"
+            className="w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center bg-[var(--bg-soft)] border border-[var(--border-soft)] hover:bg-[var(--border-soft)] active:scale-95 transition-all shrink-0 touch-manipulation"
             title="Close"
             style={{ touchAction: 'manipulation' }}
           >
@@ -110,7 +110,7 @@ export const HistoryGrid: React.FC<HistoryGridProps> = ({ habits, onClose }) => 
         </div>
       </div>
 
-      <div className="max-w-[1000px] mx-auto p-4 md:p-6 space-y-4" style={{ paddingBottom: 'max(4rem, env(safe-area-inset-bottom) + 2rem)' }}>
+      <div className="max-w-[1000px] mx-auto p-3 sm:p-4 md:p-6 space-y-3 sm:space-y-4" style={{ paddingBottom: 'max(4rem, env(safe-area-inset-bottom) + 2rem)' }}>
         {dailyHabits.length === 0 ? (
           <div className="text-center py-16 bg-[var(--bg-card)] rounded-2xl border border-[var(--border-soft)]">
             <Sparkles className="w-10 h-10 text-[var(--warning)] mx-auto mb-4" />
@@ -120,18 +120,18 @@ export const HistoryGrid: React.FC<HistoryGridProps> = ({ habits, onClose }) => 
         ) : (
           <>
             {/* Overall Stats Bar */}
-            <div className="bg-[var(--bg-card)] border border-[var(--border-soft)] rounded-2xl p-4 flex items-center gap-4">
-              <div className="flex items-center gap-2">
-                <Calendar className="w-4 h-4 text-[var(--text-muted)]" />
-                <span className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider">{dailyHabits.length} habits</span>
+            <div className="bg-[var(--bg-card)] border border-[var(--border-soft)] rounded-xl sm:rounded-2xl p-3 sm:p-4 flex flex-wrap items-center gap-2 sm:gap-4">
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[var(--text-muted)]" />
+                <span className="text-[10px] sm:text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider">{dailyHabits.length} habits</span>
               </div>
-              <div className="h-4 w-px bg-[var(--border-soft)]" />
-              <div className="flex items-center gap-2">
-                <TrendingUp className="w-4 h-4 text-[var(--text-muted)]" />
-                <span className="text-xs font-bold text-[var(--text-muted)]">{totalCompletedAll}/{totalPossibleAll} days</span>
+              <div className="hidden sm:block h-4 w-px bg-[var(--border-soft)]" />
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <TrendingUp className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[var(--text-muted)]" />
+                <span className="text-[10px] sm:text-xs font-bold text-[var(--text-muted)]">{totalCompletedAll}/{totalPossibleAll} days</span>
               </div>
-              <div className="h-4 w-px bg-[var(--border-soft)]" />
-              <span className="text-xs font-black text-[var(--text-primary)]">{overallPct}% overall</span>
+              <div className="hidden sm:block h-4 w-px bg-[var(--border-soft)]" />
+              <span className="text-[10px] sm:text-xs font-black text-[var(--text-primary)]">{overallPct}% overall</span>
             </div>
 
             {dailyHabits.map((habit) => {
@@ -144,29 +144,29 @@ export const HistoryGrid: React.FC<HistoryGridProps> = ({ habits, onClose }) => 
               return (
                 <div
                   key={String(habit.id)}
-                  className="bg-[var(--bg-card)] border border-[var(--border-soft)] rounded-2xl p-4 hover:shadow-md transition-shadow"
+                  className="bg-[var(--bg-card)] border border-[var(--border-soft)] rounded-xl sm:rounded-2xl p-3 sm:p-4 hover:shadow-md transition-shadow"
                 >
                   {/* Header */}
-                  <div className="flex items-center gap-3 mb-3">
+                  <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
                     <div
-                      className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+                      className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl flex items-center justify-center shrink-0"
                       style={{ backgroundColor: `${color}18`, border: `1.5px solid ${color}30` }}
                     >
                       <Icon className="w-5 h-5" style={{ color }} />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <h3 className="text-[var(--text-primary)] font-black text-[14px] truncate">{toTitleCase(habit.name)}</h3>
-                        <span className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full" style={{ backgroundColor: `${color}15`, color }}>
+                      <div className="flex items-center gap-1.5 sm:gap-2">
+                        <h3 className="text-[var(--text-primary)] font-black text-[13px] sm:text-[14px] truncate">{toTitleCase(habit.name)}</h3>
+                        <span className="hidden sm:inline text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full" style={{ backgroundColor: `${color}15`, color }}>
                           {PHASE_LABELS[habit.time ?? ''] ?? habit.time}
                         </span>
                       </div>
                       {habit.description && (
-                        <p className="text-[var(--text-muted)] text-[11px] mt-0.5 leading-snug truncate">{habit.description}</p>
+                        <p className="text-[var(--text-muted)] text-[10px] sm:text-[11px] mt-0.5 leading-snug truncate">{habit.description}</p>
                       )}
                     </div>
                     <div className="text-right shrink-0">
-                      <p className="text-[var(--text-primary)] font-black text-[14px] leading-none">
+                      <p className="text-[var(--text-primary)] font-black text-[13px] sm:text-[14px] leading-none">
                         {completedDays}<span className="text-[var(--text-muted)] text-[10px]">/{totalPossibleDays}</span>
                       </p>
                       <p className="text-[var(--text-muted)] text-[9px] font-bold uppercase tracking-wider mt-0.5">{pct}%</p>

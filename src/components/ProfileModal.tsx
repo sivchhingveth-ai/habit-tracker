@@ -31,8 +31,8 @@ export const ProfileModal: React.FC = () => {
     <Modal isOpen={profileModalOpen} onClose={closeProfileModal} title="Profile">
       <div className="space-y-5 px-1 pb-2">
         {/* Preview */}
-        <div className="flex items-center gap-4 pt-2">
-          <div className="w-16 h-16 rounded-2xl bg-[var(--bg-soft)] border border-[var(--border-soft)] flex items-center justify-center shrink-0 overflow-hidden shadow-lg">
+        <div className="flex items-center gap-3 sm:gap-4 pt-2">
+          <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl bg-[var(--bg-soft)] border border-[var(--border-soft)] flex items-center justify-center shrink-0 overflow-hidden shadow-lg">
             {selectedSrc ? (
               <img
                 src={selectedSrc}
@@ -59,7 +59,7 @@ export const ProfileModal: React.FC = () => {
         {/* Avatar Grid */}
         <div>
           <label className={labelClass}>Avatar</label>
-          <div className="grid grid-cols-6 md:grid-cols-8 gap-2 p-2.5 rounded-2xl bg-[var(--bg-soft)] border border-[var(--border-soft)]">
+          <div className="grid grid-cols-5 sm:grid-cols-6 md:grid-cols-8 gap-1.5 sm:gap-2 p-2 sm:p-2.5 rounded-2xl bg-[var(--bg-soft)] border border-[var(--border-soft)]">
             {/* Initial option */}
             <button
               type="button"

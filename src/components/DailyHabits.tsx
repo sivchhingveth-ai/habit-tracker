@@ -407,8 +407,8 @@ const DailyHabitsInner: React.FC<DailyHabitsProps> = ({
         <Tabs tabs={tabs} activeTab={activeTab} onTabChange={onTabChange} onLogout={onLogout} isLoggingOut={isLoggingOut} />
       </div>
 
-      <div className="sticky top-[72px] z-10 sub-nav">
-        <div className="px-5 py-3 md:px-6 md:py-4 flex flex-col md:flex-row md:items-center justify-between gap-2 md:gap-4 border-b border-[var(--border-soft)]">
+      <div className="sticky top-0 z-10 sub-nav">
+        <div className="px-3 py-2 sm:px-5 sm:py-3 md:px-6 md:py-4 flex flex-wrap items-center justify-between gap-2 md:gap-4 border-b border-[var(--border-soft)]">
           <div className="min-w-0 flex items-center gap-3">
             <div className="relative">
               <button
@@ -535,7 +535,7 @@ const DailyHabitsInner: React.FC<DailyHabitsProps> = ({
             )}
           </div>
 
-          <div className="flex items-center gap-2 md:gap-4 shrink-0">
+          <div className="flex items-center gap-1.5 sm:gap-2 md:gap-4 shrink-0 flex-wrap">
             {isHistory && (
               <button
                 onClick={openHistoryGrid}
@@ -574,12 +574,12 @@ const DailyHabitsInner: React.FC<DailyHabitsProps> = ({
         </div>
       </div>
 
-      <div className={`p-5 md:p-6 space-y-7 transition-all duration-300 ${
+      <div className={`p-3 sm:p-5 md:p-6 space-y-5 sm:space-y-7 transition-all duration-300 ${
         isTabChanging ? 'opacity-0 translate-y-2' : 'opacity-100 translate-y-0'
       }`} style={{ paddingBottom: 'max(8rem, env(safe-area-inset-bottom) + 4rem)' }}>
         {totalCount === 0 && (
-          <div className="text-center py-16">
-            <Sparkles className="w-10 h-10 text-[#8a8f97]/40 mx-auto mb-4" />
+          <div className="text-center py-10 sm:py-16">
+            <Sparkles className="w-8 h-8 sm:w-10 sm:h-10 text-[#8a8f97]/40 mx-auto mb-3 sm:mb-4" />
             <p className="text-[#8a8f97] text-base font-bold">No {activeTab} tracked yet</p>
             <p className="text-[#8a8f97]/60 text-sm mt-1">Go to Add Habit to add your first {activeTab.toLowerCase()}!</p>
           </div>
@@ -590,9 +590,9 @@ const DailyHabitsInner: React.FC<DailyHabitsProps> = ({
 
           return (
             <div key={phase.key} id={`phase-${phase.key}`} className="space-y-1.5 scroll-mt-20">
-              <div className="flex items-center gap-3 px-1 mb-1.5 py-1">
-                <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: isHistory ? 'var(--text-muted)' : phase.color }} />
-                <span className="text-[11px] md:text-[13px] font-black uppercase tracking-[0.2em] leading-none" style={{ color: isHistory ? 'var(--text-muted)' : phase.color }}>
+              <div className="flex items-center gap-2 sm:gap-3 px-1 mb-1 py-1">
+                <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full shrink-0" style={{ backgroundColor: isHistory ? 'var(--text-muted)' : phase.color }} />
+                <span className="text-[10px] sm:text-[11px] md:text-[13px] font-black uppercase tracking-[0.2em] leading-none" style={{ color: isHistory ? 'var(--text-muted)' : phase.color }}>
                   {phase.label}
                 </span>
                 <div className="flex-1 h-px section-divider" />
@@ -601,7 +601,7 @@ const DailyHabitsInner: React.FC<DailyHabitsProps> = ({
                 </span>
               </div>
 
-              <div className="grid gap-2 md:gap-3 grid-cols-1">
+              <div className="grid gap-1.5 sm:gap-2 md:gap-3 grid-cols-1">
                 {phaseHabits.map((habit) => {
                   if (isHistory) {
                     return (
