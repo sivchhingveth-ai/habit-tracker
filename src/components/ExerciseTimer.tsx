@@ -54,10 +54,13 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
 }) => {
   const totalSeconds = parseDuration(duration);
   const [remaining, setRemaining] = useState(totalSeconds);
+  const [maxSeconds, setMaxSeconds] = useState(totalSeconds);
   const [isRunning, setIsRunning] = useState(false);
   const [isDone, setIsDone] = useState(false);
   const [phase, setPhase] = useState<'ready' | 'active' | 'rest-done'>('ready');
+  const [addedFlash, setAddedFlash] = useState(false);
   const intervalRef = useRef<number | null>(null);
+  const flashRef = useRef<number | null>(null);
   const { settings } = useTimerSettings();
   const quote = REST_QUOTES[Math.floor(Math.random() * REST_QUOTES.length)];
 
@@ -68,7 +71,12 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
     }
   }, []);
 
-  useEffect(() => { return clearTimer; }, [clearTimer]);
+  useEffect(() => {
+    return () => {
+      clearTimer();
+      if (flashRef.current) clearTimeout(flashRef.current);
+    };
+  }, [clearTimer]);
 
   useEffect(() => {
     if (!isRunning || isDone) return;
@@ -89,17 +97,23 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
     return clearTimer;
   }, [isRunning, isDone, clearTimer, settings]);
 
-  const progress = 1 - remaining / totalSeconds;
+  const progress = Math.min(Math.max(1 - remaining / maxSeconds, 0), 1);
   const strokeDashoffset = CIRCUMFERENCE * (1 - progress);
 
   const handleStart = () => { setPhase('active'); setIsDone(false); setIsRunning(true); };
   const handlePause = () => setIsRunning(false);
   const handleResume = () => setIsRunning(true);
-  const handleReset = () => { clearTimer(); setRemaining(totalSeconds); setIsRunning(false); setIsDone(false); setPhase('ready'); };
+  const handleReset = () => { clearTimer(); setRemaining(totalSeconds); setMaxSeconds(totalSeconds); setIsRunning(false); setIsDone(false); setPhase('ready'); };
   const handleClose = () => { clearTimer(); onComplete(); };
   const handleSkip = () => { clearTimer(); onComplete(); };
   const handlePrevious = () => { clearTimer(); onPrevious?.(); };
-  const handleAddTime = () => { setRemaining((p) => p + 20); };
+  const handleAddTime = () => {
+    setRemaining((p) => p + 20);
+    setMaxSeconds((p) => p + 20);
+    setAddedFlash(true);
+    if (flashRef.current) clearTimeout(flashRef.current);
+    flashRef.current = window.setTimeout(() => setAddedFlash(false), 800);
+  };
   const handleFinish = () => { clearTimer(); onComplete(); };
 
   const accentColor = isRest ? '#4e8ef7' : color;
@@ -292,16 +306,43 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
                 )}
 
                 {/* Add 20s */}
-                <button
-                  onClick={handleAddTime}
-                  className="w-12 h-12 rounded-xl flex items-center justify-center transition-all active:scale-90"
-                  style={{
-                    backgroundColor: isRest ? 'rgba(255,255,255,0.15)' : 'var(--bg-soft)',
-                  }}
-                  title="+20 seconds"
-                >
-                  <Plus className="w-4 h-4" style={{ color: isRest ? '#fff' : 'var(--text-primary)' }} />
-                </button>
+                <div className="relative">
+                  <button
+                    onClick={handleAddTime}
+                    className="w-12 h-12 rounded-xl flex items-center justify-center transition-all active:scale-90"
+                    style={{
+                      backgroundColor: isRest ? 'rgba(255,255,255,0.15)' : 'var(--bg-soft)',
+                    }}
+                    title="+20 seconds"
+                  >
+                    <Plus className="w-4 h-4" style={{ color: isRest ? '#fff' : 'var(--text-primary)' }} />
+                  </button>
+                  {addedFlash && (
+                    <span
+                      className="absolute -top-8 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-full text-[11px] font-black whitespace-nowrap animate-slide-down"
+                      style={{
+                        backgroundColor: isRest ? 'rgba(255,255,255,0.25)' : `${color}20`,
+                        color: isRest ? '#fff' : color,
+                      }}
+                    >
+                      +20s
+                    </span>
+                  )}
+                </div>
+
+                {/* Next / Skip */}
+                {nextExercise && (
+                  <button
+                    onClick={handleSkip}
+                    className="w-12 h-12 rounded-xl flex items-center justify-center transition-all active:scale-90"
+                    style={{
+                      backgroundColor: isRest ? 'rgba(255,255,255,0.15)' : 'var(--bg-soft)',
+                    }}
+                    title="Skip to next"
+                  >
+                    <SkipForward className="w-4 h-4" style={{ color: isRest ? '#fff' : 'var(--text-primary)' }} />
+                  </button>
+                )}
               </div>
             )}
           </div>
