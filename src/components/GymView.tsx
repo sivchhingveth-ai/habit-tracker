@@ -1,7 +1,8 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { Sparkles, User, Timer, Repeat, Play, Check, Plus, Pencil, Trash2, Dumbbell } from 'lucide-react';
+import { Sparkles, User, Timer, Repeat, Play, Check, Plus, Pencil, Trash2, Dumbbell, Info } from 'lucide-react';
 import { Tabs } from './Tabs';
 import { ExerciseTimer } from './ExerciseTimer';
+import { ExerciseDetail } from './ExerciseDetail';
 import { AddWorkoutModal } from './AddWorkoutModal';
 import { WORKOUTS, Gender, Level, Workout, Exercise } from '../utils/workouts';
 import { getCustomWorkouts, deleteCustomWorkout } from '../utils/customWorkouts';
@@ -42,6 +43,7 @@ export const GymView: React.FC<GymViewProps> = ({
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingWorkout, setEditingWorkout] = useState<Workout | null>(null);
   const [selectedWorkoutId, setSelectedWorkoutId] = useState<string | null>(null);
+  const [detailExercise, setDetailExercise] = useState<{ index: number; exercise: Exercise } | null>(null);
 
   const refreshCustom = useCallback(() => {
     setCustomWorkouts(getCustomWorkouts());
@@ -439,7 +441,7 @@ export const GymView: React.FC<GymViewProps> = ({
                             <p className="text-[10px] md:text-[11px] text-[var(--text-muted)] font-medium mt-0.5 truncate">{ex.reps}</p>
                           )}
                         </div>
-                        <div className="flex items-center gap-2 shrink-0">
+                        <div className="flex items-center gap-1.5 shrink-0">
                           {isCompleted && (
                             <span className="text-[9px] font-black text-[var(--success-deep)] uppercase tracking-wider">Done</span>
                           )}
@@ -452,6 +454,13 @@ export const GymView: React.FC<GymViewProps> = ({
                           >
                             {ex.duration}
                           </div>
+                          <button
+                            onClick={(e) => { e.stopPropagation(); setDetailExercise({ index: i, exercise: ex }); }}
+                            className="w-7 h-7 rounded-lg flex items-center justify-center transition-all active:scale-90 hover:bg-[var(--bg-hover)]"
+                            title="Exercise details"
+                          >
+                            <Info className="w-3.5 h-3.5" style={{ color: 'var(--text-muted)' }} />
+                          </button>
                         </div>
                       </button>
                     );
@@ -513,6 +522,10 @@ export const GymView: React.FC<GymViewProps> = ({
               .filter((ex) => !ex.name.toLowerCase().includes('rest') && !ex.name.toLowerCase().includes('repeat'))
               .map((ex) => ({ name: ex.name, duration: ex.duration }))}
             currentIndex={currentNonRest - 1}
+            onExerciseDetail={(name, dur) => {
+              const idx = activeWorkout.exercises.findIndex((e) => e.name === name);
+              if (idx >= 0) setDetailExercise({ index: idx, exercise: activeWorkout.exercises[idx] });
+            }}
           />
         );
       })()}
@@ -524,6 +537,29 @@ export const GymView: React.FC<GymViewProps> = ({
         onSave={refreshCustom}
         editWorkout={editingWorkout}
       />
+
+      {/* Exercise Detail */}
+      {detailExercise && activeWorkout && (() => {
+        const nonRestExercises = activeWorkout.exercises
+          .map((ex, i) => ({ ex, i }))
+          .filter(({ ex }) => !ex.name.toLowerCase().includes('rest') && !ex.name.toLowerCase().includes('repeat'));
+        const nonRestIndex = nonRestExercises.findIndex(({ i }) => i === detailExercise.index);
+        const prevNonRest = nonRestIndex > 0 ? nonRestExercises[nonRestIndex - 1] : null;
+        const nextNonRest = nonRestIndex < nonRestExercises.length - 1 ? nonRestExercises[nonRestIndex + 1] : null;
+
+        return (
+          <ExerciseDetail
+            exerciseName={detailExercise.exercise.name}
+            duration={detailExercise.exercise.duration}
+            color={timerColor}
+            currentIndex={nonRestIndex}
+            totalExercises={nonRestExercises.length}
+            onClose={() => setDetailExercise(null)}
+            onPrevious={prevNonRest ? () => setDetailExercise({ index: prevNonRest.i, exercise: prevNonRest.ex }) : undefined}
+            onNext={nextNonRest ? () => setDetailExercise({ index: nextNonRest.i, exercise: nextNonRest.ex }) : undefined}
+          />
+        );
+      })()}
     </div>
   );
 };

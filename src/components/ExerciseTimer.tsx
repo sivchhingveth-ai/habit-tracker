@@ -43,6 +43,7 @@ interface ExerciseTimerProps {
   isRest?: boolean;
   allExercises?: { name: string; duration: string }[];
   currentIndex?: number;
+  onExerciseDetail?: (exerciseName: string, duration: string) => void;
 }
 
 const RADIUS = 80;
@@ -51,7 +52,7 @@ const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
   exerciseName, duration, color, onComplete, onNext, onPrevious,
   nextExercise, previousExercise, exerciseNumber, totalExercises,
-  isRest = false, allExercises = [], currentIndex = 0,
+  isRest = false, allExercises = [], currentIndex = 0, onExerciseDetail,
 }) => {
   const totalSeconds = parseDuration(duration);
   const [remaining, setRemaining] = useState(totalSeconds);
@@ -227,9 +228,10 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
                     const completed = i < currentIndex;
                     const current = i === currentIndex;
                     return (
-                      <div
+                      <button
                         key={i}
-                        className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all"
+                        onClick={() => onExerciseDetail?.(ex.name, ex.duration)}
+                        className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all text-left active:scale-[0.98]"
                         style={{
                           backgroundColor: current
                             ? isRest ? 'rgba(255,255,255,0.2)' : `${accentColor}15`
@@ -279,7 +281,7 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
                             {ex.duration}
                           </p>
                         </div>
-                      </div>
+                      </button>
                     );
                   })}
                 </div>
