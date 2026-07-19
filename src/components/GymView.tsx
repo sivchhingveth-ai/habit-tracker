@@ -75,29 +75,33 @@ export const GymView: React.FC<GymViewProps> = ({
 
   const handleNextExercise = useCallback(() => {
     if (!activeWorkout || !activeTimer) return;
-    const nextIdx = activeTimer.exerciseIndex + 1;
-    if (nextIdx < activeWorkout.exercises.length) {
-      setCompletedExercises((prev) => new Set(prev).add(activeTimer.exerciseIndex));
-      setActiveTimer({
-        exerciseIndex: nextIdx,
-        exercise: activeWorkout.exercises[nextIdx],
-        workoutId: activeWorkout.id,
-      });
-    } else {
-      setCompletedExercises((prev) => new Set(prev).add(activeTimer.exerciseIndex));
-      setActiveTimer(null);
+    setCompletedExercises((prev) => new Set(prev).add(activeTimer.exerciseIndex));
+    for (let j = activeTimer.exerciseIndex + 1; j < activeWorkout.exercises.length; j++) {
+      const n = activeWorkout.exercises[j].name.toLowerCase();
+      if (!n.includes('rest') && !n.includes('repeat')) {
+        setActiveTimer({
+          exerciseIndex: j,
+          exercise: activeWorkout.exercises[j],
+          workoutId: activeWorkout.id,
+        });
+        return;
+      }
     }
+    setActiveTimer(null);
   }, [activeWorkout, activeTimer]);
 
   const handlePreviousExercise = useCallback(() => {
     if (!activeWorkout || !activeTimer) return;
-    const prevIdx = activeTimer.exerciseIndex - 1;
-    if (prevIdx >= 0) {
-      setActiveTimer({
-        exerciseIndex: prevIdx,
-        exercise: activeWorkout.exercises[prevIdx],
-        workoutId: activeWorkout.id,
-      });
+    for (let j = activeTimer.exerciseIndex - 1; j >= 0; j--) {
+      const n = activeWorkout.exercises[j].name.toLowerCase();
+      if (!n.includes('rest') && !n.includes('repeat')) {
+        setActiveTimer({
+          exerciseIndex: j,
+          exercise: activeWorkout.exercises[j],
+          workoutId: activeWorkout.id,
+        });
+        return;
+      }
     }
   }, [activeWorkout, activeTimer]);
 
@@ -439,11 +443,25 @@ export const GymView: React.FC<GymViewProps> = ({
 
       {/* Timer Overlay */}
       {activeTimer && activeWorkout && (() => {
-        const nextIdx = activeTimer.exerciseIndex + 1;
-        const prevIdx = activeTimer.exerciseIndex - 1;
-        const nextEx = nextIdx < activeWorkout.exercises.length ? activeWorkout.exercises[nextIdx] : null;
-        const prevEx = prevIdx >= 0 ? activeWorkout.exercises[prevIdx] : null;
         const isRestType = activeTimer.exercise.name.toLowerCase().includes('rest') || activeTimer.exercise.name.toLowerCase().includes('repeat');
+
+        const findNextNonRest = (fromIdx: number) => {
+          for (let j = fromIdx + 1; j < activeWorkout.exercises.length; j++) {
+            const n = activeWorkout.exercises[j].name.toLowerCase();
+            if (!n.includes('rest') && !n.includes('repeat')) return activeWorkout.exercises[j];
+          }
+          return null;
+        };
+        const findPrevNonRest = (fromIdx: number) => {
+          for (let j = fromIdx - 1; j >= 0; j--) {
+            const n = activeWorkout.exercises[j].name.toLowerCase();
+            if (!n.includes('rest') && !n.includes('repeat')) return activeWorkout.exercises[j];
+          }
+          return null;
+        };
+
+        const nextEx = findNextNonRest(activeTimer.exerciseIndex);
+        const prevEx = findPrevNonRest(activeTimer.exerciseIndex);
         const nonRestCount = activeWorkout.exercises.filter(
           (ex) => !ex.name.toLowerCase().includes('rest') && !ex.name.toLowerCase().includes('repeat')
         ).length;
