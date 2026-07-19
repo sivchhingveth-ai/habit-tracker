@@ -50,7 +50,7 @@ export const Tabs: React.FC<TabsProps> = ({ tabs, activeTab, onTabChange, onLogo
                   key={tab}
                   ref={isActive ? activeTabRef : null}
                   onClick={() => onTabChange(tab)}
-                  className={`nav-tab relative h-full flex items-center justify-center gap-1.5 sm:gap-2 shrink-0 touch-manipulation group px-3 sm:px-4 md:px-5 ${
+                  className={`nav-tab relative h-full flex items-center justify-center gap-1.5 sm:gap-2 shrink-0 touch-manipulation group px-2.5 sm:px-4 md:px-5 ${
                     isActive ? 'is-active' : ''
                   }`}
                   style={{ touchAction: 'manipulation' }}
@@ -73,10 +73,6 @@ export const Tabs: React.FC<TabsProps> = ({ tabs, activeTab, onTabChange, onLogo
                     isActive ? 'font-bold' : ''
                   }`}>
                     {tab}
-                  </span>
-                  {/* Mobile: icon only, no label */}
-                  <span className="nav-tab-label sm:hidden text-[9px] font-semibold tracking-wide transition-colors">
-                    {isAdd ? '' : tab.split(' ')[0]}
                   </span>
                   {isActive && (
                     <div className="nav-underline absolute bottom-0 left-1/2 -translate-x-1/2 h-[2px] w-6 sm:w-8 rounded-t-full" />
