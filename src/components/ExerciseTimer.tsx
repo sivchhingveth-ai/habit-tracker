@@ -457,42 +457,17 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
                   </button>
                 )}
 
-                {/* Add 20s */}
-                <div className="relative">
-                  <button
-                    onClick={handleAddTime}
-                    className="w-12 h-12 rounded-xl flex items-center justify-center transition-all active:scale-90"
-                    style={{
-                      backgroundColor: isRest ? 'rgba(255,255,255,0.15)' : 'var(--bg-soft)',
-                    }}
-                    title="+20 seconds"
-                  >
-                    <Plus className="w-4 h-4" style={{ color: isRest ? '#fff' : 'var(--text-primary)' }} />
-                  </button>
-                  {addedFlash && (
-                    <span
-                      className="absolute -top-8 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-full text-[11px] font-black whitespace-nowrap animate-slide-down"
-                      style={{
-                        backgroundColor: isRest ? 'rgba(255,255,255,0.25)' : `${color}20`,
-                        color: isRest ? '#fff' : color,
-                      }}
-                    >
-                      +20s
-                    </span>
-                  )}
-                </div>
-
-                {/* Next / Skip */}
+                {/* Skip */}
                 {nextExercise && (
                   <button
                     onClick={handleSkip}
                     className="w-12 h-12 rounded-xl flex items-center justify-center transition-all active:scale-90"
                     style={{
-                      backgroundColor: isRest ? 'rgba(255,255,255,0.15)' : 'var(--bg-soft)',
+                      backgroundColor: 'var(--bg-soft)',
                     }}
                     title="Skip to next"
                   >
-                    <SkipForward className="w-4 h-4" style={{ color: isRest ? '#fff' : 'var(--text-primary)' }} />
+                    <SkipForward className="w-4 h-4" style={{ color: 'var(--text-primary)' }} />
                   </button>
                 )}
               </div>

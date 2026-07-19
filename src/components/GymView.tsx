@@ -67,11 +67,19 @@ export const GymView: React.FC<GymViewProps> = ({
   }, [activeWorkout]);
 
   const handleTimerComplete = useCallback(() => {
-    if (activeTimer) {
-      setCompletedExercises((prev) => new Set(prev).add(activeTimer.exerciseIndex));
+    if (!activeTimer || !activeWorkout) return;
+    setCompletedExercises((prev) => new Set(prev).add(activeTimer.exerciseIndex));
+    const nextIdx = activeTimer.exerciseIndex + 1;
+    if (nextIdx < activeWorkout.exercises.length) {
+      setActiveTimer({
+        exerciseIndex: nextIdx,
+        exercise: activeWorkout.exercises[nextIdx],
+        workoutId: activeWorkout.id,
+      });
+    } else {
       setActiveTimer(null);
     }
-  }, [activeTimer]);
+  }, [activeTimer, activeWorkout]);
 
   const handleNextExercise = useCallback(() => {
     if (!activeWorkout || !activeTimer) return;
