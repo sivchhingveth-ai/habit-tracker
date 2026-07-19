@@ -190,23 +190,24 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
       const left = Math.max(0, totalSeconds - Math.floor(elapsed));
       setRemaining(left);
       if (!isRest) {
-        if (!spokenRef.current.half && left <= halfMark && left > 10) {
+        const elapsedWhole = Math.floor(elapsed);
+        if (!spokenRef.current.half && elapsedWhole >= totalSeconds - halfMark) {
           spokenRef.current.half = true;
           speak(`${halfMark} seconds left`);
         }
-        if (!spokenRef.current.ten && left <= 10 && left > 3) {
+        if (!spokenRef.current.ten && elapsedWhole >= totalSeconds - 10) {
           spokenRef.current.ten = true;
           speak('10 seconds left');
         }
-        if (!spokenRef.current.three && left === 3) {
+        if (!spokenRef.current.three && elapsedWhole >= totalSeconds - 3) {
           spokenRef.current.three = true;
           speak('3');
         }
-        if (!spokenRef.current.two && left === 2) {
+        if (!spokenRef.current.two && elapsedWhole >= totalSeconds - 2) {
           spokenRef.current.two = true;
           speak('2');
         }
-        if (!spokenRef.current.one && left === 1) {
+        if (!spokenRef.current.one && elapsedWhole >= totalSeconds - 1) {
           spokenRef.current.one = true;
           speak('1');
         }
