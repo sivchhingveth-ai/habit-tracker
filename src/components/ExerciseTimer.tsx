@@ -45,6 +45,7 @@ interface ExerciseTimerProps {
   currentIndex?: number;
   onExerciseDetail?: (exerciseName: string, duration: string) => void;
   autoStart?: boolean;
+  restDuration?: number;
 }
 
 function speakDuration(dur: string): string {
@@ -148,9 +149,9 @@ const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
   exerciseName, duration, color, onComplete, onNext, onPrevious,
   nextExercise, previousExercise, exerciseNumber, totalExercises,
-  isRest = false, allExercises = [], currentIndex = 0, onExerciseDetail, autoStart = false,
+  isRest = false, allExercises = [], currentIndex = 0, onExerciseDetail, autoStart = false, restDuration = 30,
 }) => {
-  const totalSeconds = parseDuration(duration);
+  const totalSeconds = isRest ? restDuration : parseDuration(duration);
   const [remaining, setRemaining] = useState(totalSeconds);
   const [maxSeconds, setMaxSeconds] = useState(totalSeconds);
   const [isRunning, setIsRunning] = useState(false);
@@ -226,10 +227,11 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
 
   useEffect(() => {
     if (phase !== 'ready' || !isRest) return;
+    speak('Rest');
     const t = setTimeout(() => {
       setPhase('active');
       setIsRunning(true);
-    }, 300);
+    }, 1200);
     return () => clearTimeout(t);
   }, [phase, isRest]);
 
