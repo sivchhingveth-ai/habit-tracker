@@ -318,13 +318,13 @@ html[data-theme="dark"] .top-nav {
   box-shadow: 0 1px 8px color-mix(in srgb, var(--text-primary) 45%, transparent);
 }
 
-/* Add Workspace circular button */
+/* Add Habit circular button */
 .top-nav .nav-add {
-  background-color: var(--bg-soft);
-  border: 1px solid var(--border-soft);
+  background-color: var(--text-primary);
+  border: 1px solid transparent;
 }
 .top-nav .nav-add .nav-add-icon {
-  color: var(--text-secondary);
+  color: var(--bg-card);
   transition: color 0.3s ease;
 }
 .top-nav .nav-add.is-active {

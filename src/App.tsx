@@ -35,7 +35,7 @@ export default function App() {
   const { signOut } = useAuthActions();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [loadingTimeout, setLoadingTimeout] = useState(false);
-  const tabs = ['To Do List', 'Add Workspace', 'Gym', 'History'];
+  const tabs = ['To Do List', 'Add Habit', 'Gym', 'History'];
   const historyGridOpen = useAppStore((s) => s.historyGridOpen);
   const closeHistoryGrid = useAppStore((s) => s.closeHistoryGrid);
   const [historyDate, setHistoryDate] = useState(todayStr);
@@ -582,7 +582,7 @@ export default function App() {
               />
             </div>
           )}
-          {activeTab === 'Add Workspace' && (
+          {activeTab === 'Add Habit' && (
             <div key={activeTab}>
               <Habits
                 habits={habits}
@@ -622,20 +622,20 @@ export default function App() {
       >
         <button
           onClick={scrollToTop}
-          className="w-12 h-12 rounded-full bg-white border border-[#e8eaed] flex items-center justify-center shadow-lg hover:shadow-xl active:scale-95 group transition-all"
+          className="w-12 h-12 rounded-full bg-[var(--bg-card)] border border-[var(--border-soft)] flex items-center justify-center shadow-lg hover:shadow-xl active:scale-95 group transition-all"
           aria-label="Scroll to top"
         >
-          <ArrowUp className="w-6 h-6 text-[#0a0a0a] group-hover:-translate-y-1 transition-transform duration-300" />
+          <ArrowUp className="w-6 h-6 text-[var(--text-primary)] group-hover:-translate-y-1 transition-transform duration-300" />
         </button>
       </div>
         </div>
       </main>
 
       {/* Add Routine Modal */}
-      <Modal isOpen={modalOpen === 'habit'} onClose={() => { setModalOpen(null); setEditingHabitId(null); }} title={editingHabitId ? "Edit Workspace" : "New Workspace"}>
+      <Modal isOpen={modalOpen === 'habit'} onClose={() => { setModalOpen(null); setEditingHabitId(null); }} title={editingHabitId ? "Edit Habit" : "New Habit"}>
         <div className="pb-4 space-y-4 px-1">
           <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
-            <label className={labelClass}>Name Workspace</label>
+            <label className={labelClass}>Habit Name</label>
             <input className={inputClass} placeholder="e.g. Drink 8 glasses of water" value={newHabitName} onChange={e => setNewHabitName(e.target.value)} autoFocus autoComplete="off" autoCorrect="off" spellCheck={false} />
           </div>
           <div className="flex flex-col md:grid md:grid-cols-2 gap-4">
@@ -694,7 +694,7 @@ export default function App() {
               {habitError}
             </div>
           )}
-          <button onClick={saveHabit} className={`${submitClass} mt-2`}>{editingHabitId ? "Update Workspace" : "Add Workspace"}</button>
+          <button onClick={saveHabit} className={`${submitClass} mt-2`}>{editingHabitId ? "Update Habit" : "Add Habit"}</button>
 
         </div>
       </Modal>

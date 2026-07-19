@@ -202,7 +202,7 @@ export const Habits: React.FC<HabitsProps> = ({
               style={{ touchAction: 'manipulation' }}
             >
               <Plus className="w-5 h-5" strokeWidth={3} />
-              Add Workspace
+              Add Habit
             </button>
 
             {/* Search and Category Row - Side by side */}
@@ -215,16 +215,16 @@ export const Habits: React.FC<HabitsProps> = ({
                   placeholder="Search"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full bg-white border border-[#e8eaed] pl-9 pr-8 py-2.5 rounded-xl text-[13px] text-[#0a0a0a] placeholder-[#71767b] outline-none focus:border-[#4e55e0] transition-all"
+                  className="w-full bg-[var(--bg-card)] border border-[var(--border-soft)] pl-9 pr-8 py-2.5 rounded-xl text-[13px] text-[var(--text-primary)] placeholder-[var(--text-muted)] outline-none focus:border-[var(--brand)] transition-all"
                 />
                 {searchTerm && (
                   <button
                     onClick={() => setSearchTerm('')}
-                    className="absolute right-2.5 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center rounded-full bg-[#71767b]/30 hover:bg-[#71767b]/50 transition-colors touch-manipulation"
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center rounded-full bg-[var(--text-muted)]/30 hover:bg-[var(--text-muted)]/50 transition-colors touch-manipulation"
                     aria-label="Clear search"
                     style={{ touchAction: 'manipulation' }}
                   >
-                    <span className="text-[#0a0a0a] text-[10px] font-bold leading-none">✕</span>
+                    <span className="text-[var(--text-primary)] text-[10px] font-bold leading-none">✕</span>
                   </button>
                 )}
               </div>
@@ -240,9 +240,9 @@ export const Habits: React.FC<HabitsProps> = ({
                     color: TIME_PHASES.find(p => p.key === selectedCategory)?.color,
                     touchAction: 'manipulation'
                   } : {
-                    backgroundColor: '#16181c',
-                    borderColor: '#2f3336',
-                    color: '#71767b',
+                    backgroundColor: 'var(--bg-soft)',
+                    borderColor: 'var(--border-soft)',
+                    color: 'var(--text-muted)',
                     touchAction: 'manipulation'
                   }}
                 >
@@ -259,16 +259,12 @@ export const Habits: React.FC<HabitsProps> = ({
                     style={{ touchAction: 'manipulation' }}
                   >
                     {/* Glow wrapper */}
-                    <div className="relative rounded-2xl p-[1px] bg-gradient-to-b from-white/25 via-white/10 to-white/20 shadow-[0_0_40px_rgba(255,255,255,0.06),0_0_80px_rgba(255,255,255,0.03),inset_0_1px_1px_rgba(255,255,255,0.15)] overflow-hidden">
-                      {/* Full shimmer overlay */}
-                      <div className="absolute inset-0 pointer-events-none z-10">
-                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full animate-shimmer-full" />
-                      </div>
-                      {/* Inner black background */}
-                      <div className="relative bg-white rounded-2xl overflow-hidden">
+                    <div className="relative rounded-2xl p-[1px] border border-[var(--border-soft)] shadow-lg overflow-hidden">
+                      {/* Inner background */}
+                      <div className="relative bg-[var(--bg-card)] rounded-2xl overflow-hidden">
                         {/* Clean minimal header */}
-                        <div className="px-4 py-2.5 border-b border-white/[0.08]">
-                          <span className="text-[10px] font-medium text-[#8a8f97] tracking-widest uppercase">
+                        <div className="px-4 py-2.5 border-b border-[var(--border-soft)]">
+                          <span className="text-[10px] font-medium text-[var(--text-muted)] tracking-widest uppercase">
                             Filter by category
                           </span>
                         </div>
@@ -276,29 +272,29 @@ export const Habits: React.FC<HabitsProps> = ({
                         {/* All Categories Option */}
                         <button
                           onClick={() => { setSelectedCategory(null); setShowCategoryFilter(false); }}
-                          className={`w-full px-4 py-2 text-left flex items-center justify-between group transition-all duration-200 touch-manipulation border-b border-white/[0.06] ${
+                          className={`w-full px-4 py-2 text-left flex items-center justify-between group transition-all duration-200 touch-manipulation border-b border-[var(--border-soft)] ${
                             !selectedCategory 
-                              ? 'bg-white/[0.06]' 
-                              : 'hover:bg-white/[0.03]'
+                              ? 'bg-[var(--bg-soft)]' 
+                              : 'hover:bg-[var(--bg-tint)]'
                           }`}
                           style={{ touchAction: 'manipulation' }}
                         >
                           <span className="flex items-center gap-3">
                             <div className={`w-6 h-6 rounded-md flex items-center justify-center transition-all duration-200 ${
-                              !selectedCategory ? 'bg-[#f0f1f5]' : 'bg-white/[0.05]'
+                              !selectedCategory ? 'bg-[var(--bg-soft)]' : 'bg-[var(--bg-tint)]'
                             }`}>
-                              <Target className="w-3 h-3 text-[#4a4f5a]" />
+                              <Target className="w-3 h-3 text-[var(--text-secondary)]" />
                             </div>
-                            <span className={`text-[13px] font-medium tracking-wide uppercase ${
-                              !selectedCategory ? 'text-[#0a0a0a]' : 'text-[#4a4f5a]'
+                            <span className={`text-[13px] font-medium tracking-wide ${
+                              !selectedCategory ? 'text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'
                             }`}>
                               All Categories
                             </span>
                           </span>
                           <span className={`text-[12px] font-semibold px-2 py-0.5 rounded-md transition-all duration-200 ${
                             !selectedCategory
-                              ? 'bg-[#f0f1f5] text-[#0a0a0a]'
-                              : 'text-[#8a8f97]'
+                              ? 'bg-[var(--bg-soft)] text-[var(--text-primary)]'
+                              : 'text-[var(--text-muted)]'
                           }`}>
                             {habits.length}
                           </span>
@@ -322,9 +318,9 @@ export const Habits: React.FC<HabitsProps> = ({
                                   key={phase.key}
                                   onClick={() => { setSelectedCategory(phase.key); setShowCategoryFilter(false); }}
                                   className={`w-full px-4 py-2 text-left flex items-center justify-between group transition-all duration-200 touch-manipulation animate-dropdown-item ${
-                                    !isLast ? 'border-b border-white/[0.06]' : ''
+                                    !isLast ? 'border-b border-[var(--border-soft)]' : ''
                                   } ${
-                                    isSelected ? 'bg-white/[0.06]' : 'hover:bg-white/[0.03]'
+                                    isSelected ? 'bg-[var(--bg-soft)]' : 'hover:bg-[var(--bg-tint)]'
                                   }`}
                                   style={{ 
                                     touchAction: 'manipulation',
@@ -334,29 +330,29 @@ export const Habits: React.FC<HabitsProps> = ({
                                   <span className="flex items-center gap-3">
                                     <div 
                                       className={`w-6 h-6 rounded-md flex items-center justify-center transition-all duration-200 ${
-                                        isSelected ? '' : 'bg-white/[0.05] group-hover:bg-white/[0.08]'
+                                        isSelected ? '' : 'bg-[var(--bg-soft)] group-hover:bg-[var(--bg-tint)]'
                                       }`}
                                       style={isSelected ? { backgroundColor: `${phase.color}20` } : {}}
                                     >
                                       <PhaseIcon 
                                         className={`w-3 h-3 transition-all duration-200 ${
-                                          isSelected ? '' : 'text-[#4a4f5a] group-hover:text-[#0a0a0a]'
+                                          isSelected ? '' : 'text-[var(--text-secondary)] group-hover:text-[var(--text-primary)]'
                                         }`}
                                         style={isSelected ? { color: phase.color } : {}} 
                                       />
                                     </div>
                                     <span 
-                                      className={`text-[13px] font-medium tracking-wide uppercase transition-colors duration-200 ${
-                                        isSelected ? '' : 'text-[#4a4f5a] group-hover:text-[#0a0a0a]'
+                                      className={`text-[13px] font-medium tracking-wide transition-colors duration-200 ${
+                                        isSelected ? '' : 'text-[var(--text-secondary)] group-hover:text-[var(--text-primary)]'
                                       }`}
                                       style={isSelected ? { color: phase.color } : {}}
                                     >
-                                      {phase.label.toUpperCase()}
+                                      {phase.label}
                                     </span>
                                   </span>
                                   <span 
                                     className={`text-[12px] font-semibold px-2 py-0.5 rounded-md transition-all duration-200 ${
-                                      isSelected ? '' : 'text-[#8a8f97]'
+                                      isSelected ? '' : 'text-[var(--text-muted)]'
                                     }`}
                                     style={isSelected ? { 
                                       backgroundColor: `${phase.color}20`,
@@ -379,13 +375,13 @@ export const Habits: React.FC<HabitsProps> = ({
         </div>
       </div>
 
-      <div className="px-5 md:px-6 py-2 space-y-4 pb-8 md:pb-20 text-[#0a0a0a] animate-slide-up duration-[400ms]">
-        <div className="flex flex-col gap-8 pb-20 md:pb-32 mt-0 text-[#0a0a0a]" style={{ paddingBottom: 'max(5rem, env(safe-area-inset-bottom))' }}>
+      <div className="px-5 md:px-6 py-2 space-y-4 pb-8 md:pb-20 text-[var(--text-primary)] animate-slide-up duration-[400ms]">
+        <div className="flex flex-col gap-8 pb-20 md:pb-32 mt-0 text-[var(--text-primary)]" style={{ paddingBottom: 'max(5rem, env(safe-area-inset-bottom))' }}>
           {Object.entries(groupedByPhase).length === 0 && (
-            <div className="text-center py-16 bg-white/[0.01] border border-dashed border-[#e8eaed] rounded-3xl">
-              <TrendingUp className="w-10 h-10 text-[#8a8f97]/40 mx-auto mb-4" />
-              <p className="text-[#8a8f97] text-base font-bold">No categories tracked yet</p>
-              <p className="text-[#8a8f97]/60 text-sm mt-1">Click "Add Workspace" to start your journey!</p>
+            <div className="text-center py-16 bg-[var(--bg-card)] border border-dashed border-[var(--border-soft)] rounded-3xl">
+              <TrendingUp className="w-10 h-10 text-[var(--text-muted)]/40 mx-auto mb-4" />
+              <p className="text-[var(--text-muted)] text-base font-bold">No categories tracked yet</p>
+              <p className="text-[var(--text-muted)]/60 text-sm mt-1">Click "Add Habit" to start your journey!</p>
             </div>
           )}          {Object.entries(groupedByPhase).map(([phaseKey, phaseGroup]) => {
             const { phase, habits: phaseHabits } = phaseGroup as { phase: typeof TIME_PHASES[number]; habits: Habit[] };
@@ -395,11 +391,12 @@ export const Habits: React.FC<HabitsProps> = ({
                 {/* Phase Header - Compacted */}
                 <div className="flex items-center gap-3 px-0.5">
                   <div className="flex items-center gap-3 min-w-0">
+                    <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: phase.color }} />
                     <span className="text-[11px] md:text-[13px] font-black uppercase tracking-[0.2em]" style={{ color: phase.color }}>
                       {phase.label}
                     </span>
                     <div className="h-px w-8 section-divider hidden md:block" />
-                    <span className="text-[9px] font-bold text-[#8a8f97] uppercase tracking-widest whitespace-nowrap">
+                    <span className="text-[9px] font-bold text-[var(--text-muted)] tracking-widest whitespace-nowrap">
                       {phaseHabits.length} {phaseHabits.length === 1 ? 'Category' : 'Categories'}
                     </span>
                   </div>
@@ -425,10 +422,10 @@ export const Habits: React.FC<HabitsProps> = ({
                       <div
                         data-habit-id={String(habit.id)}
                         onClick={() => setShowActionsId(isExpanded ? null : habit.id)}
-                        className={`w-full flex flex-col rounded-[24px] transition-all duration-500 group relative overflow-hidden cursor-pointer border-2 touch-manipulation ${
+                        className={`w-full flex flex-col rounded-2xl transition-all duration-500 group relative overflow-hidden cursor-pointer border-2 touch-manipulation ${
                           isExpanded
                           ? 'bg-[var(--bg-card)] border-[var(--border-medium)] shadow-2xl z-[1]'
-                          : 'bg-white/[0.02] border-white/[0.15] hover:bg-white/[0.04] hover:border-white/[0.25]'
+                          : 'bg-[var(--bg-card)] border-[var(--border-soft)] hover:border-[var(--border-medium)]'
                         }`}
                         style={{ touchAction: 'manipulation' }}
                       >
@@ -472,7 +469,7 @@ export const Habits: React.FC<HabitsProps> = ({
                                   <Flame className="w-3.5 h-3.5 text-[#ff6b00] animate-fire" />
                                   <span className="text-[11px] font-black text-[#ff6b00]">{habit.streak}</span>
                                 </div>
-                                <span className="text-[11px] font-bold text-[#8a8f97] uppercase tracking-widest">{totalMonthly}/{target} Days</span>
+                                <span className="text-[11px] font-bold text-[var(--text-muted)] tracking-widest">{totalMonthly}/{target} Days</span>
                               </div>
                             </div>
                           </div>
@@ -512,7 +509,7 @@ export const Habits: React.FC<HabitsProps> = ({
                               </div>
 
                               {/* Description Section */}
-                              <div className="bg-white/[0.02] border border-[var(--border-soft)] rounded-[20px] p-4">
+                              <div className="bg-[var(--bg-tint)] border border-[var(--border-soft)] rounded-2xl p-4">
                                 <h5 className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-[0.25em] mb-2.5 flex items-center gap-2">
                                   <Info className="w-3 h-3" />
                                   Description & Summary
@@ -523,7 +520,7 @@ export const Habits: React.FC<HabitsProps> = ({
                               </div>
 
                               {/* Recent Activity Bar */}
-                              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white/[0.01] p-4 rounded-xl border border-[var(--border-soft)]">
+                              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-[var(--bg-tint)] p-4 rounded-xl border border-[var(--border-soft)]">
                                 <span className="text-[11px] font-black text-[var(--text-muted)] uppercase tracking-widest">Recent Activity</span>
                                 <div className="flex gap-2 overflow-x-auto no-scrollbar py-1" style={{ WebkitOverflowScrolling: 'touch' }}>
                                   {currentWeekDates.map((d, i) => (
@@ -532,7 +529,7 @@ export const Habits: React.FC<HabitsProps> = ({
                                       className={`w-6 h-6 rounded-full border transition-all flex items-center justify-center shrink-0 ${
                                         habit.history[d.dateStr] 
                                         ? '' 
-                                        : 'bg-white/[0.04] border-[#e8eaed]'
+                                        : 'bg-[var(--bg-soft)] border-[var(--border-soft)]'
                                       }`}
                                       style={habit.history[d.dateStr] ? { backgroundColor: `${phase.color}20`, borderColor: `${phase.color}40` } : {}}
                                       title={d.dateStr}
@@ -541,7 +538,7 @@ export const Habits: React.FC<HabitsProps> = ({
                                         <div className="w-2 h-2 rounded-full" style={{ backgroundColor: phase.color }} />
                                       )}
                                       {!habit.history[d.dateStr] && (
-                                        <span className="text-[8px] font-black text-[#8a8f97] select-none uppercase">{d.label}</span>
+                                        <span className="text-[8px] font-black text-[var(--text-muted)] select-none uppercase">{d.label}</span>
                                       )}
                                     </div>
                                   ))}

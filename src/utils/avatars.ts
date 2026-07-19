@@ -1,37 +1,35 @@
-// Avatar sticker catalog. Each sticker is a mini profile tile: an emoji on
-// its own gradient so the picker and nav avatar read as real profile
-// pictures. Only the emoji is persisted; gradients are looked up here.
-export interface AvatarSticker {
-  emoji: string;
-  gradient: [string, string];
+// Avatar catalog. Each avatar is a PNG image served from /avatars/.
+// Drop your PNG files into public/avatars/ named av 01.png through av 16.png.
+// The avatar value persisted in the store is the numeric id (as a string).
+
+export interface Avatar {
+  id: string;
+  src: string;
+  label: string;
 }
 
-export const AVATAR_STICKERS: AvatarSticker[] = [
-  { emoji: '💪', gradient: ['#f7b733', '#fc4a1a'] },
-  { emoji: '🔥', gradient: ['#ff512f', '#dd2476'] },
-  { emoji: '🏆', gradient: ['#f2994a', '#f2c94c'] },
-  { emoji: '⚡', gradient: ['#fddb3a', '#f6a623'] },
-  { emoji: '🎯', gradient: ['#ee0979', '#ff6a00'] },
-  { emoji: '🚀', gradient: ['#36d1dc', '#5b86e5'] },
-  { emoji: '👑', gradient: ['#b06ab3', '#4568dc'] },
-  { emoji: '🥇', gradient: ['#ffd200', '#f7971e'] },
-  { emoji: '🦁', gradient: ['#f83600', '#f9d423'] },
-  { emoji: '🐯', gradient: ['#ff8008', '#ffc837'] },
-  { emoji: '🐺', gradient: ['#606c88', '#3f4c6b'] },
-  { emoji: '🦅', gradient: ['#8e6e53', '#c89b7b'] },
-  { emoji: '🦍', gradient: ['#485563', '#29323c'] },
-  { emoji: '🐉', gradient: ['#11998e', '#38ef7d'] },
-  { emoji: '🥷', gradient: ['#232526', '#414345'] },
-  { emoji: '🤖', gradient: ['#00c6ff', '#0072ff'] },
+export const AVATARS: Avatar[] = [
+  { id: '1',  src: '/avatars/av 01.png', label: 'Avatar 1' },
+  { id: '2',  src: '/avatars/av 02.png', label: 'Avatar 2' },
+  { id: '3',  src: '/avatars/av 03.png', label: 'Avatar 3' },
+  { id: '4',  src: '/avatars/av 04.png', label: 'Avatar 4' },
+  { id: '5',  src: '/avatars/av 05.png', label: 'Avatar 5' },
+  { id: '6',  src: '/avatars/av 06.png', label: 'Avatar 6' },
+  { id: '7',  src: '/avatars/av 07.png', label: 'Avatar 7' },
+  { id: '8',  src: '/avatars/av 08.png', label: 'Avatar 8' },
+  { id: '9',  src: '/avatars/av 09.png', label: 'Avatar 9' },
+  { id: '10', src: '/avatars/av 10.png', label: 'Avatar 10' },
+  { id: '11', src: '/avatars/av 11.png', label: 'Avatar 11' },
+  { id: '12', src: '/avatars/av 12.png', label: 'Avatar 12' },
+  { id: '13', src: '/avatars/av 13.png', label: 'Avatar 13' },
+  { id: '14', src: '/avatars/av 14.png', label: 'Avatar 14' },
+  { id: '15', src: '/avatars/av 15.png', label: 'Avatar 15' },
+  { id: '16', src: '/avatars/av 16.png', label: 'Avatar 16' },
+  { id: '17', src: '/avatars/av 17.png', label: 'Avatar 17' },
+  { id: '18', src: '/avatars/av 18.png', label: 'Avatar 18' },
 ];
 
-export const DEFAULT_GRADIENT: [string, string] = ['#4e55e0', '#7856ff'];
-
-export function avatarGradient(emoji: string): [string, string] {
-  return AVATAR_STICKERS.find((s) => s.emoji === emoji)?.gradient ?? DEFAULT_GRADIENT;
-}
-
-export function avatarBackground(emoji: string): string {
-  const [from, to] = avatarGradient(emoji);
-  return `linear-gradient(135deg, ${from} 0%, ${to} 100%)`;
+export function avatarSrc(id: string | null | undefined): string | null {
+  if (!id) return null;
+  return AVATARS.find((a) => a.id === id)?.src ?? null;
 }

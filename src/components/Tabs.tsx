@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { ListChecks, Plus, Clock, Dumbbell, LogOut, Loader2, User as UserIcon, Sun, Moon } from 'lucide-react';
 import useAppStore from '../store/appStore';
-import { avatarBackground } from '../utils/avatars';
+import { avatarSrc } from '../utils/avatars';
 
 interface TabsProps {
   tabs: string[];
@@ -13,7 +13,7 @@ interface TabsProps {
 
 const TAB_ICONS: Record<string, React.ComponentType<{ className?: string; strokeWidth?: number }>> = {
   'To Do List': ListChecks,
-  'Add Workspace': Plus,
+  'Add Habit': Plus,
   'History': Clock,
   'Gym': Dumbbell,
 };
@@ -42,7 +42,7 @@ export const Tabs: React.FC<TabsProps> = ({ tabs, activeTab, onTabChange, onLogo
             {tabs.map((tab, index) => {
               const Icon = TAB_ICONS[tab] ?? ListChecks;
               const isActive = activeTab === tab;
-              const isAdd = tab === 'Add Workspace';
+              const isAdd = tab === 'Add Habit';
               const isLast = index === tabs.length - 1;
 
               return (
@@ -57,10 +57,10 @@ export const Tabs: React.FC<TabsProps> = ({ tabs, activeTab, onTabChange, onLogo
                   title={tab}
                 >
                   {isAdd ? (
-                    <div className={`nav-add w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 group-active:scale-95 ${isActive ? 'is-active' : ''}`}>
+                    <div className="nav-add w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 group-active:scale-95 is-active">
                       <Icon
                         className="nav-add-icon w-5 h-5"
-                        strokeWidth={isActive ? 3 : 2}
+                        strokeWidth={3}
                       />
                     </div>
                   ) : (
@@ -89,16 +89,19 @@ export const Tabs: React.FC<TabsProps> = ({ tabs, activeTab, onTabChange, onLogo
             style={{ touchAction: 'manipulation' }}
           >
             <div
-              className="w-8 h-8 md:w-9 md:h-9 rounded-full flex items-center justify-center text-[12px] md:text-[13px] font-black text-white shrink-0"
-              style={{
-                background: avatarBackground(avatar),
-                boxShadow: '0 2px 8px rgba(10, 10, 10, 0.25)',
-              }}
+              className="w-8 h-8 md:w-9 md:h-9 rounded-full bg-[var(--bg-soft)] border border-[var(--border-soft)] flex items-center justify-center shrink-0 overflow-hidden"
             >
-              {avatar ? (
-                <span className="text-[16px] md:text-[18px] leading-none drop-shadow-sm">{avatar}</span>
+              {avatarSrc(avatar) ? (
+                <img
+                  src={avatarSrc(avatar)}
+                  alt="Avatar"
+                  className="w-full h-full object-contain"
+                  draggable={false}
+                />
               ) : (
-                initial || <UserIcon className="w-4 h-4" />
+                <span className="text-[12px] md:text-[13px] font-bold text-[var(--text-primary)]">
+                  {initial || <UserIcon className="w-4 h-4 text-[var(--text-muted)]" />}
+                </span>
               )}
             </div>
             {nickname.trim() && (

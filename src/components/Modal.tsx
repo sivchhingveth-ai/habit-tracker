@@ -13,7 +13,7 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/30 backdrop-blur-sm animate-fade-in" onClick={onClose}></div>
+      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm animate-fade-in" onClick={onClose}></div>
       <div className="relative bg-white w-full max-w-[600px] rounded-3xl shadow-2xl overflow-hidden animate-slide-up border border-[#e8eaed] max-h-[90vh] flex flex-col">
         <div className="px-5 h-[56px] flex items-center gap-3 border-b border-[#e8eaed]">
           <button

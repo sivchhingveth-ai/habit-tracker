@@ -189,7 +189,7 @@ export const Detail: React.FC<DetailProps> = ({
                               </h5>
                               <div className="text-[14px] md:text-[16px] text-[#0a0a0a] leading-relaxed font-medium whitespace-pre-wrap">
                                 {habit.description || (
-                                  <span className="text-[#8a8f97] italic opacity-50">No detailed info provided for this category. You can add them in the "Add Workspace" tab.</span>
+                                  <span className="text-[#8a8f97] italic opacity-50">No detailed info provided for this category. You can add them in the "Add Habit" tab.</span>
                                 )}
                               </div>
                             </div>
