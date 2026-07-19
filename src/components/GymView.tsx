@@ -65,18 +65,39 @@ export const GymView: React.FC<GymViewProps> = ({
   }, [activeWorkout]);
 
   const handleTimerComplete = useCallback(() => {
-    if (activeTimer && activeWorkout) {
+    if (activeTimer) {
       setCompletedExercises((prev) => new Set(prev).add(activeTimer.exerciseIndex));
-      // Auto-start the next exercise (or rest) after current completes
-      const nextIndex = activeTimer.exerciseIndex + 1;
-      if (nextIndex < activeWorkout.exercises.length) {
-        const nextEx = activeWorkout.exercises[nextIndex];
-        setActiveTimer({ exerciseIndex: nextIndex, exercise: nextEx, workoutId: activeWorkout.id });
-      } else {
-        setActiveTimer(null);
-      }
+      setActiveTimer(null);
     }
-  }, [activeTimer, activeWorkout]);
+  }, [activeTimer]);
+
+  const handleNextExercise = useCallback(() => {
+    if (!activeWorkout || !activeTimer) return;
+    const nextIdx = activeTimer.exerciseIndex + 1;
+    if (nextIdx < activeWorkout.exercises.length) {
+      setCompletedExercises((prev) => new Set(prev).add(activeTimer.exerciseIndex));
+      setActiveTimer({
+        exerciseIndex: nextIdx,
+        exercise: activeWorkout.exercises[nextIdx],
+        workoutId: activeWorkout.id,
+      });
+    } else {
+      setCompletedExercises((prev) => new Set(prev).add(activeTimer.exerciseIndex));
+      setActiveTimer(null);
+    }
+  }, [activeWorkout, activeTimer]);
+
+  const handlePreviousExercise = useCallback(() => {
+    if (!activeWorkout || !activeTimer) return;
+    const prevIdx = activeTimer.exerciseIndex - 1;
+    if (prevIdx >= 0) {
+      setActiveTimer({
+        exerciseIndex: prevIdx,
+        exercise: activeWorkout.exercises[prevIdx],
+        workoutId: activeWorkout.id,
+      });
+    }
+  }, [activeWorkout, activeTimer]);
 
   const handleStartWorkout = useCallback(() => {
     setCompletedExercises(new Set());
@@ -461,15 +482,36 @@ export const GymView: React.FC<GymViewProps> = ({
       </div>
 
       {/* Timer Overlay */}
-      {activeTimer && activeWorkout && (
-        <ExerciseTimer
-          key={`${activeTimer.exerciseIndex}-${activeTimer.exercise.name}`}
-          exerciseName={activeTimer.exercise.name}
-          duration={activeTimer.exercise.duration}
-          color={timerColor}
-          onComplete={handleTimerComplete}
-        />
-      )}
+      {activeTimer && activeWorkout && (() => {
+        const nextIdx = activeTimer.exerciseIndex + 1;
+        const prevIdx = activeTimer.exerciseIndex - 1;
+        const nextEx = nextIdx < activeWorkout.exercises.length ? activeWorkout.exercises[nextIdx] : null;
+        const prevEx = prevIdx >= 0 ? activeWorkout.exercises[prevIdx] : null;
+        const isRestType = activeTimer.exercise.name.toLowerCase().includes('rest') || activeTimer.exercise.name.toLowerCase().includes('repeat');
+        const nonRestCount = activeWorkout.exercises.filter(
+          (ex) => !ex.name.toLowerCase().includes('rest') && !ex.name.toLowerCase().includes('repeat')
+        ).length;
+        const currentNonRest = activeWorkout.exercises.slice(0, activeTimer.exerciseIndex + 1).filter(
+          (ex) => !ex.name.toLowerCase().includes('rest') && !ex.name.toLowerCase().includes('repeat')
+        ).length;
+
+        return (
+          <ExerciseTimer
+            key={`${activeTimer.exerciseIndex}-${activeTimer.exercise.name}`}
+            exerciseName={activeTimer.exercise.name}
+            duration={activeTimer.exercise.duration}
+            color={timerColor}
+            onComplete={handleTimerComplete}
+            onNext={handleNextExercise}
+            onPrevious={handlePreviousExercise}
+            nextExercise={nextEx ? { name: nextEx.name, duration: nextEx.duration } : null}
+            previousExercise={prevEx ? { name: prevEx.name, duration: prevEx.duration } : null}
+            exerciseNumber={isRestType ? undefined : currentNonRest}
+            totalExercises={isRestType ? undefined : nonRestCount}
+            isRest={isRestType}
+          />
+        );
+      })()}
 
       {/* Add/Edit Workout Modal */}
       <AddWorkoutModal

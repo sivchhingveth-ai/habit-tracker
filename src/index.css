@@ -761,3 +761,7 @@ html:not([data-theme="dark"]) .hover\:text-white:hover { color: var(--text-prima
 /* Habit card title: keep it dark on the light (collapsed) card; the
    expanded card is solid black (.bg-[#0a0a0a]) and keeps white text. */
 html:not([data-theme="dark"]) .group:not(.bg-\[\#0a0a0a\]):hover .group-hover\:text-white { color: var(--text-primary); }
+
+/* Safe area utilities for fullscreen timer */
+.safe-area-top { padding-top: env(safe-area-inset-top, 0px); }
+.safe-area-bottom { padding-bottom: env(safe-area-inset-bottom, 0px); }
