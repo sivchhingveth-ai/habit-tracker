@@ -162,9 +162,8 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
       setRemaining((prev) => {
         if (prev <= 1) {
           clearTimer();
-          setIsDone(true);
-          setIsRunning(false);
-          setPhase('rest-done');
+          speak('Rest');
+          onComplete();
           return 0;
         }
         if (prev === 4) speak('3');
@@ -174,7 +173,7 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
       });
     }, 1000);
     return clearTimer;
-  }, [isRunning, isDone, clearTimer]);
+  }, [isRunning, isDone, clearTimer, onComplete]);
 
   useEffect(() => {
     if (phase !== 'countdown') return;
