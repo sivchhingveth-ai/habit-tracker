@@ -113,13 +113,14 @@ export const DatePicker: React.FC<DatePickerProps> = ({ value, onChange, classNa
                     key={day}
                     type="button"
                     onClick={(e) => { e.preventDefault(); handleSelect(day); }}
-                    className={`w-8 h-8 mx-auto flex items-center justify-center rounded-full text-[13px] font-medium transition-all ${
+                    className={`w-10 h-10 mx-auto flex items-center justify-center rounded-full text-[13px] font-medium transition-all touch-manipulation ${
                       isSelected
                         ? 'bg-[#4e55e0] text-white font-bold shadow-[0_0_12px_rgba(29,155,240,0.4)]'
                         : isToday
                           ? 'bg-[#f0f1f5] text-[#4e55e0] font-bold'
                           : 'text-[#0a0a0a] hover:bg-[#f0f1f5]'
                     }`}
+                    style={{ touchAction: 'manipulation' }}
                   >
                     {day}
                   </button>

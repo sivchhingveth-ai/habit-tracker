@@ -101,11 +101,11 @@ export const HistoryGrid: React.FC<HistoryGridProps> = ({ habits, onClose }) => 
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center bg-[var(--bg-soft)] border border-[var(--border-soft)] hover:bg-[var(--border-soft)] active:scale-95 transition-all shrink-0 touch-manipulation"
+            className="w-11 h-11 rounded-full flex items-center justify-center bg-[var(--bg-soft)] border border-[var(--border-soft)] hover:bg-[var(--border-soft)] active:scale-95 transition-all shrink-0 touch-manipulation"
             title="Close"
             style={{ touchAction: 'manipulation' }}
           >
-            <X className="w-4 h-4 text-[var(--text-primary)]" />
+            <X className="w-[14px] h-[14px] text-[var(--text-primary)]" />
           </button>
         </div>
       </div>

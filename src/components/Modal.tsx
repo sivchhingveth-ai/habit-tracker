@@ -18,9 +18,10 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }
         <div className="px-4 sm:px-5 h-[48px] sm:h-[56px] flex items-center gap-2 sm:gap-3 border-b border-[var(--border-soft)]">
           <button
             onClick={onClose}
-            className="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center bg-[var(--bg-soft)] hover:bg-[var(--border-medium)] transition-all active:scale-95"
+            className="w-11 h-11 rounded-full flex items-center justify-center bg-[var(--bg-soft)] hover:bg-[var(--border-medium)] transition-all active:scale-95 touch-manipulation"
+            style={{ touchAction: 'manipulation' }}
           >
-            <CloseIcon className="w-3 h-3 sm:w-[14px] sm:h-[14px] text-[var(--text-primary)]" />
+            <CloseIcon className="w-[14px] h-[14px] text-[var(--text-primary)]" />
           </button>
           <h2 className="text-[15px] sm:text-[16px] md:text-[18px] font-black text-[var(--text-primary)] tracking-tight">{title}</h2>
         </div>

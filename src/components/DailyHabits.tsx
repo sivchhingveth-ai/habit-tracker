@@ -506,13 +506,13 @@ const DailyHabitsInner: React.FC<DailyHabitsProps> = ({
                 {startDate !== todayStr ? (
                   <button
                     onClick={handlePrevDate}
-                    className="glass-hover w-7 h-7 rounded-full flex items-center justify-center text-[var(--text-muted)] hover:text-[var(--text-primary)] touch-manipulation shrink-0"
+                    className="glass-hover w-11 h-11 rounded-full flex items-center justify-center text-[var(--text-muted)] hover:text-[var(--text-primary)] touch-manipulation shrink-0"
                     style={{ touchAction: 'manipulation' }}
                   >
                     <ChevronLeft className="w-4 h-4" />
                   </button>
                 ) : (
-                  <div className="w-7 h-7 shrink-0" />
+                  <div className="w-11 h-11 shrink-0" />
                 )}
                 <div className="flex items-center gap-2 px-0.5">
                   <Clock className="w-3 h-3 text-[var(--text-muted)] shrink-0" />
@@ -523,13 +523,13 @@ const DailyHabitsInner: React.FC<DailyHabitsProps> = ({
                 {maxDate !== todayStr ? (
                   <button
                     onClick={handleNextDate}
-                    className="glass-hover w-7 h-7 rounded-full flex items-center justify-center text-[var(--text-muted)] hover:text-[var(--text-primary)] touch-manipulation shrink-0"
+                    className="glass-hover w-11 h-11 rounded-full flex items-center justify-center text-[var(--text-muted)] hover:text-[var(--text-primary)] touch-manipulation shrink-0"
                     style={{ touchAction: 'manipulation' }}
                   >
                     <ChevronRight className="w-4 h-4" />
                   </button>
                 ) : (
-                  <div className="w-7 h-7 shrink-0" />
+                  <div className="w-11 h-11 shrink-0" />
                 )}
               </div>
             )}
@@ -539,7 +539,7 @@ const DailyHabitsInner: React.FC<DailyHabitsProps> = ({
             {isHistory && (
               <button
                 onClick={openHistoryGrid}
-                className="w-9 h-9 md:w-10 md:h-10 rounded-full bg-[var(--bg-soft)] border border-[var(--border-soft)] hover:bg-[var(--border-medium)] flex items-center justify-center transition-all text-[var(--text-primary)] active:scale-95 touch-manipulation shrink-0"
+                className="w-11 h-11 rounded-full bg-[var(--bg-soft)] border border-[var(--border-soft)] hover:bg-[var(--border-medium)] flex items-center justify-center transition-all text-[var(--text-primary)] active:scale-95 touch-manipulation shrink-0"
                 title="Show History Grid"
                 style={{ touchAction: 'manipulation' }}
               >

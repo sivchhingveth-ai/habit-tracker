@@ -103,12 +103,12 @@ export const Auth: React.FC = () => {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[#4e55e0]/8 rounded-full blur-[120px] pointer-events-none" />
         
         <div className="w-full max-w-md relative z-10">
-            <div className="bg-white border border-[#e8eaed] rounded-3xl p-8 shadow-xl">
+            <div className="bg-white border border-[#e8eaed] rounded-3xl p-5 sm:p-8 shadow-xl">
                 <div className="text-center mb-8">
                     <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-[#4e55e0] to-[#7856ff] mb-4 shadow-lg">
                       <Lock className="w-6 h-6 text-white" />
                     </div>
-                    <h1 className="text-3xl font-black text-[#0a0a0a] mb-2 tracking-tight">
+                    <h1 className="text-2xl sm:text-3xl font-black text-[#0a0a0a] mb-2 tracking-tight">
                         {isSignUp ? 'Create Account' : 'Welcome Back'}
                     </h1>
                     <p className="text-[#8a8f97] font-medium text-sm">

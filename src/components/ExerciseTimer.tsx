@@ -90,9 +90,10 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
           </div>
           <button
             onClick={handleClose}
-            className="w-8 h-8 rounded-full flex items-center justify-center bg-[var(--bg-soft)] hover:bg-[var(--border-medium)] transition-all active:scale-95 shrink-0"
+            className="w-11 h-11 rounded-full flex items-center justify-center bg-[var(--bg-soft)] hover:bg-[var(--border-medium)] transition-all active:scale-95 shrink-0 touch-manipulation"
+            style={{ touchAction: 'manipulation' }}
           >
-            <X className="w-4 h-4 text-[var(--text-primary)]" />
+            <X className="w-[14px] h-[14px] text-[var(--text-primary)]" />
           </button>
         </div>
 

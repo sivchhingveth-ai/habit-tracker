@@ -130,7 +130,7 @@ export const DailyHabits: React.FC<DailyHabitsProps> = ({
       </div>
 
       {isHistory && (
-        <div className="bg-[#16181c] border-b border-[#2f3336] p-3 flex items-center justify-between gap-4">
+        <div className="bg-[var(--bg-card)] border-b border-[var(--border-soft)] p-3 flex items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             {startDate !== todayStr ? (
               <button 
@@ -175,7 +175,7 @@ export const DailyHabits: React.FC<DailyHabitsProps> = ({
       )}
 
       <div>
-        <div className="px-5 py-3 md:px-6 md:py-4 flex flex-col md:flex-row md:items-center justify-between gap-2 md:gap-4 border-b border-[#2f3336]">
+        <div className="px-4 sm:px-5 md:px-6 py-3 sm:py-4 flex flex-col md:flex-row md:items-center justify-between gap-2 md:gap-4 border-b border-[var(--border-soft)]">
           <div className="min-w-0">
             <h2 className="text-[18px] md:text-[22px] font-black text-[#eff3f4] leading-tight tracking-tight">
               {activeTab}
@@ -191,7 +191,7 @@ export const DailyHabits: React.FC<DailyHabitsProps> = ({
           </div>
 
           <div className="flex items-center gap-2 md:gap-4 shrink-0">
-            <div className="bg-[#16181c] border border-[#2f3336] rounded-xl p-1.5 md:p-2 flex items-center gap-2 shadow-xl flex-1 md:flex-none justify-center md:justify-start">
+            <div className="bg-[var(--bg-card)] border border-[var(--border-soft)] rounded-xl p-1.5 md:p-2 flex items-center gap-2 shadow-xl flex-1 md:flex-none justify-center md:justify-start">
                 <div 
                   className="w-6 h-6 md:w-8 md:h-8 rounded-lg border flex items-center justify-center transition-colors"
                   style={{ backgroundColor: `${chipColor}10`, borderColor: `${chipColor}20` }}
@@ -206,7 +206,7 @@ export const DailyHabits: React.FC<DailyHabitsProps> = ({
               </div>
             </div>
 
-            <div className="bg-[#16181c] border border-[#2f3336] rounded-xl p-1.5 md:p-2 flex items-center gap-2 shadow-xl flex-1 md:flex-none justify-center md:justify-start">
+            <div className="bg-[var(--bg-card)] border border-[var(--border-soft)] rounded-xl p-1.5 md:p-2 flex items-center gap-2 shadow-xl flex-1 md:flex-none justify-center md:justify-start">
               <div className="w-6 h-6 md:w-8 md:h-8 rounded-lg bg-[#ff6b00]/10 border border-[#ff6b00]/20 flex items-center justify-center">
                 <Flame className="w-3.5 h-3.5 md:w-4 md:h-4 text-[#ff6b00] animate-fire" />
               </div>

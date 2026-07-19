@@ -189,7 +189,7 @@ export const Habits: React.FC<HabitsProps> = ({
         <Tabs tabs={tabs} activeTab={activeTab} onTabChange={onTabChange} onLogout={onLogout} isLoggingOut={isLoggingOut} />
       </div>
 
-      <div className="px-5 md:px-6 py-2 md:py-3 flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-[#e8eaed]">
+      <div className="px-4 sm:px-5 md:px-6 py-2 sm:py-3 flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-[var(--border-soft)]">
         {/* Row 1: Empty title area for spacing */}
         <div className="min-w-0" />
 
@@ -208,23 +208,23 @@ export const Habits: React.FC<HabitsProps> = ({
             {/* Search and Category Row - Side by side */}
             <div className="flex flex-row gap-3 items-center w-full">
               {/* Search Input - Takes most space on the LEFT */}
-              <div className="relative flex-1">
+                    <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#8a8f97]" />
                 <input
                   type="text"
                   placeholder="Search"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full bg-[var(--bg-card)] border border-[var(--border-soft)] pl-9 pr-8 py-2.5 rounded-xl text-[13px] text-[var(--text-primary)] placeholder-[var(--text-muted)] outline-none focus:border-[var(--brand)] transition-all"
+                  className="w-full bg-[var(--bg-card)] border border-[var(--border-soft)] pl-9 pr-10 py-2.5 rounded-xl text-[13px] text-[var(--text-primary)] placeholder-[var(--text-muted)] outline-none focus:border-[var(--brand)] transition-all"
                 />
                 {searchTerm && (
                   <button
                     onClick={() => setSearchTerm('')}
-                    className="absolute right-2.5 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center rounded-full bg-[var(--text-muted)]/30 hover:bg-[var(--text-muted)]/50 transition-colors touch-manipulation"
+                    className="absolute right-1.5 top-1/2 -translate-y-1/2 w-11 h-11 flex items-center justify-center rounded-full hover:bg-[var(--text-muted)]/20 transition-colors touch-manipulation"
                     aria-label="Clear search"
                     style={{ touchAction: 'manipulation' }}
                   >
-                    <span className="text-[var(--text-primary)] text-[10px] font-bold leading-none">✕</span>
+                    <span className="text-[var(--text-primary)] text-[12px] font-bold leading-none">✕</span>
                   </button>
                 )}
               </div>
@@ -475,7 +475,7 @@ export const Habits: React.FC<HabitsProps> = ({
                           </div>
 
                           <div className="flex items-center gap-2 relative z-10">
-                            <div className={`card-toggle w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-all duration-300 ${isExpanded ? 'is-active' : ''}`}>
+                            <div className={`card-toggle w-11 h-11 rounded-full flex items-center justify-center transition-all duration-300 ${isExpanded ? 'is-active' : ''}`}>
                               <AlignLeft className="w-4 h-4 md:w-[18px] md:h-[18px] transition-transform duration-300" />
                             </div>
                           </div>

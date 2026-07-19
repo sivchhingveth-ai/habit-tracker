@@ -90,15 +90,15 @@ const SavingItem: React.FC<{
 
   return (
     <div className="x-card overflow-hidden group">
-      <div className="p-4 md:p-5 flex flex-col gap-3 md:gap-4">
+      <div className="p-4 sm:p-5 flex flex-col gap-3 md:gap-4">
         <div className="flex justify-between items-start gap-4">
           <div className="min-w-0 flex-1">
-            <h3 className="text-[16px] md:text-[18px] font-bold text-[#0a0a0a] leading-tight mb-2">
+            <h3 className="text-[16px] sm:text-[18px] font-bold text-[#0a0a0a] leading-tight mb-2">
               {s.name}
             </h3>
             <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[#f0f1f5] border border-[#e8eaed] w-fit">
               <Calendar className="w-2.5 h-2.5 text-[#8a8f97]" />
-              <span className="text-[8px] md:text-[9px] font-bold text-[#8a8f97] uppercase tracking-wider">
+              <span className="text-[9px] sm:text-[9px] font-bold text-[#8a8f97] uppercase tracking-wider">
                 {new Date(s.startDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })} – {new Date(s.targetDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
               </span>
             </div>
@@ -111,13 +111,15 @@ const SavingItem: React.FC<{
                 }
                 setShowAddSaving(!showAddSaving);
               }}
-              className="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center bg-white/[0.05] border border-[#e8eaed] text-[#8a8f97] hover:text-white hover:bg-[#f0f1f5] transition-all active:scale-90"
+              className="w-11 h-11 rounded-full flex items-center justify-center bg-white/[0.05] border border-[#e8eaed] text-[#8a8f97] hover:text-white hover:bg-[#f0f1f5] transition-all active:scale-90 touch-manipulation"
+              style={{ touchAction: 'manipulation' }}
             >
-              <Plus className="w-4 h-4 md:w-5 md:h-5" />
+              <Plus className="w-5 h-5" />
             </button>
             <button
               onClick={() => onDelete(s.id)}
-              className="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center bg-white/[0.05] border border-[#e8eaed] text-[#8a8f97] md:opacity-0 md:group-hover:opacity-100 hover:text-red-500 hover:bg-red-500/10 hover:border-red-500/20 transition-all active:scale-90"
+              className="w-11 h-11 rounded-full flex items-center justify-center bg-white/[0.05] border border-[#e8eaed] text-[#8a8f97] hover:text-red-500 hover:bg-red-500/10 hover:border-red-500/20 transition-all active:scale-90 touch-manipulation md:opacity-0 md:group-hover:opacity-100"
+              style={{ touchAction: 'manipulation' }}
             >
               <Trash2 className="w-4 h-4 md:w-5 md:h-5" />
             </button>
@@ -131,7 +133,7 @@ const SavingItem: React.FC<{
                 type="text"
                 inputMode="decimal"
                 placeholder="Amount"
-                className="w-full bg-white border border-[#e8eaed] px-3 pr-16 py-2 rounded-xl text-sm text-white outline-none focus:border-x-blue"
+                className="w-full bg-[var(--bg-card)] border border-[var(--border-soft)] px-3 pr-16 py-2 rounded-xl text-sm text-[var(--text-primary)] outline-none focus:border-[var(--brand)] transition-all placeholder-[var(--text-muted)]"
                 value={savingAmount}
                 onChange={e => {
                   const raw = e.target.value.replace(/,/g, '');
@@ -176,7 +178,7 @@ const SavingItem: React.FC<{
               <span className="text-[#00ba7c] font-black">${s.saved.toLocaleString()}</span> of <span className="text-[#8a8f97]">${s.goal.toLocaleString()}</span>
             </p>
           </div>
-          <div className="w-full h-2 md:h-2.5 bg-white/[0.03] border border-[#d4d7dc] rounded-full overflow-hidden">
+          <div className="w-full h-2 md:h-2.5 bg-[var(--bg-soft)] border border-[var(--border-soft)] rounded-full overflow-hidden">
             <div
               className="h-full transition-all duration-[1200ms] ease-out relative"
               style={{
@@ -259,12 +261,12 @@ export const Savings: React.FC<SavingsProps> = ({
         <Tabs tabs={tabs} activeTab={activeTab} onTabChange={onTabChange} onLogout={onLogout} isLoggingOut={isLoggingOut} />
       </div>
       <div>
-        <div className="px-5 py-4 md:px-6 md:py-6 flex items-center justify-between border-b border-[#e8eaed]">
+        <div className="px-4 sm:px-5 md:px-6 py-3 sm:py-4 md:py-6 flex items-center justify-between border-b border-[var(--border-soft)]">
             <div className="min-w-0">
-              <h2 className="text-[20px] md:text-[28px] font-black text-[#0a0a0a] leading-tight tracking-tight">
+              <h2 className="text-[18px] sm:text-[20px] md:text-[28px] font-black text-[#0a0a0a] leading-tight tracking-tight">
                 Spending
               </h2>
-              <p className="text-[#8b98a5] text-[10px] md:text-[13px] font-black uppercase tracking-[0.2em] mt-1.5 truncate">
+              <p className="text-[#8b98a5] text-[10px] sm:text-[11px] md:text-[13px] font-black uppercase tracking-[0.2em] mt-1.5 truncate">
                 {currentTime.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' })}
               </p>
             </div>

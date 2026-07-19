@@ -168,7 +168,7 @@ export const AddWorkoutModal: React.FC<AddWorkoutModalProps> = ({
                 <span className="w-5 h-5 rounded-lg bg-[var(--bg-soft)] flex items-center justify-center text-[10px] font-bold text-[var(--text-muted)] mt-2.5 shrink-0">
                   {i + 1}
                 </span>
-                <div className="flex-1 grid grid-cols-[1fr_90px_80px] gap-1.5">
+                <div className="flex-1 grid grid-cols-1 sm:grid-cols-[1fr_90px_80px] gap-1.5">
                   <input
                     className={inputCls + ' !py-2 !text-[13px]'}
                     placeholder="Exercise name"
@@ -190,7 +190,8 @@ export const AddWorkoutModal: React.FC<AddWorkoutModalProps> = ({
                 </div>
                 <button
                   onClick={() => removeExercise(i)}
-                  className="w-7 h-7 rounded-lg flex items-center justify-center text-[var(--text-muted)] hover:text-red-500 hover:bg-red-500/10 transition-all mt-1.5 opacity-0 group-hover:opacity-100 active:scale-90"
+                  className="w-11 h-11 rounded-lg flex items-center justify-center text-[var(--text-muted)] hover:text-red-500 hover:bg-red-500/10 transition-all mt-1.5 md:opacity-0 md:group-hover:opacity-100 active:scale-90 touch-manipulation"
+                  style={{ touchAction: 'manipulation' }}
                 >
                   <X className="w-3 h-3" />
                 </button>

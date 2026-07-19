@@ -117,13 +117,13 @@ export const GymView: React.FC<GymViewProps> = ({
 
       <div className="flex-1 overflow-y-auto custom-scrollbar">
         <div
-          className="p-5 md:p-6 space-y-5 animate-slide-up"
+          className="p-4 sm:p-5 md:p-6 space-y-5 animate-slide-up"
           style={{ paddingBottom: 'max(8rem, env(safe-area-inset-bottom) + 4rem)' }}
         >
           {/* Header */}
           <div className="flex items-start justify-between">
             <div>
-              <h2 className="text-[22px] md:text-[26px] font-black text-[var(--text-primary)] leading-tight tracking-tight">
+              <h2 className="text-[20px] sm:text-[22px] md:text-[26px] font-black text-[var(--text-primary)] leading-tight tracking-tight">
                 Gym
               </h2>
               <p className="text-[var(--text-muted)] text-[13px] font-medium mt-1">
@@ -132,7 +132,8 @@ export const GymView: React.FC<GymViewProps> = ({
             </div>
             <button
               onClick={() => { setEditingWorkout(null); setShowAddModal(true); }}
-              className="shrink-0 w-9 h-9 rounded-xl flex items-center justify-center bg-[var(--accent)] text-white shadow-md hover:shadow-lg hover:brightness-110 transition-all active:scale-90"
+              className="shrink-0 w-11 h-11 rounded-xl flex items-center justify-center bg-[var(--accent)] text-white shadow-md hover:shadow-lg hover:brightness-110 transition-all active:scale-90 touch-manipulation"
+              style={{ touchAction: 'manipulation' }}
             >
               <Plus className="w-4 h-4" strokeWidth={3} />
             </button>

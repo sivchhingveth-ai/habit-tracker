@@ -106,10 +106,10 @@ export const Detail: React.FC<DetailProps> = ({
         </div>
 
         <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
-          <div className="flex items-center gap-1 bg-[var(--bg-card)] border border-[var(--border-soft)] p-1 rounded-xl h-9 sm:h-10">
-            <button onClick={() => changeMonth(-1)} className="p-1.5 hover:bg-[var(--bg-soft)] rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)]"><ChevronLeft className="w-4 h-4" /></button>
+          <div className="flex items-center gap-1 bg-[var(--bg-card)] border border-[var(--border-soft)] p-1 rounded-xl h-11 sm:h-12">
+            <button onClick={() => changeMonth(-1)} className="p-2 hover:bg-[var(--bg-soft)] rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)] touch-manipulation" style={{ touchAction: 'manipulation' }}><ChevronLeft className="w-4 h-4" /></button>
             <span className="px-2 sm:px-3 text-[10px] sm:text-[11px] font-black uppercase tracking-widest text-[var(--text-primary)] min-w-[100px] sm:min-w-[120px] text-center">{monthYearLabel}</span>
-            <button onClick={() => changeMonth(1)} className="p-1.5 hover:bg-[var(--bg-soft)] rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)]" disabled={isCurrentMonth}><ChevronRight className="w-4 h-4" /></button>
+            <button onClick={() => changeMonth(1)} className="p-2 hover:bg-[var(--bg-soft)] rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)] touch-manipulation" style={{ touchAction: 'manipulation' }} disabled={isCurrentMonth}><ChevronRight className="w-4 h-4" /></button>
           </div>
           <div className="relative w-full sm:w-[200px] md:w-[240px]">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[var(--text-muted)]" />

@@ -38,20 +38,20 @@ export const MonthPicker: React.FC<MonthPickerProps> = ({ value, onChange, child
 
       {isOpen && createPortal(
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-white/90 backdrop-blur-md" onClick={() => setIsOpen(false)} />
-          <div className="relative bg-[#000000] border border-[#e8eaed] rounded-[28px] shadow-[0_32px_128px_rgba(0,0,0,0.8)] w-[320px] md:w-[360px] animate-slide-up overflow-hidden">
+          <div className="absolute inset-0 bg-[var(--bg-page)] backdrop-blur-md" onClick={() => setIsOpen(false)} />
+          <div className="relative bg-[var(--bg-card)] border border-[var(--border-soft)] rounded-[28px] shadow-[0_32px_128px_rgba(0,0,0,0.8)] w-[320px] md:w-[360px] animate-slide-up overflow-hidden">
             {/* Year Header */}
-            <div className="flex items-center justify-between px-6 py-5 border-b border-[#e8eaed]">
+            <div className="flex items-center justify-between px-6 py-5 border-b border-[var(--border-soft)]">
               <button
                 onClick={(e) => { e.stopPropagation(); setViewYear(y => y - 1); }}
-                className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-[#f0f1f5] transition-all text-[#8a8f97] hover:text-[#0a0a0a] active:scale-90"
+                className="w-11 h-11 flex items-center justify-center rounded-full hover:bg-[var(--bg-soft)] transition-all text-[var(--text-muted)] hover:text-[var(--text-primary)] active:scale-90 touch-manipulation"
               >
                 <ChevronLeft className="w-5 h-5" />
               </button>
-              <span className="text-[20px] font-black text-[#0a0a0a] tracking-tighter">{viewYear}</span>
+              <span className="text-[20px] font-black text-[var(--text-primary)] tracking-tighter">{viewYear}</span>
               <button
                 onClick={(e) => { e.stopPropagation(); setViewYear(y => y + 1); }}
-                className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-[#f0f1f5] transition-all text-[#8a8f97] hover:text-[#0a0a0a] active:scale-90"
+                className="w-11 h-11 flex items-center justify-center rounded-full hover:bg-[var(--bg-soft)] transition-all text-[var(--text-muted)] hover:text-[var(--text-primary)] active:scale-90 touch-manipulation"
               >
                 <ChevronRight className="w-5 h-5" />
               </button>
@@ -69,10 +69,10 @@ export const MonthPicker: React.FC<MonthPickerProps> = ({ value, onChange, child
                     onClick={(e) => { e.stopPropagation(); handleSelect(i); }}
                     className={`py-4 rounded-2xl text-[14px] font-black transition-all duration-300 ${
                       isSelected
-                        ? 'bg-[#4e55e0] text-white shadow-[0_8px_32px_rgba(29,155,240,0.4)] scale-105'
+                        ? 'bg-[var(--brand)] text-white shadow-[0_8px_32px_rgba(29,155,240,0.4)] scale-105'
                         : isToday
-                          ? 'bg-[#4e55e0]/10 text-[#4e55e0] border border-[#4e55e0]/40'
-                          : 'text-[#0a0a0a] hover:bg-[#f0f1f5] hover:scale-105'
+                          ? 'bg-[var(--brand)]/10 text-[var(--brand)] border border-[var(--brand)]/40'
+                          : 'text-[var(--text-primary)] hover:bg-[var(--bg-soft)] hover:scale-105'
                     }`}
                   >
                     {month}
