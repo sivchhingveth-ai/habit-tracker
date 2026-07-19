@@ -1,7 +1,7 @@
 import React from 'react';
 import { X, LayoutGrid, Sparkles, Heart, Target, Rocket, ShieldOff, Wallet, TrendingUp, Calendar } from 'lucide-react';
 import { Habit } from '../types';
-import { formatDateStr, getEffectiveDate } from '../utils/dateUtils';
+import { formatDateStr, getEffectiveDate, toTitleCase } from '../utils/dateUtils';
 
 const PHASE_COLORS: Record<string, string> = {
   'reset': '#6fa83b',
@@ -156,7 +156,7 @@ export const HistoryGrid: React.FC<HistoryGridProps> = ({ habits, onClose }) => 
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
-                        <h3 className="text-[var(--text-primary)] font-black text-[14px] truncate">{habit.name}</h3>
+                        <h3 className="text-[var(--text-primary)] font-black text-[14px] truncate">{toTitleCase(habit.name)}</h3>
                         <span className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full" style={{ backgroundColor: `${color}15`, color }}>
                           {PHASE_LABELS[habit.time ?? ''] ?? habit.time}
                         </span>

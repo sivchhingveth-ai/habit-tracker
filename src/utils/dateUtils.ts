@@ -9,6 +9,12 @@ export const formatDateStr = (date: Date): string => {
 };
 
 /**
+ * Converts a string to title case: first letter of each word capitalized.
+ */
+export const toTitleCase = (str: string): string =>
+  str.replace(/\b\w/g, (c) => c.toUpperCase());
+
+/**
  * Calculates the "effective date" for the habit tracker.
  * If the current time is before 5:00 AM, it returns the previous day's date.
  */

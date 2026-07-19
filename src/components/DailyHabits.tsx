@@ -1,7 +1,7 @@
 import React, { useMemo, useState, useCallback, useRef } from 'react';
 import { Habit } from '../types';
 import { Circle, Flame, Target, Sparkles, ChevronDown, ChevronUp, Minus, Clock, ChevronLeft, ChevronRight, Filter, AlignLeft, Info, LayoutGrid } from 'lucide-react';
-import { getEffectiveDateStr, getEffectiveDate, formatDateStr, shouldShowHabitOnDay } from '../utils/dateUtils';
+import { getEffectiveDateStr, getEffectiveDate, formatDateStr, shouldShowHabitOnDay, toTitleCase } from '../utils/dateUtils';
 import { Tabs } from './Tabs';
 import { LiveClock } from './LiveClock';
 import useAppStore from '../store/appStore';
@@ -97,7 +97,7 @@ const HistoryHabitCard = React.memo<HistoryCardProps>(({ habit, todayStr, phaseC
           <div className="flex-1 text-left min-w-0">
             <div className="flex items-center gap-2">
               <p className={`text-[14px] md:text-[15px] font-bold ${isExpanded ? 'whitespace-normal break-words' : 'truncate'} ${isDone ? 'text-[#8a8f97] opacity-60 line-through' : 'text-[#0a0a0a]'}`}>
-                {habit.name.toUpperCase()}
+                {toTitleCase(habit.name)}
               </p>
               {habit.streak > 0 && (
                 <div className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-[#2f3336] shrink-0">
@@ -216,7 +216,7 @@ const ActiveHabitCard = React.memo<ActiveCardProps>(({ habit, todayStr, phase, p
         <div className="flex-1 text-left min-w-0">
           <div className="flex items-center gap-2">
             <p className={`text-[13px] md:text-[14px] font-bold transition-all duration-300 ease-in-out truncate ${isDone ? 'text-[var(--text-muted)] opacity-60 line-through' : 'text-[var(--text-primary)]'}`}>
-              {habit.name}
+              {toTitleCase(habit.name)}
             </p>
             {habit.streak > 0 && (
               <div className="flex items-center gap-0.5 px-1 py-0.5 rounded-full bg-[#ff6b00]/10 border border-[#ff6b00]/20 shrink-0 group-hover:animate-fire">

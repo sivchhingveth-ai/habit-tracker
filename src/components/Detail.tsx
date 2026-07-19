@@ -1,7 +1,7 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { Habit } from '../types';
 import { Circle, Target, ChevronLeft, ChevronRight, Search, Flame, AlignLeft, Info, Loader2 } from 'lucide-react';
-import { formatDateStr } from '../utils/dateUtils';
+import { formatDateStr, toTitleCase } from '../utils/dateUtils';
 import { Tabs } from './Tabs';
 
 interface DetailProps {
@@ -157,7 +157,7 @@ export const Detail: React.FC<DetailProps> = ({
                             </div>
                           </div>
                           <div>
-                             <h4 className="text-[15px] font-black text-[#0a0a0a] uppercase tracking-tight">{habit.name.toUpperCase()}</h4>
+                              <h4 className="text-[15px] font-black text-[#0a0a0a] uppercase tracking-tight">{toTitleCase(habit.name)}</h4>
                             <div className="flex items-center gap-2 mt-1">
                               <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-[#ff6b00]/10 border border-[#ff6b00]/20">
                                 <Flame className="w-2.5 h-2.5 text-[#ff6b00] animate-fire" />

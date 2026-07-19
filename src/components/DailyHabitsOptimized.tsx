@@ -2,7 +2,7 @@ import React, { useMemo, useCallback } from 'react';
 import useAppStore from '../store/appStore';
 import { Habit } from '../types';
 import { Circle, Flame, Target, ChevronDown, ChevronUp, Minus, Clock, ChevronLeft, ChevronRight } from 'lucide-react';
-import { formatDateStr } from '../utils/dateUtils';
+import { formatDateStr, toTitleCase } from '../utils/dateUtils';
 import { Tabs } from './Tabs';
 
 interface DailyHabitsProps {
@@ -302,7 +302,7 @@ export const DailyHabits: React.FC<DailyHabitsProps> = ({
                           <div className="flex items-center gap-2">
                             <p className={`text-[14px] md:text-[15px] font-bold transition-all duration-300 ease-in-out truncate ${isDone ? 'text-[#71767b] opacity-60 line-through' : 'text-[#eff3f4]'
                               }`}>
-                               {habit.name.toUpperCase()}
+                                {toTitleCase(habit.name)}
                             </p>
                               {habit.streak > 0 && (
                               <div className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-[#ff6b00]/10 border border-[#ff6b00]/20 shrink-0">

@@ -1,7 +1,7 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { Habit } from '../types';
 import { Edit2, Trash2, Plus, Activity, TrendingUp, Search, Target, Clock, ChevronLeft, ChevronRight, Check, Circle, AlignLeft, Info, Flame, Pencil } from 'lucide-react';
-import { getEffectiveDate, formatDateStr } from '../utils/dateUtils';
+import { getEffectiveDate, formatDateStr, toTitleCase } from '../utils/dateUtils';
 import { Tabs } from './Tabs';
 
 interface HabitsProps {
@@ -462,7 +462,7 @@ export const Habits: React.FC<HabitsProps> = ({
                               <h4 className={`text-[15px] md:text-[17px] font-black text-[var(--text-primary)] uppercase tracking-tight transition-all ${
                                 isExpanded ? 'whitespace-normal break-words' : 'truncate'
                               }`}>
-                                 {habit.name.toUpperCase()}
+                                  {toTitleCase(habit.name)}
                               </h4>
                               <div className="flex items-center gap-3 mt-2">
                                 <div className="flex items-center gap-1 bg-[#ff6b00]/10 px-2 py-0.5 rounded-full">
