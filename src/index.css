@@ -41,8 +41,8 @@
   --shadow-lg: 0 12px 32px rgba(10, 10, 10, 0.08);
 
   /* Liquid-glass hover (light) */
-  --glass-fill: rgba(10, 10, 10, 0.05);
-  --glass-fill-strong: rgba(10, 10, 10, 0.09);
+  --glass-fill: rgba(10, 10, 10, 0.06);
+  --glass-fill-strong: rgba(10, 10, 10, 0.10);
   --glass-sheen: rgba(255, 255, 255, 0.75);
   --glass-shade: rgba(10, 10, 10, 0.06);
 
@@ -210,7 +210,7 @@ button:active {
 }
 
 .x-button-primary:hover {
-  background-color: #1a1a1a;
+  background-color: var(--brand);
   transform: translateY(-1px);
   box-shadow: var(--shadow-md);
 }
@@ -287,13 +287,15 @@ html.theme-transition *::after {
    so icons/text stay legible on whichever tint shows through.
    ============================================================ */
 .top-nav {
-  background-color: rgba(255, 255, 255, 0.72);
+  background-color: rgba(255, 255, 255, 0.82);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
   backdrop-filter: blur(20px) saturate(180%);
   border-bottom: 1px solid var(--border-soft);
+  box-shadow: 0 1px 3px rgba(10, 10, 10, 0.04);
 }
 html[data-theme="dark"] .top-nav {
   background-color: rgba(10, 11, 15, 0.6);
+  box-shadow: none;
 }
 
 /* Tab icon + label: muted by default, primary on hover/active */
@@ -318,8 +320,8 @@ html[data-theme="dark"] .top-nav {
 
 /* Active-tab underline */
 .top-nav .nav-underline {
-  background-color: var(--text-primary);
-  box-shadow: 0 1px 4px color-mix(in srgb, var(--text-primary) 25%, transparent);
+  background-color: var(--brand);
+  box-shadow: 0 1px 6px color-mix(in srgb, var(--brand) 30%, transparent);
 }
 
 /* Add Habit — outline style, not filled circle */
@@ -339,8 +341,8 @@ html[data-theme="dark"] .top-nav .nav-add-icon-wrap {
   background: var(--glass-fill);
 }
 .top-nav .nav-tab.is-active .nav-add-icon-wrap {
-  border-color: var(--text-primary);
-  background: var(--glass-fill-strong);
+  border-color: var(--brand);
+  background: var(--brand-soft);
 }
 .top-nav .nav-add-icon-wrap .nav-tab-icon {
   color: var(--text-muted);
@@ -349,7 +351,7 @@ html[data-theme="dark"] .top-nav .nav-add-icon-wrap {
   color: var(--text-secondary);
 }
 .top-nav .nav-tab.is-active .nav-add-icon-wrap .nav-tab-icon {
-  color: var(--text-primary);
+  color: var(--brand);
 }
 
 /* Right-side icon buttons (profile / theme / logout) */
@@ -372,9 +374,14 @@ html[data-theme="dark"] .top-nav .nav-add-icon-wrap {
    never scroll out of view while browsing a long habit list.
    ============================================================ */
 .sub-nav {
-  background-color: rgba(255, 255, 255, 0.72);
+  background-color: rgba(255, 255, 255, 0.82);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
   backdrop-filter: blur(20px) saturate(180%);
+  box-shadow: 0 1px 2px rgba(10, 10, 10, 0.03);
+}
+html[data-theme="dark"] .sub-nav {
+  background-color: rgba(10, 11, 15, 0.6);
+  box-shadow: none;
 }
 html[data-theme="dark"] .sub-nav {
   background-color: rgba(10, 11, 15, 0.6);
@@ -416,7 +423,7 @@ html[data-theme="dark"] .sub-nav {
 }
 
 .x-button-glass {
-  background-color: #ffffff;
+  background-color: var(--bg-card);
   border: 1px solid var(--border-soft);
   color: var(--text-primary);
   font-weight: 700;
@@ -449,7 +456,7 @@ html[data-theme="dark"] .sub-nav {
   border-radius: 9999px;
   padding: 8px 16px;
   transition: all 0.2s;
-  background-color: #ffffff;
+  background-color: var(--bg-card);
 }
 
 .x-button-outline:hover {
@@ -701,8 +708,10 @@ html[data-theme="dark"] .hover\:bg-\[\#1a1a1a\]:hover { background-color: #5860e
 /* Component classes whose bg was tied to --text-primary (now light) */
 html[data-theme="dark"] .x-button-primary { background-color: var(--brand); color: #ffffff; }
 html[data-theme="dark"] .x-button-primary:hover { background-color: #5860ee; }
-html[data-theme="dark"] .x-button-glass { background-color: var(--bg-card); color: var(--text-primary); }
-html[data-theme="dark"] .x-button-outline { background-color: var(--bg-card); }
+html[data-theme="dark"] .x-button-glass { background-color: var(--bg-card); color: var(--text-primary); border-color: var(--border-soft); }
+html[data-theme="dark"] .x-button-glass:hover { background-color: var(--bg-soft); }
+html[data-theme="dark"] .x-button-outline { background-color: var(--bg-card); border-color: var(--border-soft); }
+html[data-theme="dark"] .x-button-outline:hover { background-color: var(--bg-soft); }
 
 /* Scrollbars & selection */
 html[data-theme="dark"] * { scrollbar-color: #3a3f4a transparent; }
