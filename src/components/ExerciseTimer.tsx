@@ -163,6 +163,7 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
   const [addedFlash, setAddedFlash] = useState(false);
   const intervalRef = useRef<number | null>(null);
   const flashRef = useRef<number | null>(null);
+  const spokenRef = useRef<{ half: boolean; quarter: boolean }>({ half: false, quarter: false });
   const quote = REST_QUOTES[Math.floor(Math.random() * REST_QUOTES.length)];
 
   const clearTimer = useCallback(() => {
@@ -181,6 +182,7 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
 
   useEffect(() => {
     if (!isRunning || isDone) return;
+    spokenRef.current = { half: false, quarter: false };
     intervalRef.current = window.setInterval(() => {
       setRemaining((prev) => {
         if (prev <= 1) {
@@ -193,14 +195,22 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
           }
           return 0;
         }
-        if (!isRest && prev === 21) speak('20 seconds left');
-        if (!isRest && prev === 11) speak('10 seconds left');
-        if (!isRest && prev === 6) speak('5 seconds left');
+        if (!isRest) {
+          const pct = prev / totalSeconds;
+          if (!spokenRef.current.half && pct <= 0.5) {
+            spokenRef.current.half = true;
+            speak(`${Math.round(prev)} seconds`);
+          }
+          if (!spokenRef.current.quarter && pct <= 0.25) {
+            spokenRef.current.quarter = true;
+            speak(`${Math.round(prev)} seconds`);
+          }
+        }
         return prev - 1;
       });
     }, 1000);
     return clearTimer;
-  }, [isRunning, isDone, clearTimer, onComplete, isRest]);
+  }, [isRunning, isDone, clearTimer, onComplete, isRest, totalSeconds]);
 
   useEffect(() => {
     if (phase !== 'finishing') return;
