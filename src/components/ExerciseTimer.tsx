@@ -184,7 +184,6 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
         if (prev <= 1) {
           clearTimer();
           if (isRest) {
-            speak('Next');
             onComplete();
           } else {
             setPhase('finishing');
@@ -192,9 +191,9 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
           }
           return 0;
         }
-        if (isRest && prev === 4) speak('3');
-        if (isRest && prev === 3) speak('2');
-        if (isRest && prev === 2) speak('1');
+        if (!isRest && prev === 21) speak('20 seconds left');
+        if (!isRest && prev === 11) speak('10 seconds left');
+        if (!isRest && prev === 6) speak('5 seconds left');
         return prev - 1;
       });
     }, 1000);
@@ -261,7 +260,7 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
   const handleResume = () => setIsRunning(true);
   const handleReset = () => { clearTimer(); setRemaining(totalSeconds); setMaxSeconds(totalSeconds); setIsRunning(false); setIsDone(false); setPhase('ready'); };
   const handleClose = () => { clearTimer(); onComplete(); };
-  const handleSkip = () => { clearTimer(); onComplete(); };
+  const handleSkip = () => { clearTimer(); speak('Rest'); onComplete(); };
   const handlePrevious = () => { clearTimer(); onPrevious?.(); };
   const handleAddTime = () => {
     setRemaining((p) => p + 20);
@@ -271,26 +270,25 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
     flashRef.current = window.setTimeout(() => setAddedFlash(false), 800);
   };
 
-  const accentColor = isRest ? '#4e8ef7' : color;
-  const isLightBg = !isRest;
+  const accentColor = isRest ? 'var(--brand)' : color;
 
   return (
-    <div className="fixed inset-0 z-[200] flex flex-col animate-fade-in" style={{ backgroundColor: isRest ? accentColor : 'var(--bg-page)' }}>
+    <div className="fixed inset-0 z-[200] flex flex-col animate-fade-in" style={{ backgroundColor: 'var(--bg-page)' }}>
       {/* Top bar */}
       <div className="flex items-center justify-between px-5 pt-5 pb-3 safe-area-top">
           <button
             onClick={handleClose}
             className="w-11 h-11 rounded-full flex items-center justify-center transition-all active:scale-90 touch-manipulation"
-            style={{ touchAction: 'manipulation', backgroundColor: isRest ? 'rgba(255,255,255,0.15)' : 'var(--bg-soft)' }}
+            style={{ touchAction: 'manipulation', backgroundColor: 'var(--bg-soft)' }}
           >
-          <X className="w-5 h-5" style={{ color: isRest ? '#fff' : 'var(--text-primary)' }} />
+          <X className="w-5 h-5" style={{ color: 'var(--text-primary)' }} />
         </button>
         {exerciseNumber && totalExercises && (
           <div
             className="px-3 py-1.5 rounded-full text-[11px] font-bold tracking-wider"
             style={{
-              backgroundColor: isRest ? 'rgba(255,255,255,0.15)' : `${color}15`,
-              color: isRest ? '#fff' : color,
+              backgroundColor: `${color}15`,
+              color: color,
             }}
           >
             {exerciseNumber}/{totalExercises}
@@ -306,14 +304,14 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
           <div className="flex flex-col items-center gap-4">
             <h2
               className="text-[22px] sm:text-[26px] font-black text-center leading-tight tracking-tight"
-              style={{ color: isRest ? '#fff' : 'var(--text-primary)' }}
+              style={{ color: 'var(--text-primary)' }}
             >
               {exerciseName}
             </h2>
             <span
               className="text-[80px] sm:text-[96px] font-black leading-none tabular-nums animate-pop-in"
               key={countdownNum}
-              style={{ color: isRest ? '#fff' : accentColor }}
+              style={{ color: accentColor }}
             >
               {countdownNum === 0 ? 'Go!' : countdownNum}
             </span>
@@ -335,10 +333,10 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
         ) : phase === 'ready' && isRest ? (
           /* Rest ready — auto-starts */
           <div className="flex flex-col items-center gap-4 animate-slide-up">
-            <p className="text-[13px] font-bold tracking-widest uppercase" style={{ color: 'rgba(255,255,255,0.6)' }}>
+            <p className="text-[13px] font-bold tracking-widest uppercase" style={{ color: 'var(--text-muted)' }}>
               Rest
             </p>
-            <span className="text-[72px] sm:text-[80px] font-black leading-none tabular-nums" style={{ color: '#fff' }}>
+            <span className="text-[72px] sm:text-[80px] font-black leading-none tabular-nums" style={{ color: 'var(--text-primary)' }}>
               {formatTime(remaining)}
             </span>
           </div>
@@ -369,14 +367,14 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
         ) : isRest && !isDone ? (
           /* Active rest state — the main rest screen */
           <div className="flex flex-col items-center gap-5 w-full animate-slide-up">
-            <p className="text-[13px] font-bold tracking-widest uppercase" style={{ color: 'rgba(255,255,255,0.6)' }}>
+            <p className="text-[13px] font-bold tracking-widest uppercase" style={{ color: 'var(--text-muted)' }}>
               Rest
             </p>
 
             {/* Timer ring */}
             <div className="relative w-[180px] h-[180px] sm:w-[200px] sm:h-[200px]">
               <svg className="w-full h-full -rotate-90" viewBox="0 0 180 180">
-                <circle cx="90" cy="90" r={RADIUS} fill="transparent" stroke="rgba(255,255,255,0.15)" strokeWidth="8" />
+                <circle cx="90" cy="90" r={RADIUS} fill="transparent" stroke="var(--border-soft)" strokeWidth="8" />
                 <circle
                   cx="90" cy="90" r={RADIUS} fill="transparent" stroke="#fff" strokeWidth="8"
                   strokeDasharray={CIRCUMFERENCE} strokeDashoffset={strokeDashoffset}
@@ -384,7 +382,7 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
                 />
               </svg>
               <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-[48px] sm:text-[56px] font-black leading-none tabular-nums" style={{ color: '#fff' }}>
+                <span className="text-[48px] sm:text-[56px] font-black leading-none tabular-nums" style={{ color: 'var(--text-primary)' }}>
                   {formatTime(remaining)}
                 </span>
               </div>
@@ -396,13 +394,13 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
                 <button
                   onClick={handleAddTime}
                   className="h-12 px-6 rounded-full flex items-center justify-center gap-2 text-[14px] font-bold transition-all active:scale-95"
-                  style={{ backgroundColor: 'rgba(255,255,255,0.2)', color: '#fff' }}
+                  style={{ backgroundColor: 'var(--bg-soft)', color: 'var(--text-primary)' }}
                 >
                   <Plus className="w-4 h-4" />
                   +20s
                 </button>
                 {addedFlash && (
-                  <span className="absolute -top-7 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-full text-[11px] font-black whitespace-nowrap animate-slide-down" style={{ backgroundColor: 'rgba(255,255,255,0.3)', color: '#fff' }}>
+                  <span className="absolute -top-7 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-full text-[11px] font-black whitespace-nowrap animate-slide-down" style={{ backgroundColor: `${color}20`, color }}>
                     +20s
                   </span>
                 )}
@@ -410,7 +408,7 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
               <button
                 onClick={handleSkip}
                 className="h-12 px-6 rounded-full flex items-center justify-center gap-2 text-[14px] font-bold transition-all active:scale-95"
-                style={{ backgroundColor: '#fff', color: accentColor }}
+                style={{ backgroundColor: color, color: '#fff' }}
               >
                 Skip
               </button>
@@ -440,7 +438,7 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
                         className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all text-left active:scale-[0.98]"
                         style={{
                           backgroundColor: current
-                            ? isRest ? 'rgba(255,255,255,0.2)' : `${accentColor}15`
+                            ? 'var(--text-primary)'
                             : 'transparent',
                         }}
                       >
@@ -449,15 +447,15 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
                           className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-[11px] font-bold"
                           style={{
                             backgroundColor: completed
-                              ? isRest ? 'rgba(255,255,255,0.25)' : `${accentColor}20`
+                              ? `${accentColor}20`
                               : current
-                                ? isRest ? '#fff' : accentColor
-                                : isRest ? 'rgba(255,255,255,0.1)' : 'var(--bg-soft)',
+                                ? accentColor
+                                : 'var(--bg-soft)',
                             color: completed
-                              ? isRest ? '#fff' : accentColor
+                              ? accentColor
                               : current
                                 ? '#fff'
-                                : isRest ? 'rgba(255,255,255,0.4)' : 'var(--text-muted)',
+                                : 'var(--text-muted)',
                           }}
                         >
                           {completed ? '✓' : i + 1}
@@ -469,8 +467,8 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
                             className="text-[13px] font-bold truncate leading-tight"
                             style={{
                               color: completed
-                                ? isRest ? 'rgba(255,255,255,0.6)' : 'var(--text-muted)'
-                                : isRest ? '#fff' : 'var(--text-primary)',
+                                ? 'var(--text-muted)'
+                                : 'var(--text-primary)',
                               textDecoration: completed ? 'line-through' : 'none',
                             }}
                           >
@@ -480,8 +478,8 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
                             className="text-[11px] font-medium tabular-nums"
                             style={{
                               color: completed
-                                ? isRest ? 'rgba(255,255,255,0.4)' : 'var(--text-muted)'
-                                : isRest ? 'rgba(255,255,255,0.7)' : accentColor,
+                                ? 'var(--text-muted)'
+                                : accentColor,
                             }}
                           >
                             {ex.duration}
@@ -500,13 +498,13 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
                     <circle
                       cx="90" cy="90" r={RADIUS}
                       fill="transparent"
-                      stroke={isRest ? 'rgba(255,255,255,0.15)' : 'var(--border-soft)'}
+                      stroke={'var(--border-soft)'}
                       strokeWidth="8"
                     />
                     <circle
                       cx="90" cy="90" r={RADIUS}
                       fill="transparent"
-                      stroke={isDone ? (isRest ? '#fff' : 'var(--success-deep)') : '#fff'}
+                      stroke={isDone ? ('var(--success-deep)') : '#fff'}
                       strokeWidth="8"
                       strokeDasharray={CIRCUMFERENCE}
                       strokeDashoffset={strokeDashoffset}
@@ -517,18 +515,18 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
                   </svg>
                   <div className="absolute inset-0 flex flex-col items-center justify-center">
                     {isDone ? (
-                      <span className="text-[32px] sm:text-[40px] font-black" style={{ color: isRest ? '#fff' : 'var(--success-deep)' }}>
+                      <span className="text-[32px] sm:text-[40px] font-black" style={{ color: 'var(--success-deep)' }}>
                         {isRest ? '✓' : 'Done!'}
                       </span>
                     ) : (
-                      <span className="text-[48px] sm:text-[56px] font-black leading-none tabular-nums" style={{ color: isRest ? '#fff' : 'var(--text-primary)' }}>
+                      <span className="text-[48px] sm:text-[56px] font-black leading-none tabular-nums" style={{ color: 'var(--text-primary)' }}>
                         {formatTime(remaining)}
                       </span>
                     )}
                   </div>
                 </div>
                 {!isDone && (
-                  <p className="text-[12px] font-bold tracking-wider" style={{ color: isRest ? 'rgba(255,255,255,0.6)' : 'var(--text-muted)' }}>
+                  <p className="text-[12px] font-bold tracking-wider" style={{ color: 'var(--text-muted)' }}>
                     {Math.round(progress * 100)}% COMPLETE
                   </p>
                 )}
@@ -543,7 +541,7 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
                     onClick={onNext}
                     className="w-full h-14 rounded-2xl flex items-center justify-center gap-3 text-[15px] font-bold transition-all active:scale-[0.97] shadow-lg"
                     style={{
-                      backgroundColor: isRest ? '#fff' : accentColor,
+                      backgroundColor: accentColor,
                       color: isRest ? accentColor : '#fff',
                     }}
                   >
@@ -555,8 +553,8 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
                   onClick={handleReset}
                   className="w-full h-12 rounded-2xl flex items-center justify-center gap-2 text-[14px] font-bold transition-all active:scale-[0.97]"
                   style={{
-                    backgroundColor: isRest ? 'rgba(255,255,255,0.15)' : 'var(--bg-soft)',
-                    color: isRest ? '#fff' : 'var(--text-primary)',
+                    backgroundColor: 'var(--bg-soft)',
+                    color: 'var(--text-primary)',
                   }}
                 >
                   <RotateCcw className="w-4 h-4" />
@@ -570,11 +568,11 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
                   onClick={handleReset}
                   className="w-12 h-12 rounded-xl flex items-center justify-center transition-all active:scale-90"
                   style={{
-                    backgroundColor: isRest ? 'rgba(255,255,255,0.15)' : 'var(--bg-soft)',
+                    backgroundColor: 'var(--bg-soft)',
                   }}
                   title="Reset"
                 >
-                  <RotateCcw className="w-4 h-4" style={{ color: isRest ? '#fff' : 'var(--text-primary)' }} />
+                  <RotateCcw className="w-4 h-4" style={{ color: 'var(--text-primary)' }} />
                 </button>
 
                 {/* Play/Pause */}
@@ -630,35 +628,35 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
       {nextExercise && !isDone && (
         <div
           className="px-6 pb-8 pt-4 safe-area-bottom"
-          style={{ borderTop: isRest ? '1px solid rgba(255,255,255,0.1)' : '1px solid var(--border-soft)' }}
+          style={{ borderTop: 'var(--border-soft)' }}
         >
           {isRest ? (
             /* Rest: show next exercise with illustration */
             <div className="flex flex-col gap-3">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: 'rgba(255,255,255,0.5)' }}>
+                  <p className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: 'var(--text-muted)' }}>
                     Next {exerciseNumber && totalExercises ? `${exerciseNumber + 1}/${totalExercises}` : ''}
                   </p>
-                  <p className="text-[15px] font-black" style={{ color: '#fff' }}>
+                  <p className="text-[15px] font-black" style={{ color: 'var(--text-primary)' }}>
                     {nextExercise.name}
                   </p>
                 </div>
-                <div className="px-3 py-1.5 rounded-full text-[12px] font-bold" style={{ backgroundColor: 'rgba(255,255,255,0.15)', color: '#fff' }}>
+                <div className="px-3 py-1.5 rounded-full text-[12px] font-bold" style={{ backgroundColor: `${color}15`, color }}>
                   {nextExercise.duration}
                 </div>
               </div>
               {/* Silhouette preview */}
-              <div className="w-full h-[140px] rounded-2xl flex items-center justify-center" style={{ backgroundColor: 'rgba(255,255,255,0.1)' }}>
+              <div className="w-full h-[140px] rounded-2xl flex items-center justify-center" style={{ backgroundColor: 'var(--bg-soft)' }}>
                 <svg width="80" height="120" viewBox="0 0 120 160" fill="none">
-                  <circle cx="60" cy="22" r="14" fill="#fff" opacity="0.5" />
-                  <rect x="48" y="36" width="24" height="50" rx="8" fill="#fff" opacity="0.4" />
-                  <rect x="28" y="40" width="18" height="8" rx="4" fill="#fff" opacity="0.35" transform="rotate(-15 28 44)" />
-                  <rect x="74" y="40" width="18" height="8" rx="4" fill="#fff" opacity="0.35" transform="rotate(15 74 44)" />
-                  <rect x="44" y="86" width="10" height="44" rx="5" fill="#fff" opacity="0.35" transform="rotate(-5 44 86)" />
-                  <rect x="66" y="86" width="10" height="44" rx="5" fill="#fff" opacity="0.35" transform="rotate(5 66 86)" />
-                  <rect x="38" y="128" width="16" height="6" rx="3" fill="#fff" opacity="0.3" />
-                  <rect x="66" y="128" width="16" height="6" rx="3" fill="#fff" opacity="0.3" />
+                  <circle cx="60" cy="22" r="14" fill="var(--text-muted)" opacity="0.5" />
+                  <rect x="48" y="36" width="24" height="50" rx="8" fill="var(--text-muted)" opacity="0.4" />
+                  <rect x="28" y="40" width="18" height="8" rx="4" fill="var(--text-muted)" opacity="0.35" transform="rotate(-15 28 44)" />
+                  <rect x="74" y="40" width="18" height="8" rx="4" fill="var(--text-muted)" opacity="0.35" transform="rotate(15 74 44)" />
+                  <rect x="44" y="86" width="10" height="44" rx="5" fill="var(--text-muted)" opacity="0.35" transform="rotate(-5 44 86)" />
+                  <rect x="66" y="86" width="10" height="44" rx="5" fill="var(--text-muted)" opacity="0.35" transform="rotate(5 66 86)" />
+                  <rect x="38" y="128" width="16" height="6" rx="3" fill="var(--text-muted)" opacity="0.3" />
+                  <rect x="66" y="128" width="16" height="6" rx="3" fill="var(--text-muted)" opacity="0.3" />
                 </svg>
               </div>
             </div>
