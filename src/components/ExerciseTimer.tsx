@@ -47,6 +47,26 @@ interface ExerciseTimerProps {
   autoStart?: boolean;
 }
 
+function speakDuration(dur: string): string {
+  const s = dur.toLowerCase().trim();
+  const minMatch = s.match(/(\d+)\s*min/);
+  const secMatch = s.match(/(\d+)\s*sec/);
+  let parts: string[] = [];
+  if (minMatch) {
+    const m = parseInt(minMatch[1], 10);
+    parts.push(m === 1 ? '1 minute' : `${m} minutes`);
+  }
+  if (secMatch) {
+    const sec = parseInt(secMatch[1], 10);
+    parts.push(sec === 1 ? '1 second' : `${sec} seconds`);
+  }
+  if (parts.length === 0) {
+    const num = s.match(/(\d+)/);
+    if (num) parts.push(`${num[1]} seconds`);
+  }
+  return parts.join(', ') || dur;
+}
+
 function cleanForSpeech(text: string): string {
   return text
     .replace(/-/g, ' ')
@@ -135,8 +155,9 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
   const [maxSeconds, setMaxSeconds] = useState(totalSeconds);
   const [isRunning, setIsRunning] = useState(false);
   const [isDone, setIsDone] = useState(false);
-  const [phase, setPhase] = useState<'countdown' | 'ready' | 'active' | 'rest-done'>('ready');
+  const [phase, setPhase] = useState<'countdown' | 'ready' | 'active' | 'finishing' | 'rest-done'>('ready');
   const [countdownNum, setCountdownNum] = useState(3);
+  const [finishNum, setFinishNum] = useState(3);
   const [addedFlash, setAddedFlash] = useState(false);
   const intervalRef = useRef<number | null>(null);
   const flashRef = useRef<number | null>(null);
@@ -162,18 +183,35 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
       setRemaining((prev) => {
         if (prev <= 1) {
           clearTimer();
-          speak('Rest');
-          onComplete();
+          if (isRest) {
+            speak('Next');
+            onComplete();
+          } else {
+            setPhase('finishing');
+            setFinishNum(3);
+          }
           return 0;
         }
-        if (prev === 4) speak('3');
-        if (prev === 3) speak('2');
-        if (prev === 2) speak('1');
+        if (isRest && prev === 4) speak('3');
+        if (isRest && prev === 3) speak('2');
+        if (isRest && prev === 2) speak('1');
         return prev - 1;
       });
     }, 1000);
     return clearTimer;
-  }, [isRunning, isDone, clearTimer, onComplete]);
+  }, [isRunning, isDone, clearTimer, onComplete, isRest]);
+
+  useEffect(() => {
+    if (phase !== 'finishing') return;
+    if (finishNum <= 0) {
+      speak('Rest');
+      onComplete();
+      return;
+    }
+    speak(String(finishNum));
+    const t = setTimeout(() => setFinishNum((n) => n - 1), 1000);
+    return () => clearTimeout(t);
+  }, [phase, finishNum, onComplete]);
 
   useEffect(() => {
     if (phase !== 'countdown') return;
@@ -199,7 +237,7 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
   useEffect(() => {
     if (phase !== 'active' || isRest || isDone) return;
     const t = setTimeout(() => {
-      speak(`${exerciseName}, ${duration}`);
+      speak(`${exerciseName}, ${speakDuration(duration)}`);
     }, 400);
     return () => clearTimeout(t);
   }, [phase, isRest, isDone, exerciseName, duration]);
@@ -278,6 +316,20 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
               style={{ color: isRest ? '#fff' : accentColor }}
             >
               {countdownNum === 0 ? 'Go!' : countdownNum}
+            </span>
+          </div>
+        ) : phase === 'finishing' ? (
+          /* Exercise finishing — 3-2-1 before rest */
+          <div className="flex flex-col items-center gap-4 animate-slide-up">
+            <p className="text-[13px] font-bold tracking-widest uppercase" style={{ color: 'var(--text-muted)' }}>
+              Getting ready for rest
+            </p>
+            <span
+              className="text-[80px] sm:text-[96px] font-black leading-none tabular-nums animate-pop-in"
+              key={finishNum}
+              style={{ color: accentColor }}
+            >
+              {finishNum === 0 ? 'Rest!' : finishNum}
             </span>
           </div>
         ) : phase === 'ready' && isRest ? (
