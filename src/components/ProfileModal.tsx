@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { User as UserIcon, Sun, Moon, Check, Volume2, VolumeX, Timer, ChevronRight, Play } from 'lucide-react';
+import { User as UserIcon, Check, Volume2, VolumeX, Timer, ChevronRight, Play } from 'lucide-react';
 import useAppStore from '../store/appStore';
 import { Modal } from './Modal';
 import { AVATARS, avatarSrc } from '../utils/avatars';
@@ -12,8 +12,6 @@ export const ProfileModal: React.FC = () => {
   const setNickname = useAppStore((s) => s.setNickname);
   const avatar = useAppStore((s) => s.avatar);
   const setAvatar = useAppStore((s) => s.setAvatar);
-  const theme = useAppStore((s) => s.theme);
-  const setTheme = useAppStore((s) => s.setTheme);
   const [draft, setDraft] = useState(nickname);
   const [draftAvatar, setDraftAvatar] = useState(avatar);
   const [showAllAvatars, setShowAllAvatars] = useState(false);
@@ -150,43 +148,7 @@ export const ProfileModal: React.FC = () => {
           </div>
         </div>
 
-        {/* ─── Section 3: Appearance ────────────────────────── */}
-        <div className="rounded-2xl border border-[var(--border-soft)] overflow-hidden">
-          <div className="p-4 bg-[var(--bg-tint)]">
-            <span className="text-[13px] font-semibold text-[var(--text-primary)]">Appearance</span>
-          </div>
-          <div className="p-3">
-            <div className="grid grid-cols-2 gap-2">
-              {([
-                { value: 'light' as const, label: 'Light', Icon: Sun, desc: 'Clean and bright' },
-                { value: 'dark' as const, label: 'Dark', Icon: Moon, desc: 'Easy on the eyes' },
-              ]).map(({ value, label, Icon, desc }) => {
-                const active = theme === value;
-                return (
-                  <button
-                    key={value}
-                    type="button"
-                    onClick={() => setTheme(value)}
-                    aria-pressed={active}
-                    className={`flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all ${
-                      active
-                        ? 'bg-[var(--brand)] text-white shadow-sm'
-                        : 'bg-[var(--bg-soft)] text-[var(--text-secondary)] hover:bg-[var(--border-soft)] border border-[var(--border-soft)]'
-                    }`}
-                  >
-                    <Icon className={`w-4 h-4 shrink-0 ${active ? 'text-white' : ''}`} strokeWidth={2} />
-                    <div>
-                      <p className={`text-[13px] font-bold ${active ? 'text-white' : 'text-[var(--text-primary)]'}`}>{label}</p>
-                      <p className={`text-[10px] ${active ? 'text-white/70' : 'text-[var(--text-muted)]'}`}>{desc}</p>
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-
-        {/* ─── Section 4: Gym Timer ─────────────────────────── */}
+        {/* ─── Section 3: Gym Timer ─────────────────────────── */}
         <div className="rounded-2xl border border-[var(--border-soft)] overflow-hidden">
           <div className="p-4 bg-[var(--bg-tint)] flex items-center gap-2">
             <Timer className="w-3.5 h-3.5 text-[var(--text-muted)]" />

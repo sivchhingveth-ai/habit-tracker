@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Play, Pause, X, RotateCcw, SkipForward, SkipBack, Plus, Timer, Volume2, VolumeX } from 'lucide-react';
+import { Play, Pause, X, RotateCcw, SkipForward, SkipBack, Plus, Timer, Volume2, VolumeX, Check, Dumbbell } from 'lucide-react';
 import { startMusic, stopMusic, setMusicVolume } from '../utils/backgroundMusic';
 
 function parseDuration(str: string): number {
@@ -48,6 +48,8 @@ interface ExerciseTimerProps {
   onExerciseDetail?: (exerciseName: string, duration: string) => void;
   autoStart?: boolean;
   restDuration?: number;
+  isRepsBased?: boolean;
+  repsLabel?: string;
 }
 
 function speakDuration(dur: string): string {
@@ -152,6 +154,7 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
   exerciseName, duration, color, onComplete, onClose, onNext, onPrevious,
   nextExercise, previousExercise, exerciseNumber, totalExercises,
   isRest = false, allExercises = [], currentIndex = 0, onExerciseDetail, autoStart = false, restDuration = 30,
+  isRepsBased = false, repsLabel,
 }) => {
   const totalSeconds = isRest ? restDuration : parseDuration(duration);
   const [remaining, setRemaining] = useState(totalSeconds);
@@ -444,6 +447,56 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
               >
                 Skip
               </button>
+            </div>
+          </div>
+        ) : isRepsBased && !isDone ? (
+          /* Rep-based exercise — no timer, just finish button */
+          <div className="flex flex-col items-center gap-6 animate-slide-up w-full">
+            <h2
+              className="text-[22px] sm:text-[26px] font-black text-center leading-tight tracking-tight"
+              style={{ color: 'var(--text-primary)' }}
+            >
+              {exerciseName}
+            </h2>
+            {repsLabel && (
+              <p className="text-[14px] font-bold tracking-wide" style={{ color: 'var(--text-muted)' }}>
+                {repsLabel}
+              </p>
+            )}
+            <div className="w-[160px] h-[160px] rounded-full flex items-center justify-center" style={{ backgroundColor: `${accentColor}15` }}>
+              <Dumbbell className="w-16 h-16" style={{ color: accentColor, opacity: 0.6 }} />
+            </div>
+            <p className="text-[13px] font-medium text-center" style={{ color: 'var(--text-muted)' }}>
+              Do the exercise at your own pace.<br/>Press Done when finished.
+            </p>
+            <div className="flex items-center gap-3 w-full max-w-[280px] mt-2">
+              {onPrevious && (
+                <button
+                  onClick={handlePrevious}
+                  className="w-12 h-12 rounded-xl flex items-center justify-center transition-all active:scale-90"
+                  style={{ backgroundColor: 'var(--bg-soft)' }}
+                >
+                  <SkipBack className="w-4 h-4" style={{ color: 'var(--text-primary)' }} />
+                </button>
+              )}
+              <button
+                onClick={() => { setIsDone(true); onComplete(); }}
+                className="flex-1 h-14 rounded-2xl flex items-center justify-center gap-3 text-[16px] font-bold transition-all active:scale-[0.97] shadow-lg"
+                style={{ backgroundColor: accentColor, color: '#fff' }}
+              >
+                <Check className="w-6 h-6" strokeWidth={3} />
+                Done
+              </button>
+              {nextExercise && (
+                <button
+                  onClick={handleSkip}
+                  className="w-12 h-12 rounded-xl flex items-center justify-center transition-all active:scale-90"
+                  style={{ backgroundColor: 'var(--bg-soft)' }}
+                  title="Skip"
+                >
+                  <SkipForward className="w-4 h-4" style={{ color: 'var(--text-primary)' }} />
+                </button>
+              )}
             </div>
           </div>
         ) : (

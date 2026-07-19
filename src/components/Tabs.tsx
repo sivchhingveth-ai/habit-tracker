@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { ListChecks, Plus, Clock, Dumbbell, LogOut, Loader2, User as UserIcon, Sun, Moon } from 'lucide-react';
+import { ListChecks, Plus, Clock, Dumbbell, LogOut, Loader2, User as UserIcon } from 'lucide-react';
 import useAppStore from '../store/appStore';
 import { avatarSrc } from '../utils/avatars';
 
@@ -23,8 +23,6 @@ export const Tabs: React.FC<TabsProps> = ({ tabs, activeTab, onTabChange, onLogo
   const nickname = useAppStore((s) => s.nickname);
   const avatar = useAppStore((s) => s.avatar);
   const openProfileModal = useAppStore((s) => s.openProfileModal);
-  const theme = useAppStore((s) => s.theme);
-  const toggleTheme = useAppStore((s) => s.toggleTheme);
 
   useEffect(() => {
     if (activeTabRef.current) {
@@ -106,21 +104,6 @@ export const Tabs: React.FC<TabsProps> = ({ tabs, activeTab, onTabChange, onLogo
                 </span>
               )}
             </div>
-          </button>
-
-          {/* Theme */}
-          <button
-            onClick={toggleTheme}
-            className="nav-icon-btn px-2.5 sm:px-3 h-full flex items-center justify-center touch-manipulation"
-            title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-            aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-            style={{ touchAction: 'manipulation' }}
-          >
-            {theme === 'dark' ? (
-              <Sun className="w-4 h-4 sm:w-[18px] sm:h-[18px]" strokeWidth={2} />
-            ) : (
-              <Moon className="w-4 h-4 sm:w-[18px] sm:h-[18px]" strokeWidth={2} />
-            )}
           </button>
 
           {/* Logout */}

@@ -1,16 +1,19 @@
 export type Gender = 'men' | 'women';
 export type Level = 'beginner' | 'intermediate' | 'advanced';
+export type ExerciseCategory = 'chest' | 'back' | 'shoulders' | 'arms' | 'core' | 'legs' | 'glutes' | 'cardio' | 'full-body';
 
 export interface Exercise {
   name: string;
   duration: string;
   reps?: string;
+  categories?: ExerciseCategory[];
 }
 
 export interface ExerciseDetail {
   description: string;
   commonMistakes: string[];
   musclesWorked: string;
+  categories: ExerciseCategory[];
 }
 
 export const EXERCISE_DETAILS: Record<string, ExerciseDetail> = {
@@ -18,161 +21,193 @@ export const EXERCISE_DETAILS: Record<string, ExerciseDetail> = {
     description: 'Start in a high plank with hands slightly wider than shoulder-width. Lower your chest to the floor, then push back up to full arm extension.',
     commonMistakes: ['Flaring elbows out to 90 degrees', 'Letting hips sag or pike up', 'Not going through full range of motion'],
     musclesWorked: 'Chest, shoulders, triceps, core',
+    categories: ['chest', 'arms'],
   },
   'Wide-Grip Push-Ups': {
     description: 'Same as regular push-ups but with hands placed wider than shoulder-width. This shifts more emphasis to the chest.',
     commonMistakes: ['Hands too wide causing shoulder strain', 'Reducing range of motion', 'Losing core tension'],
     musclesWorked: 'Chest, front delts, triceps',
+    categories: ['chest', 'shoulders'],
   },
   'Incline Push-Ups': {
     description: 'Place your hands on a raised surface like a chair or wall. The higher the surface, the easier the exercise. Lower your chest and push back up.',
     commonMistakes: ['Standing too upright', 'Not maintaining a straight body line', 'Rushing through reps'],
     musclesWorked: 'Lower chest, triceps, core',
+    categories: ['chest', 'arms'],
   },
   'Knee Push-Ups': {
     description: 'Perform push-ups from your knees instead of toes. Keep a straight line from head to knees. Lower and push with controlled tempo.',
     commonMistakes: ['Raising hips too high', 'Dropping head forward', 'Going too fast'],
     musclesWorked: 'Chest, shoulders, triceps',
+    categories: ['chest', 'arms'],
   },
   'Plank Hold': {
     description: 'Hold a push-up position on your forearms. Keep your body in a straight line from head to heels. Engage your core and glutes.',
     commonMistakes: ['Hips sagging toward the floor', 'Hiking hips too high', 'Holding breath'],
     musclesWorked: 'Core, shoulders, glutes',
+    categories: ['core'],
   },
   'Jumping Jacks': {
     description: 'Start with feet together and arms at your sides. Jump while spreading your feet and raising your arms overhead, then return to start.',
     commonMistakes: ['Landing stiff-legged', 'Not raising arms fully', 'Moving too slowly to get heart rate up'],
     musclesWorked: 'Full body, cardio',
+    categories: ['cardio', 'full-body'],
   },
   'Push-Ups': {
     description: 'Standard push-up from toes. Lower your chest to the floor with elbows at 45 degrees, then push back up explosively.',
     commonMistakes: ['Elbows flaring too wide', 'Sagging hips', 'Half reps'],
     musclesWorked: 'Chest, shoulders, triceps, core',
+    categories: ['chest', 'arms'],
   },
   'Push-Ups (knee or full)': {
     description: 'Perform push-ups from your knees or toes. Keep a straight body line, lower your chest, and push back up with controlled tempo.',
     commonMistakes: ['Flaring elbows', 'Sagging hips', 'Going too fast'],
     musclesWorked: 'Chest, shoulders, triceps, core',
+    categories: ['chest', 'arms'],
   },
   'Bodyweight Squats': {
     description: 'Stand with feet shoulder-width apart. Lower your hips back and down as if sitting in a chair, then drive through your heels to stand.',
     commonMistakes: ['Knees caving inward', 'Rising onto toes', 'Rounding the lower back'],
     musclesWorked: 'Quads, glutes, hamstrings',
+    categories: ['legs', 'glutes'],
   },
   'Walking Lunges': {
     description: 'Step forward into a lunge with your front knee over your ankle, back knee hovering above the ground. Push off and step into the next lunge.',
     commonMistakes: ['Front knee going past toes', 'Torso leaning forward', 'Taking too short a step'],
     musclesWorked: 'Quads, glutes, hamstrings, core',
+    categories: ['legs', 'glutes'],
   },
   'Mountain Climbers': {
     description: 'Start in a high plank. Alternate driving your knees toward your chest in a running motion while keeping your hips level.',
     commonMistakes: ['Bouncing hips up and down', 'Hands too far forward', 'Going too slow'],
     musclesWorked: 'Core, hip flexors, shoulders, cardio',
+    categories: ['core', 'cardio'],
   },
   'Plank': {
     description: 'Hold a straight body position on your forearms and toes. Keep your core braced and breathe steadily throughout.',
     commonMistakes: ['Hips sagging', 'Butt in the air', 'Looking up straining the neck'],
     musclesWorked: 'Core, shoulders, glutes',
+    categories: ['core'],
   },
   'Burpees': {
     description: 'Drop into a squat, kick feet back to plank, do a push-up, jump feet forward, then explode upward with arms overhead.',
     commonMistakes: ['Skipping the push-up', 'Not jumping at the top', 'Rounding the back when picking up feet'],
     musclesWorked: 'Full body, cardio',
+    categories: ['full-body', 'cardio'],
   },
   'Diamond Push-Ups': {
     description: 'Place your hands together under your chest forming a diamond shape with thumbs and index fingers. Lower and push up.',
     commonMistakes: ['Hands too far from chest', 'Elbows flaring out', 'Not going low enough'],
     musclesWorked: 'Triceps, inner chest, shoulders',
+    categories: ['chest', 'arms'],
   },
   'Pistol Squat Progression': {
     description: 'Single-leg squat with one leg extended forward. Use a chair or wall for assistance if needed. Lower until thigh is parallel, then stand.',
     commonMistakes: ['Leaning too far forward', 'Letting the extended leg touch the ground', 'Knee caving inward'],
     musclesWorked: 'Quads, glutes, balance, core',
+    categories: ['legs', 'glutes'],
   },
   'Pull-Ups / Inverted Rows': {
     description: 'Pull your body up to a bar with palms facing away, or row your chest to a low bar from underneath. Control the descent.',
     commonMistakes: ['Using momentum/kipping', 'Not going to full extension', 'Shrugging shoulders up'],
     musclesWorked: 'Back, biceps, grip, core',
+    categories: ['back', 'arms'],
   },
   'Plank to Shoulder Tap': {
     description: 'Hold a high plank. Alternate lifting one hand to tap the opposite shoulder while keeping your hips as still as possible.',
     commonMistakes: ['Rocking hips side to side', 'Rushing through taps', 'Hands too far forward'],
     musclesWorked: 'Core, shoulders, anti-rotation',
+    categories: ['core', 'shoulders'],
   },
   'Jump Squats': {
     description: 'Perform a bodyweight squat, then explode upward into a jump. Land softly with bent knees and immediately go into the next rep.',
     commonMistakes: ['Landing with straight legs', 'Not squatting deep enough', 'Landing loudly'],
     musclesWorked: 'Quads, glutes, calves, cardio',
+    categories: ['legs', 'cardio'],
   },
   'March in Place': {
     description: 'Stand tall and march, lifting knees to hip height. Swing your arms naturally. Keep a steady pace to warm up.',
     commonMistakes: ['Looking down', 'Not lifting knees high enough', 'Stiff arms'],
     musclesWorked: 'Hip flexors, legs, cardio warm-up',
+    categories: ['cardio', 'legs'],
   },
   'Wall Push-Ups': {
     description: 'Stand arm\'s length from a wall. Place hands on the wall and perform push-ups. The more upright you are, the easier it gets.',
     commonMistakes: ['Standing too close to the wall', 'Not going through full range', 'Flaring elbows'],
     musclesWorked: 'Chest, shoulders, triceps',
+    categories: ['chest', 'shoulders'],
   },
   'Glute Bridges': {
     description: 'Lie on your back with knees bent, feet flat on the floor. Drive through your heels to lift your hips until your body forms a straight line. Squeeze at the top.',
     commonMistakes: ['Pushing through toes instead of heels', 'Over-arching the lower back', 'Rushing the movement'],
     musclesWorked: 'Glutes, hamstrings, core',
+    categories: ['glutes', 'legs'],
   },
   'Standing Side Leg Raises': {
     description: 'Stand tall and slowly lift one leg out to the side, keeping it straight. Lower with control. Switch sides after the set.',
     commonMistakes: ['Leaning the torso to compensate', 'Lifting too high too fast', 'Not controlling the descent'],
     musclesWorked: 'Outer thighs, hip abductors, glutes',
+    categories: ['legs', 'glutes'],
   },
   'Cat-Cow Stretch': {
     description: 'On all fours, alternate between arching your back (cow) and rounding it (cat). Move slowly with your breath.',
     commonMistakes: ['Rushing through the movement', 'Not engaging the core', 'Moving only the lower back'],
     musclesWorked: 'Spine mobility, core, back',
+    categories: ['core', 'back'],
   },
   'Kneeling Plank': {
     description: 'Hold a plank position from your knees instead of toes. Keep your body in a straight line from head to knees. Brace your core.',
     commonMistakes: ['Hips too high or too low', 'Looking up straining neck', 'Not breathing'],
     musclesWorked: 'Core, shoulders',
+    categories: ['core'],
   },
   'Sumo Squats': {
     description: 'Take a wide stance with toes pointed out. Lower your hips straight down, pushing knees out over toes. Drive back up squeezing your glutes.',
     commonMistakes: ['Knees caving inward', 'Leaning too far forward', 'Not going deep enough'],
     musclesWorked: 'Inner thighs, quads, glutes',
+    categories: ['legs', 'glutes'],
   },
   'Tricep Dips (chair)': {
     description: 'Place hands on the edge of a chair behind you. Lower your body by bending your elbows to 90 degrees, then push back up.',
     commonMistakes: ['Elbows flaring outward', 'Going too deep straining shoulders', 'Feet too far away making it too hard'],
     musclesWorked: 'Triceps, shoulders, chest',
+    categories: ['arms', 'chest'],
   },
   'Reverse Lunges': {
     description: 'Step backward into a lunge, lowering your back knee toward the floor. Push through your front heel to return to standing.',
     commonMistakes: ['Front knee going past toes', 'Torso collapsing forward', 'Stepping back too short'],
     musclesWorked: 'Quads, glutes, hamstrings',
+    categories: ['legs', 'glutes'],
   },
   'Forearm Plank': {
     description: 'Hold a plank on your forearms. Keep elbows under shoulders and body in a straight line. Breathe steadily.',
     commonMistakes: ['Hips sagging', 'Butt piking up', 'Holding breath'],
     musclesWorked: 'Core, shoulders, glutes',
+    categories: ['core'],
   },
   'Archer Push-Ups': {
     description: 'Wide hand placement. Lower toward one hand while the other arm straightens. Push back up and alternate sides.',
     commonMistakes: ['Not going low enough', 'Twisting the torso', 'Bending the straight arm'],
     musclesWorked: 'Chest, triceps, shoulders, core',
+    categories: ['chest', 'arms'],
   },
   'Bulgarian Split Squats': {
     description: 'Place your rear foot on a raised surface. Lower into a lunge with the front leg, then drive back up. Keep your torso upright.',
     commonMistakes: ['Leaning too far forward', 'Front knee caving in', 'Rear foot too close to the bench'],
     musclesWorked: 'Quads, glutes, balance',
+    categories: ['legs', 'glutes'],
   },
   'Side Plank': {
     description: 'Stack your feet and hold yourself up on one forearm, body in a straight line. Hold, then switch sides.',
     commonMistakes: ['Hips dropping', 'Rolling forward', 'Not keeping shoulders stacked'],
     musclesWorked: 'Obliques, core, shoulders',
+    categories: ['core'],
   },
   'Skater Jumps': {
     description: 'Leap laterally from one foot to the other, landing softly on the outside foot. Swing your arms for momentum. Mimic a speed skater.',
     commonMistakes: ['Landing stiff-legged', 'Not jumping laterally enough', 'Rounding the back'],
     musclesWorked: 'Glutes, quads, calves, cardio',
+    categories: ['legs', 'cardio'],
   },
 };
 
@@ -341,3 +376,59 @@ export const WORKOUTS: Workout[] = [
 
 export const getWorkouts = (gender: Gender, level: Level): Workout[] =>
   WORKOUTS.filter((w) => w.gender === gender && w.level === level);
+
+export function isRepsExercise(ex: Exercise): boolean {
+  const n = ex.name.toLowerCase();
+  if (n.includes('repeat') || n.includes('round')) return true;
+  if (ex.duration.startsWith('~')) return true;
+  return false;
+}
+
+export const ALL_EXERCISES: Exercise[] = Object.entries(EXERCISE_DETAILS).map(([name, detail]) => ({
+  name,
+  duration: '30 sec',
+  categories: detail.categories,
+}));
+
+export const CATEGORY_LABELS: Record<ExerciseCategory, string> = {
+  'chest': 'Chest',
+  'back': 'Back',
+  'shoulders': 'Shoulders',
+  'arms': 'Arms',
+  'core': 'Abs & Core',
+  'legs': 'Legs',
+  'glutes': 'Glutes',
+  'cardio': 'Cardio',
+  'full-body': 'Full Body',
+};
+
+export const CATEGORY_ICONS: Record<ExerciseCategory, string> = {
+  'chest': '💪',
+  'back': '🔙',
+  'shoulders': '🏋️',
+  'arms': '💪',
+  'core': '🎯',
+  'legs': '🦵',
+  'glutes': '🍑',
+  'cardio': '❤️',
+  'full-body': '⚡',
+};
+
+export function generateWorkout(categories: ExerciseCategory[], level: Level): Exercise[] {
+  const pool = ALL_EXERCISES.filter((ex) =>
+    ex.categories?.some((c) => categories.includes(c))
+  );
+
+  const shuffled = [...pool].sort(() => Math.random() - 0.5);
+  const count = level === 'beginner' ? 5 : level === 'intermediate' ? 6 : 7;
+  const selected = shuffled.slice(0, count);
+
+  const exercises: Exercise[] = [];
+  selected.forEach((ex, i) => {
+    exercises.push({ name: ex.name, duration: '30 sec', categories: ex.categories });
+    if (i < selected.length - 1) {
+      exercises.push({ name: 'Rest', duration: '10 sec' });
+    }
+  });
+  return exercises;
+}

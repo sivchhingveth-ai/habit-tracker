@@ -6,12 +6,7 @@ export type Theme = 'light' | 'dark';
 const THEME_KEY = 'habit_tracker_theme';
 
 function getInitialTheme(): Theme {
-  if (typeof window === 'undefined') return 'light';
-  const saved = localStorage.getItem(THEME_KEY);
-  if (saved === 'light' || saved === 'dark') return saved;
-  return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
-    ? 'dark'
-    : 'light';
+  return 'dark';
 }
 
 let _themeTransitionTimer: ReturnType<typeof setTimeout> | undefined;
