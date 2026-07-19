@@ -422,13 +422,16 @@ export const GymView: React.FC<GymViewProps> = ({
                             >
                               {ex.duration}
                             </div>
-                            <button
+                            <div
+                              role="button"
+                              tabIndex={0}
                               onClick={(e) => { e.stopPropagation(); setDetailExercise({ index: originalIndex, exercise: ex }); }}
-                              className="w-7 h-7 rounded-lg flex items-center justify-center transition-all active:scale-90 hover:bg-[var(--bg-hover)]"
+                              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.stopPropagation(); setDetailExercise({ index: originalIndex, exercise: ex }); } }}
+                              className="w-7 h-7 rounded-lg flex items-center justify-center transition-all active:scale-90 hover:bg-[var(--bg-hover)] cursor-pointer"
                               title="Exercise details"
                             >
                               <Info className="w-3.5 h-3.5" style={{ color: 'var(--text-muted)' }} />
-                            </button>
+                            </div>
                           </div>
                         </button>
                       );
