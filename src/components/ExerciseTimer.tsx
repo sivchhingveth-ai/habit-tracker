@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Play, Pause, X, RotateCcw, SkipForward, SkipBack, Plus, Timer } from 'lucide-react';
+import { Play, Pause, X, RotateCcw, SkipForward, SkipBack, Plus, Timer, Volume2, VolumeX } from 'lucide-react';
+import { startMusic, stopMusic, setMusicVolume } from '../utils/backgroundMusic';
 
 function parseDuration(str: string): number {
   const s = str.toLowerCase().trim();
@@ -160,6 +161,7 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
   const [phase, setPhase] = useState<'countdown' | 'ready' | 'active' | 'rest-done'>('ready');
   const [countdownNum, setCountdownNum] = useState(3);
   const [addedFlash, setAddedFlash] = useState(false);
+  const [muted, setMuted] = useState(false);
   const intervalRef = useRef<number | null>(null);
   const flashRef = useRef<number | null>(null);
   const startRef = useRef<number>(0);
@@ -222,6 +224,7 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
         if (isRest) {
           onComplete();
         } else {
+          stopMusic();
           speak('Rest');
           onComplete();
         }
@@ -271,6 +274,21 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
     }
   }, [phase, autoStart, isRest]);
 
+  useEffect(() => {
+    if (phase === 'active' && !isRest && !isDone && !muted) {
+      startMusic();
+    }
+    return () => {};
+  }, [phase, isRest, isDone, muted]);
+
+  useEffect(() => {
+    return () => { stopMusic(); };
+  }, []);
+
+  useEffect(() => {
+    setMusicVolume(muted ? 0 : 0.5);
+  }, [muted]);
+
   const progress = Math.min(Math.max(1 - remaining / maxSeconds, 0), 1);
   const strokeDashoffset = CIRCUMFERENCE * (1 - progress);
 
@@ -278,8 +296,8 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
   const handlePause = () => setIsRunning(false);
   const handleResume = () => setIsRunning(true);
   const handleReset = () => { clearTimer(); setRemaining(totalSeconds); setMaxSeconds(totalSeconds); setIsRunning(false); setIsDone(false); setPhase('ready'); startRef.current = Date.now(); spokenRef.current = { half: false, ten: false, three: false, two: false, one: false, restHalf: false }; };
-  const handleClose = () => { clearTimer(); if (onClose) { onClose(); } else { onComplete(); } };
-  const handleSkip = () => { clearTimer(); if (onNext) { onNext(); } else { onComplete(); } };
+  const handleClose = () => { clearTimer(); stopMusic(); if (onClose) { onClose(); } else { onComplete(); } };
+  const handleSkip = () => { clearTimer(); stopMusic(); if (onNext) { onNext(); } else { onComplete(); } };
   const handlePrevious = () => { clearTimer(); onPrevious?.(); };
   const handleAddTime = () => {
     if (flashRef.current) return;
@@ -317,7 +335,13 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
             {exerciseNumber}/{totalExercises}
           </div>
         )}
-        <div className="w-11 h-11" />
+        <button
+          onClick={() => setMuted((m) => !m)}
+          className="w-11 h-11 rounded-full flex items-center justify-center transition-all active:scale-90 touch-manipulation"
+          style={{ touchAction: 'manipulation', backgroundColor: 'var(--bg-soft)' }}
+        >
+          {muted ? <VolumeX className="w-5 h-5" style={{ color: 'var(--text-primary)' }} /> : <Volume2 className="w-5 h-5" style={{ color: 'var(--text-primary)' }} />}
+        </button>
       </div>
 
       {/* Main content */}

@@ -496,7 +496,7 @@ export const GymView: React.FC<GymViewProps> = ({
             duration={activeTimer.exercise.duration}
             color={timerColor}
             onComplete={handleTimerComplete}
-            onClose={() => { setActiveTimer(null); }}
+            onClose={() => { setActiveTimer(null); setCompletedExercises(new Set()); setWorkoutStarted(false); }}
             onNext={handleNextExercise}
             onPrevious={handlePreviousExercise}
             nextExercise={nextEx ? { name: nextEx.name, duration: nextEx.duration } : null}
