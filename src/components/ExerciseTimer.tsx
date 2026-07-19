@@ -274,7 +274,7 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
   const handleResume = () => setIsRunning(true);
   const handleReset = () => { clearTimer(); setRemaining(totalSeconds); setMaxSeconds(totalSeconds); setIsRunning(false); setIsDone(false); setPhase('ready'); startRef.current = Date.now(); spokenRef.current = { half: false, ten: false, three: false, two: false, one: false }; };
   const handleClose = () => { clearTimer(); if (onClose) { onClose(); } else { onComplete(); } };
-  const handleSkip = () => { clearTimer(); onComplete(); };
+  const handleSkip = () => { clearTimer(); if (onNext) { onNext(); } else { onComplete(); } };
   const handlePrevious = () => { clearTimer(); onPrevious?.(); };
   const handleAddTime = () => {
     if (flashRef.current) return;
