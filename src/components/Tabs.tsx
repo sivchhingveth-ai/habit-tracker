@@ -72,7 +72,7 @@ export const Tabs: React.FC<TabsProps> = ({
 
   return (
     <div className="top-nav sticky top-0 z-40">
-      <div className="flex h-[60px] sm:h-[64px] md:h-[68px] items-center">
+      <div className="flex h-[48px] sm:h-[50px] md:h-[52px] items-center">
         {/* Tab group */}
         <div className="flex-1 min-w-0 flex h-full overflow-x-auto scrollbar-hide no-scrollbar relative">
           <div className="flex h-full min-w-max md:min-w-0 w-full items-center">
@@ -96,7 +96,7 @@ export const Tabs: React.FC<TabsProps> = ({
                       onTabChange(tab);
                     }
                   }}
-                  className={`nav-tab relative h-full flex items-center justify-center gap-1.5 sm:gap-2 shrink-0 touch-manipulation group px-2.5 sm:px-4 md:px-5 ${
+                  className={`nav-tab relative h-full flex items-center justify-center gap-1 sm:gap-1.5 shrink-0 touch-manipulation group px-2 sm:px-3 md:px-4 ${
                     isActive ? 'is-active' : ''
                   }`}
                   style={{ touchAction: 'manipulation' }}
@@ -104,12 +104,12 @@ export const Tabs: React.FC<TabsProps> = ({
                 >
                   {isAdd ? (
                     <div className="nav-add-icon-wrap flex items-center justify-center">
-                      <Icon className="nav-tab-icon w-[18px] h-[18px] sm:w-5 sm:h-5 transition-all" strokeWidth={isActive ? 2.5 : 2} />
+                      <Icon className="nav-tab-icon w-4 h-4 sm:w-[18px] sm:h-[18px] transition-all" strokeWidth={isActive ? 2.5 : 2} />
                     </div>
                   ) : (
-                    <Icon className="nav-tab-icon w-[18px] h-[18px] sm:w-5 sm:h-5 transition-all" strokeWidth={isActive ? 2.5 : 2} />
+                    <Icon className="nav-tab-icon w-4 h-4 sm:w-[18px] sm:h-[18px] transition-all" strokeWidth={isActive ? 2.5 : 2} />
                   )}
-                  <span className={`nav-tab-label text-[10px] sm:text-[11px] font-semibold tracking-wide transition-colors hidden sm:inline ${isActive ? 'font-bold' : ''}`}>
+                  <span className={`nav-tab-label text-[10px] font-semibold tracking-wide transition-colors hidden sm:inline ${isActive ? 'font-bold' : ''}`}>
                     {tab}
                   </span>
                   {isGym && (
@@ -128,11 +128,11 @@ export const Tabs: React.FC<TabsProps> = ({
         <div className="flex h-full shrink-0 items-center">
           <button
             onClick={openProfileModal}
-            className="nav-icon-btn px-2.5 sm:px-3 h-full flex items-center justify-center touch-manipulation"
+            className="nav-icon-btn px-1.5 sm:px-2 h-full flex items-center justify-center touch-manipulation"
             title="Profile"
             style={{ touchAction: 'manipulation' }}
           >
-            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[var(--bg-soft)] border border-[var(--border-soft)] flex items-center justify-center shrink-0 overflow-hidden transition-all">
+            <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-[var(--bg-soft)] border border-[var(--border-soft)] flex items-center justify-center shrink-0 overflow-hidden transition-all">
               {avatarSrc(avatar) ? (
                 <img src={avatarSrc(avatar)} alt="Avatar" className="w-full h-full object-contain" draggable={false} />
               ) : (
