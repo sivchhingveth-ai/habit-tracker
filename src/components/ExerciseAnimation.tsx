@@ -1,12 +1,12 @@
 import React from 'react';
 
-type AnimationType =
+type AnimType =
   | 'pushup' | 'squat' | 'plank' | 'jumpingjacks' | 'lunge'
   | 'mountainclimber' | 'armcircles' | 'highknees' | 'buttkicks'
   | 'sideplank' | 'glutebridge' | 'walk' | 'stretch' | 'twist'
   | 'dip' | 'legraise' | 'skater' | 'hold' | 'calf' | 'pullup' | 'default';
 
-const EXERCISE_ANIMATION_MAP: Record<string, AnimationType> = {
+const MAP: Record<string, AnimType> = {
   'Regular Push-Ups': 'pushup', 'Push-Ups': 'pushup', 'Push-Ups (knee or full)': 'pushup',
   'Wide-Grip Push-Ups': 'pushup', 'Incline Push-Ups': 'pushup', 'Knee Push-Ups': 'pushup',
   'Wall Push-Ups': 'pushup', 'Diamond Push-Ups': 'pushup', 'Archer Push-Ups': 'pushup',
@@ -29,555 +29,713 @@ const EXERCISE_ANIMATION_MAP: Record<string, AnimationType> = {
   'Pull-Ups / Inverted Rows': 'pullup',
 };
 
-function getAnimationType(name: string): AnimationType {
-  return EXERCISE_ANIMATION_MAP[name] || 'default';
+// Stick figure helper - draws a complete person with connected limbs
+// cx, cy = center of torso top (shoulder level)
+function StickFigure({ cx, cy, headR = 7, torsoLen = 28, upperArm = 16, lowerArm = 14, upperLeg = 18, lowerLeg = 18, opacity = 0.9 }: {
+  cx: number; cy: number; headR?: number; torsoLen?: number;
+  upperArm?: number; lowerArm?: number; upperLeg?: number; lowerLeg?: number; opacity?: number;
+}) {
+  const headCY = cy - headR - 2;
+  const hipY = cy + torsoLen;
+  return { cx, cy, headCY, hipY, headR, torsoLen, upperArm, lowerArm, upperLeg, lowerLeg, opacity };
 }
 
 const C = '#ffffff';
 
-/* ── PUSH-UP: plank position, body lowers and rises ── */
-const PushUpAnimation: React.FC = () => (
+// ── PUSH-UP ──
+const PushUp: React.FC = () => (
   <svg viewBox="0 0 200 100" className="w-full h-full">
-    {/* Head */}
-    <circle cx="155" cy="32" r="8" fill={C} opacity="0.9">
-      <animate attributeName="cy" values="32;42;32" dur="2s" repeatCount="indefinite" />
-    </circle>
-    {/* Torso + hips - straight line */}
-    <rect x="60" y="34" width="95" height="8" rx="4" fill={C} opacity="0.8">
-      <animate attributeName="y" values="34;44;34" dur="2s" repeatCount="indefinite" />
-    </rect>
-    {/* Upper arms (bend at elbow) */}
-    <rect x="148" y="42" width="6" height="14" rx="3" fill={C} opacity="0.7">
-      <animate attributeName="height" values="14;8;14" dur="2s" repeatCount="indefinite" />
-      <animate attributeName="y" values="42;48;42" dur="2s" repeatCount="indefinite" />
-    </rect>
-    {/* Forearms (stay on ground) */}
-    <rect x="148" y="56" width="6" height="16" rx="3" fill={C} opacity="0.6" />
-    {/* Legs - straight back */}
-    <rect x="50" y="36" width="15" height="6" rx="3" fill={C} opacity="0.6" />
-    <rect x="35" y="37" width="18" height="5" rx="2.5" fill={C} opacity="0.5" />
+    {/* Floor line */}
+    <line x1="30" y1="72" x2="170" y2="72" stroke={C} strokeWidth="1" opacity="0.1" />
+    <g>
+      <animateTransform attributeName="transform" type="translate" values="0,0;0,8;0,0" dur="2s" repeatCount="indefinite" />
+      {/* Head */}
+      <circle cx="155" cy="42" r="7" fill={C} opacity="0.9" />
+      {/* Torso - straight line from shoulders to hips */}
+      <line x1="155" y1="49" x2="65" y2="50" stroke={C} strokeWidth="5" strokeLinecap="round" opacity="0.8" />
+      {/* Upper arms - from shoulders down to elbows */}
+      <line x1="148" y1="50" x2="148" y2="62" stroke={C} strokeWidth="4" strokeLinecap="round" opacity="0.7">
+        <animate attributeName="y2" values="62;56;62" dur="2s" repeatCount="indefinite" />
+      </line>
+      {/* Forearms - elbows to ground */}
+      <line x1="148" y1="62" x2="155" y2="72" stroke={C} strokeWidth="3.5" strokeLinecap="round" opacity="0.6" />
+      {/* Upper legs - hips back */}
+      <line x1="65" y1="50" x2="42" y2="52" stroke={C} strokeWidth="4.5" strokeLinecap="round" opacity="0.6" />
+      {/* Lower legs */}
+      <line x1="42" y1="52" x2="35" y2="72" stroke={C} strokeWidth="4" strokeLinecap="round" opacity="0.5" />
+    </g>
   </svg>
 );
 
-/* ── SQUAT: standing, hips drop down and back, knees bend ── */
-const SquatAnimation: React.FC = () => (
+// ── SQUAT ──
+const Squat: React.FC = () => (
   <svg viewBox="0 0 200 160" className="w-full h-full">
-    {/* Head */}
-    <circle cx="100" cy="25" r="10" fill={C} opacity="0.9">
-      <animate attributeName="cy" values="25;42;25" dur="2.5s" repeatCount="indefinite" />
-    </circle>
-    {/* Torso - leans slightly forward */}
-    <rect x="93" y="35" width="14" height="35" rx="5" fill={C} opacity="0.8">
-      <animate attributeName="y" values="35;52;35" dur="2.5s" repeatCount="indefinite" />
-    </rect>
-    {/* Arms forward for balance */}
-    <rect x="107" y="48" width="28" height="6" rx="3" fill={C} opacity="0.7">
-      <animate attributeName="y" values="48;62;48" dur="2.5s" repeatCount="indefinite" />
-    </rect>
-    {/* Upper legs (thighs) - bend at hip */}
-    <rect x="87" y="70" width="8" height="24" rx="4" fill={C} opacity="0.6">
-      <animateTransform attributeName="transform" type="rotate" values="0 91 70;60 91 70;0 91 70" dur="2.5s" repeatCount="indefinite" />
-    </rect>
-    <rect x="105" y="70" width="8" height="24" rx="4" fill={C} opacity="0.6">
-      <animateTransform attributeName="transform" type="rotate" values="0 109 70;-60 109 70;0 109 70" dur="2.5s" repeatCount="indefinite" />
-    </rect>
-    {/* Lower legs (shins) - stay mostly vertical */}
-    <rect x="85" y="94" width="7" height="28" rx="3.5" fill={C} opacity="0.5">
-      <animateTransform attributeName="transform" type="rotate" values="0 88 94;-25 88 94;0 88 94" dur="2.5s" repeatCount="indefinite" />
-    </rect>
-    <rect x="108" y="94" width="7" height="28" rx="3.5" fill={C} opacity="0.5">
-      <animateTransform attributeName="transform" type="rotate" values="0 111 94;25 111 94;0 111 94" dur="2.5s" repeatCount="indefinite" />
-    </rect>
+    <g>
+      {/* Head */}
+      <circle cx="100" cy="22" r="8" fill={C} opacity="0.9">
+        <animate attributeName="cy" values="22;42;22" dur="2.5s" repeatCount="indefinite" />
+      </circle>
+      {/* Neck to shoulders */}
+      <line x1="100" y1="30" x2="100" y2="36" stroke={C} strokeWidth="4" strokeLinecap="round" opacity="0.8" />
+      {/* Torso */}
+      <line x1="100" y1="36" x2="100" y2="70" stroke={C} strokeWidth="5" strokeLinecap="round" opacity="0.8">
+        <animate attributeName="y1" values="36;50;36" dur="2.5s" repeatCount="indefinite" />
+        <animate attributeName="y2" values="70;84;70" dur="2.5s" repeatCount="indefinite" />
+      </line>
+      {/* Left upper arm - forward */}
+      <line x1="100" y1="40" x2="125" y2="44" stroke={C} strokeWidth="3.5" strokeLinecap="round" opacity="0.7">
+        <animate attributeName="y1" values="40;54;40" dur="2.5s" repeatCount="indefinite" />
+        <animate attributeName="y2" values="44;58;44" dur="2.5s" repeatCount="indefinite" />
+      </line>
+      {/* Left forearm */}
+      <line x1="125" y1="44" x2="140" y2="42" stroke={C} strokeWidth="3" strokeLinecap="round" opacity="0.6">
+        <animate attributeName="y1" values="44;58;44" dur="2.5s" repeatCount="indefinite" />
+        <animate attributeName="y2" values="42;56;42" dur="2.5s" repeatCount="indefinite" />
+      </line>
+      {/* Right upper arm - forward */}
+      <line x1="100" y1="40" x2="75" y2="44" stroke={C} strokeWidth="3.5" strokeLinecap="round" opacity="0.7">
+        <animate attributeName="y1" values="40;54;40" dur="2.5s" repeatCount="indefinite" />
+        <animate attributeName="y2" values="44;58;44" dur="2.5s" repeatCount="indefinite" />
+      </line>
+      {/* Right forearm */}
+      <line x1="75" y1="44" x2="60" y2="42" stroke={C} strokeWidth="3" strokeLinecap="round" opacity="0.6">
+        <animate attributeName="y1" values="44;58;44" dur="2.5s" repeatCount="indefinite" />
+        <animate attributeName="y2" values="42;56;42" dur="2.5s" repeatCount="indefinite" />
+      </line>
+      {/* Left upper leg */}
+      <line x1="96" y1="70" x2="82" y2="100" stroke={C} strokeWidth="5" strokeLinecap="round" opacity="0.6">
+        <animate attributeName="y1" values="70;84;70" dur="2.5s" repeatCount="indefinite" />
+        <animate attributeName="x2" values="82;75;82" dur="2.5s" repeatCount="indefinite" />
+        <animate attributeName="y2" values="100;108;100" dur="2.5s" repeatCount="indefinite" />
+      </line>
+      {/* Left lower leg */}
+      <line x1="82" y1="100" x2="85" y2="130" stroke={C} strokeWidth="4" strokeLinecap="round" opacity="0.5">
+        <animate attributeName="x1" values="82;75;82" dur="2.5s" repeatCount="indefinite" />
+        <animate attributeName="y1" values="100;108;100" dur="2.5s" repeatCount="indefinite" />
+      </line>
+      {/* Right upper leg */}
+      <line x1="104" y1="70" x2="118" y2="100" stroke={C} strokeWidth="5" strokeLinecap="round" opacity="0.6">
+        <animate attributeName="y1" values="70;84;70" dur="2.5s" repeatCount="indefinite" />
+        <animate attributeName="x2" values="118;125;118" dur="2.5s" repeatCount="indefinite" />
+        <animate attributeName="y2" values="100;108;100" dur="2.5s" repeatCount="indefinite" />
+      </line>
+      {/* Right lower leg */}
+      <line x1="118" y1="100" x2="115" y2="130" stroke={C} strokeWidth="4" strokeLinecap="round" opacity="0.5">
+        <animate attributeName="x1" values="118;125;118" dur="2.5s" repeatCount="indefinite" />
+        <animate attributeName="y1" values="100;108;100" dur="2.5s" repeatCount="indefinite" />
+      </line>
+      {/* Feet */}
+      <line x1="85" y1="130" x2="75" y2="132" stroke={C} strokeWidth="3" strokeLinecap="round" opacity="0.4" />
+      <line x1="115" y1="130" x2="125" y2="132" stroke={C} strokeWidth="3" strokeLinecap="round" opacity="0.4" />
+    </g>
   </svg>
 );
 
-/* ── PLANK: static forearm plank, very subtle breathing ── */
-const PlankAnimation: React.FC = () => (
+// ── PLANK ──
+const Plank: React.FC = () => (
+  <svg viewBox="0 0 200 80" className="w-full h-full">
+    <line x1="25" y1="65" x2="175" y2="65" stroke={C} strokeWidth="1" opacity="0.1" />
+    <g>
+      {/* Head */}
+      <circle cx="160" cy="32" r="6" fill={C} opacity="0.9" />
+      {/* Neck */}
+      <line x1="155" y1="35" x2="153" y2="38" stroke={C} strokeWidth="3" strokeLinecap="round" opacity="0.8" />
+      {/* Torso - straight line */}
+      <line x1="153" y1="38" x2="60" y2="40" stroke={C} strokeWidth="5" strokeLinecap="round" opacity="0.8">
+        <animate attributeName="y1" values="38;39.5;38" dur="3s" repeatCount="indefinite" />
+        <animate attributeName="y2" values="40;41.5;40" dur="3s" repeatCount="indefinite" />
+      </line>
+      {/* Upper arms */}
+      <line x1="148" y1="40" x2="148" y2="52" stroke={C} strokeWidth="3.5" strokeLinecap="round" opacity="0.7" />
+      {/* Forearms */}
+      <line x1="148" y1="52" x2="145" y2="65" stroke={C} strokeWidth="3" strokeLinecap="round" opacity="0.6" />
+      <line x1="138" y1="52" x2="135" y2="65" stroke={C} strokeWidth="3" strokeLinecap="round" opacity="0.6" />
+      {/* Upper legs */}
+      <line x1="60" y1="40" x2="45" y2="42" stroke={C} strokeWidth="4" strokeLinecap="round" opacity="0.6" />
+      {/* Lower legs */}
+      <line x1="45" y1="42" x2="32" y2="60" stroke={C} strokeWidth="3.5" strokeLinecap="round" opacity="0.5" />
+    </g>
+  </svg>
+);
+
+// ── JUMPING JACKS ──
+const JumpingJacks: React.FC = () => (
+  <svg viewBox="0 0 200 160" className="w-full h-full">
+    <g>
+      {/* Head */}
+      <circle cx="100" cy="16" r="8" fill={C} opacity="0.9" />
+      {/* Neck */}
+      <line x1="100" y1="24" x2="100" y2="28" stroke={C} strokeWidth="3" strokeLinecap="round" opacity="0.8" />
+      {/* Torso */}
+      <line x1="100" y1="28" x2="100" y2="62" stroke={C} strokeWidth="5" strokeLinecap="round" opacity="0.8" />
+      {/* Left arm - swings up */}
+      <line x1="100" y1="32" x2="70" y2="20" stroke={C} strokeWidth="3.5" strokeLinecap="round" opacity="0.7">
+        <animate attributeName="x2" values="70;72;70" dur="1s" repeatCount="indefinite" />
+        <animate attributeName="y2" values="20;48;20" dur="1s" repeatCount="indefinite" />
+      </line>
+      {/* Left forearm */}
+      <line x1="70" y1="20" x2="55" y2="10" stroke={C} strokeWidth="3" strokeLinecap="round" opacity="0.6">
+        <animate attributeName="x1" values="70;72;70" dur="1s" repeatCount="indefinite" />
+        <animate attributeName="y1" values="20;48;20" dur="1s" repeatCount="indefinite" />
+        <animate attributeName="x2" values="55;62;55" dur="1s" repeatCount="indefinite" />
+        <animate attributeName="y2" values="10;55;10" dur="1s" repeatCount="indefinite" />
+      </line>
+      {/* Right arm - swings up */}
+      <line x1="100" y1="32" x2="130" y2="20" stroke={C} strokeWidth="3.5" strokeLinecap="round" opacity="0.7">
+        <animate attributeName="x2" values="130;128;130" dur="1s" repeatCount="indefinite" />
+        <animate attributeName="y2" values="20;48;20" dur="1s" repeatCount="indefinite" />
+      </line>
+      {/* Right forearm */}
+      <line x1="130" y1="20" x2="145" y2="10" stroke={C} strokeWidth="3" strokeLinecap="round" opacity="0.6">
+        <animate attributeName="x1" values="130;128;130" dur="1s" repeatCount="indefinite" />
+        <animate attributeName="y1" values="20;48;20" dur="1s" repeatCount="indefinite" />
+        <animate attributeName="x2" values="145;138;145" dur="1s" repeatCount="indefinite" />
+        <animate attributeName="y2" values="10;55;10" dur="1s" repeatCount="indefinite" />
+      </line>
+      {/* Left leg - spreads */}
+      <line x1="97" y1="62" x2="72" y2="100" stroke={C} strokeWidth="4.5" strokeLinecap="round" opacity="0.6">
+        <animate attributeName="x2" values="72;88;72" dur="1s" repeatCount="indefinite" />
+      </line>
+      <line x1="72" y1="100" x2="65" y2="130" stroke={C} strokeWidth="4" strokeLinecap="round" opacity="0.5">
+        <animate attributeName="x1" values="72;88;72" dur="1s" repeatCount="indefinite" />
+        <animate attributeName="x2" values="65;85;65" dur="1s" repeatCount="indefinite" />
+      </line>
+      {/* Right leg - spreads */}
+      <line x1="103" y1="62" x2="128" y2="100" stroke={C} strokeWidth="4.5" strokeLinecap="round" opacity="0.6">
+        <animate attributeName="x2" values="128;112;128" dur="1s" repeatCount="indefinite" />
+      </line>
+      <line x1="128" y1="100" x2="135" y2="130" stroke={C} strokeWidth="4" strokeLinecap="round" opacity="0.5">
+        <animate attributeName="x1" values="128;112;128" dur="1s" repeatCount="indefinite" />
+        <animate attributeName="x2" values="135;115;135" dur="1s" repeatCount="indefinite" />
+      </line>
+    </g>
+  </svg>
+);
+
+// ── LUNGE ──
+const Lunge: React.FC = () => (
+  <svg viewBox="0 0 200 160" className="w-full h-full">
+    <g>
+      <circle cx="100" cy="18" r="8" fill={C} opacity="0.9">
+        <animate attributeName="cy" values="18;30;18" dur="2.5s" repeatCount="indefinite" />
+      </circle>
+      <line x1="100" y1="26" x2="100" y2="30" stroke={C} strokeWidth="3" strokeLinecap="round" opacity="0.8" />
+      {/* Torso */}
+      <line x1="100" y1="30" x2="100" y2="64" stroke={C} strokeWidth="5" strokeLinecap="round" opacity="0.8">
+        <animate attributeName="y1" values="30;42;30" dur="2.5s" repeatCount="indefinite" />
+        <animate attributeName="y2" values="64;76;64" dur="2.5s" repeatCount="indefinite" />
+      </line>
+      {/* Front upper leg */}
+      <line x1="96" y1="64" x2="78" y2="90" stroke={C} strokeWidth="5" strokeLinecap="round" opacity="0.6">
+        <animate attributeName="y1" values="64;76;64" dur="2.5s" repeatCount="indefinite" />
+        <animate attributeName="y2" values="90;100;90" dur="2.5s" repeatCount="indefinite" />
+      </line>
+      {/* Front lower leg */}
+      <line x1="78" y1="90" x2="82" y2="125" stroke={C} strokeWidth="4" strokeLinecap="round" opacity="0.5">
+        <animate attributeName="y1" values="90;100;90" dur="2.5s" repeatCount="indefinite" />
+      </line>
+      {/* Back upper leg */}
+      <line x1="104" y1="64" x2="125" y2="88" stroke={C} strokeWidth="4.5" strokeLinecap="round" opacity="0.5">
+        <animate attributeName="y1" values="64;76;64" dur="2.5s" repeatCount="indefinite" />
+        <animate attributeName="y2" values="88;98;88" dur="2.5s" repeatCount="indefinite" />
+      </line>
+      {/* Back lower leg */}
+      <line x1="125" y1="88" x2="132" y2="120" stroke={C} strokeWidth="3.5" strokeLinecap="round" opacity="0.4">
+        <animate attributeName="y1" values="88;98;88" dur="2.5s" repeatCount="indefinite" />
+        <animate attributeName="y2" values="120;130;120" dur="2.5s" repeatCount="indefinite" />
+      </line>
+    </g>
+  </svg>
+);
+
+// ── MOUNTAIN CLIMBERS ──
+const MountainClimber: React.FC = () => (
+  <svg viewBox="0 0 200 80" className="w-full h-full">
+    <line x1="25" y1="62" x2="175" y2="62" stroke={C} strokeWidth="1" opacity="0.1" />
+    <g>
+      <circle cx="160" cy="24" r="6" fill={C} opacity="0.9" />
+      <line x1="155" y1="28" x2="152" y2="32" stroke={C} strokeWidth="3" strokeLinecap="round" opacity="0.8" />
+      <line x1="152" y1="32" x2="58" y2="35" stroke={C} strokeWidth="5" strokeLinecap="round" opacity="0.8" />
+      {/* Arms */}
+      <line x1="148" y1="35" x2="150" y2="52" stroke={C} strokeWidth="3" strokeLinecap="round" opacity="0.7" />
+      <line x1="140" y1="36" x2="142" y2="52" stroke={C} strokeWidth="3" strokeLinecap="round" opacity="0.7" />
+      {/* Left knee drives forward */}
+      <line x1="70" y1="35" x2="90" y2="50" stroke={C} strokeWidth="4" strokeLinecap="round" opacity="0.6">
+        <animate attributeName="x2" values="90;75;90" dur="0.8s" repeatCount="indefinite" />
+        <animate attributeName="y2" values="50;42;50" dur="0.8s" repeatCount="indefinite" />
+      </line>
+      <line x1="90" y1="50" x2="85" y2="62" stroke={C} strokeWidth="3.5" strokeLinecap="round" opacity="0.5">
+        <animate attributeName="x1" values="90;75;90" dur="0.8s" repeatCount="indefinite" />
+        <animate attributeName="y1" values="50;42;50" dur="0.8s" repeatCount="indefinite" />
+      </line>
+      {/* Right knee drives forward */}
+      <line x1="82" y1="35" x2="100" y2="48" stroke={C} strokeWidth="4" strokeLinecap="round" opacity="0.5">
+        <animate attributeName="x2" values="100;82;100" dur="0.8s" repeatCount="indefinite" begin="0.4s" />
+        <animate attributeName="y2" values="48;40;48" dur="0.8s" repeatCount="indefinite" begin="0.4s" />
+      </line>
+      <line x1="100" y1="48" x2="95" y2="62" stroke={C} strokeWidth="3.5" strokeLinecap="round" opacity="0.4">
+        <animate attributeName="x1" values="100;82;100" dur="0.8s" repeatCount="indefinite" begin="0.4s" />
+        <animate attributeName="y1" values="48;40;48" dur="0.8s" repeatCount="indefinite" begin="0.4s" />
+      </line>
+    </g>
+  </svg>
+);
+
+// ── ARM CIRCLES ──
+const ArmCircles: React.FC = () => (
+  <svg viewBox="0 0 200 160" className="w-full h-full">
+    <g>
+      <circle cx="100" cy="18" r="8" fill={C} opacity="0.9" />
+      <line x1="100" y1="26" x2="100" y2="30" stroke={C} strokeWidth="3" strokeLinecap="round" opacity="0.8" />
+      <line x1="100" y1="30" x2="100" y2="64" stroke={C} strokeWidth="5" strokeLinecap="round" opacity="0.8" />
+      {/* Left arm - full circle */}
+      <line x1="100" y1="34" x2="65" y2="34" stroke={C} strokeWidth="3.5" strokeLinecap="round" opacity="0.7">
+        <animateTransform attributeName="transform" type="rotate" values="0 100 34;360 100 34" dur="3s" repeatCount="indefinite" />
+      </line>
+      {/* Right arm - full circle opposite */}
+      <line x1="100" y1="34" x2="135" y2="34" stroke={C} strokeWidth="3.5" strokeLinecap="round" opacity="0.7">
+        <animateTransform attributeName="transform" type="rotate" values="0 100 34;-360 100 34" dur="3s" repeatCount="indefinite" />
+      </line>
+      {/* Legs */}
+      <line x1="97" y1="64" x2="90" y2="110" stroke={C} strokeWidth="4.5" strokeLinecap="round" opacity="0.6" />
+      <line x1="103" y1="64" x2="110" y2="110" stroke={C} strokeWidth="4.5" strokeLinecap="round" opacity="0.6" />
+    </g>
+  </svg>
+);
+
+// ── HIGH KNEES ──
+const HighKnees: React.FC = () => (
+  <svg viewBox="0 0 200 160" className="w-full h-full">
+    <g>
+      <circle cx="100" cy="14" r="8" fill={C} opacity="0.9" />
+      <line x1="100" y1="22" x2="100" y2="26" stroke={C} strokeWidth="3" strokeLinecap="round" opacity="0.8" />
+      <line x1="100" y1="26" x2="100" y2="60" stroke={C} strokeWidth="5" strokeLinecap="round" opacity="0.8" />
+      {/* Left arm swings */}
+      <line x1="96" y1="30" x2="82" y2="50" stroke={C} strokeWidth="3" strokeLinecap="round" opacity="0.7">
+        <animate attributeName="y2" values="50;30;50" dur="0.6s" repeatCount="indefinite" />
+      </line>
+      {/* Right arm swings */}
+      <line x1="104" y1="30" x2="118" y2="50" stroke={C} strokeWidth="3" strokeLinecap="round" opacity="0.7">
+        <animate attributeName="y2" values="50;30;50" dur="0.6s" repeatCount="indefinite" begin="0.3s" />
+      </line>
+      {/* Left knee drives up high */}
+      <line x1="96" y1="60" x2="88" y2="45" stroke={C} strokeWidth="4.5" strokeLinecap="round" opacity="0.6">
+        <animate attributeName="y2" values="45;38;45" dur="0.6s" repeatCount="indefinite" />
+      </line>
+      <line x1="88" y1="45" x2="82" y2="60" stroke={C} strokeWidth="4" strokeLinecap="round" opacity="0.5">
+        <animate attributeName="y1" values="45;38;45" dur="0.6s" repeatCount="indefinite" />
+        <animate attributeName="y2" values="60;52;60" dur="0.6s" repeatCount="indefinite" />
+      </line>
+      {/* Right knee drives up */}
+      <line x1="104" y1="60" x2="112" y2="45" stroke={C} strokeWidth="4.5" strokeLinecap="round" opacity="0.5">
+        <animate attributeName="y2" values="45;38;45" dur="0.6s" repeatCount="indefinite" begin="0.3s" />
+      </line>
+      <line x1="112" y1="45" x2="118" y2="60" stroke={C} strokeWidth="4" strokeLinecap="round" opacity="0.4">
+        <animate attributeName="y1" values="45;38;45" dur="0.6s" repeatCount="indefinite" begin="0.3s" />
+        <animate attributeName="y2" values="60;52;60" dur="0.6s" repeatCount="indefinite" begin="0.3s" />
+      </line>
+    </g>
+  </svg>
+);
+
+// ── BUTT KICKS ──
+const ButtKicks: React.FC = () => (
+  <svg viewBox="0 0 200 160" className="w-full h-full">
+    <g>
+      <circle cx="100" cy="16" r="8" fill={C} opacity="0.9" />
+      <line x1="100" y1="24" x2="100" y2="28" stroke={C} strokeWidth="3" strokeLinecap="round" opacity="0.8" />
+      <line x1="100" y1="28" x2="100" y2="62" stroke={C} strokeWidth="5" strokeLinecap="round" opacity="0.8" />
+      {/* Arms swing */}
+      <line x1="96" y1="32" x2="84" y2="48" stroke={C} strokeWidth="3" strokeLinecap="round" opacity="0.7">
+        <animate attributeName="y2" values="48;36;48" dur="0.6s" repeatCount="indefinite" />
+      </line>
+      <line x1="104" y1="32" x2="116" y2="48" stroke={C} strokeWidth="3" strokeLinecap="round" opacity="0.7">
+        <animate attributeName="y2" values="48;36;48" dur="0.6s" repeatCount="indefinite" begin="0.3s" />
+      </line>
+      {/* Left leg - heel kicks back to glute */}
+      <line x1="96" y1="62" x2="88" y2="80" stroke={C} strokeWidth="4.5" strokeLinecap="round" opacity="0.6">
+        <animate attributeName="x2" values="88;80;88" dur="0.6s" repeatCount="indefinite" />
+        <animate attributeName="y2" values="80;65;80" dur="0.6s" repeatCount="indefinite" />
+      </line>
+      <line x1="88" y1="80" x2="82" y2="100" stroke={C} strokeWidth="4" strokeLinecap="round" opacity="0.5">
+        <animate attributeName="x1" values="88;80;88" dur="0.6s" repeatCount="indefinite" />
+        <animate attributeName="y1" values="80;65;80" dur="0.6s" repeatCount="indefinite" />
+        <animate attributeName="x2" values="82;78;82" dur="0.6s" repeatCount="indefinite" />
+        <animate attributeName="y2" values="100;82;100" dur="0.6s" repeatCount="indefinite" />
+      </line>
+      {/* Right leg */}
+      <line x1="104" y1="62" x2="112" y2="80" stroke={C} strokeWidth="4.5" strokeLinecap="round" opacity="0.5">
+        <animate attributeName="x2" values="112;120;112" dur="0.6s" repeatCount="indefinite" begin="0.3s" />
+        <animate attributeName="y2" values="80;65;80" dur="0.6s" repeatCount="indefinite" begin="0.3s" />
+      </line>
+      <line x1="112" y1="80" x2="118" y2="100" stroke={C} strokeWidth="4" strokeLinecap="round" opacity="0.4">
+        <animate attributeName="x1" values="112;120;112" dur="0.6s" repeatCount="indefinite" begin="0.3s" />
+        <animate attributeName="y1" values="80;65;80" dur="0.6s" repeatCount="indefinite" begin="0.3s" />
+        <animate attributeName="x2" values="118;122;118" dur="0.6s" repeatCount="indefinite" begin="0.3s" />
+        <animate attributeName="y2" values="100;82;100" dur="0.6s" repeatCount="indefinite" begin="0.3s" />
+      </line>
+    </g>
+  </svg>
+);
+
+// ── WALK / MARCH ──
+const Walk: React.FC = () => (
+  <svg viewBox="0 0 200 160" className="w-full h-full">
+    <g>
+      <circle cx="100" cy="16" r="8" fill={C} opacity="0.9" />
+      <line x1="100" y1="24" x2="100" y2="28" stroke={C} strokeWidth="3" strokeLinecap="round" opacity="0.8" />
+      <line x1="100" y1="28" x2="100" y2="62" stroke={C} strokeWidth="5" strokeLinecap="round" opacity="0.8" />
+      {/* Arms swing */}
+      <line x1="96" y1="32" x2="82" y2="48" stroke={C} strokeWidth="3" strokeLinecap="round" opacity="0.7">
+        <animate attributeName="y2" values="48;36;48" dur="1.5s" repeatCount="indefinite" />
+      </line>
+      <line x1="104" y1="32" x2="118" y2="48" stroke={C} strokeWidth="3" strokeLinecap="round" opacity="0.7">
+        <animate attributeName="y2" values="48;36;48" dur="1.5s" repeatCount="indefinite" begin="0.75s" />
+      </line>
+      {/* Left leg stride forward */}
+      <line x1="96" y1="62" x2="82" y2="90" stroke={C} strokeWidth="4.5" strokeLinecap="round" opacity="0.6">
+        <animate attributeName="x2" values="82;105;82" dur="1.5s" repeatCount="indefinite" />
+      </line>
+      <line x1="82" y1="90" x2="78" y2="125" stroke={C} strokeWidth="4" strokeLinecap="round" opacity="0.5">
+        <animate attributeName="x1" values="82;105;82" dur="1.5s" repeatCount="indefinite" />
+        <animate attributeName="x2" values="78;108;78" dur="1.5s" repeatCount="indefinite" />
+      </line>
+      {/* Right leg stride back */}
+      <line x1="104" y1="62" x2="118" y2="90" stroke={C} strokeWidth="4.5" strokeLinecap="round" opacity="0.5">
+        <animate attributeName="x2" values="118;95;118" dur="1.5s" repeatCount="indefinite" />
+      </line>
+      <line x1="118" y1="90" x2="122" y2="125" stroke={C} strokeWidth="4" strokeLinecap="round" opacity="0.4">
+        <animate attributeName="x1" values="118;95;118" dur="1.5s" repeatCount="indefinite" />
+        <animate attributeName="x2" values="122;92;122" dur="1.5s" repeatCount="indefinite" />
+      </line>
+    </g>
+  </svg>
+);
+
+// ── CAT-COW STRETCH ──
+const Stretch: React.FC = () => (
   <svg viewBox="0 0 200 90" className="w-full h-full">
-    {/* Head */}
-    <circle cx="160" cy="28" r="7" fill={C} opacity="0.9" />
-    {/* Torso - straight line, slight breathing movement */}
-    <rect x="60" y="30" width="100" height="7" rx="3.5" fill={C} opacity="0.8">
-      <animate attributeName="y" values="30;31.5;30" dur="3s" repeatCount="indefinite" />
-    </rect>
-    {/* Forearms on ground */}
-    <rect x="152" y="37" width="5" height="20" rx="2.5" fill={C} opacity="0.7" />
-    <rect x="138" y="37" width="5" height="20" rx="2.5" fill={C} opacity="0.7" />
-    {/* Toes */}
-    <rect x="52" y="33" width="15" height="5" rx="2.5" fill={C} opacity="0.5" />
-    <rect x="38" y="34" width="15" height="4" rx="2" fill={C} opacity="0.4" />
+    <g>
+      {/* Head */}
+      <circle cx="162" cy="28" r="6" fill={C} opacity="0.9">
+        <animate attributeName="cy" values="28;36;28" dur="3s" repeatCount="indefinite" />
+      </circle>
+      {/* Spine - curves up and down */}
+      <path d="M 70,38 C 100,28 130,28 158,32" stroke={C} strokeWidth="5" strokeLinecap="round" fill="none" opacity="0.8">
+        <animate attributeName="d" values="M 70,38 C 100,28 130,28 158,32;M 70,38 C 100,48 130,48 158,36;M 70,38 C 100,28 130,28 158,32" dur="3s" repeatCount="indefinite" />
+      </path>
+      {/* Front arms */}
+      <line x1="152" y1="34" x2="152" y2="58" stroke={C} strokeWidth="4" strokeLinecap="round" opacity="0.7" />
+      <line x1="145" y1="35" x2="145" y2="58" stroke={C} strokeWidth="4" strokeLinecap="round" opacity="0.7" />
+      {/* Back legs */}
+      <line x1="72" y1="38" x2="72" y2="58" stroke={C} strokeWidth="4" strokeLinecap="round" opacity="0.6" />
+    </g>
   </svg>
 );
 
-/* ── JUMPING JACKS: arms and legs spread and close ── */
-const JumpingJacksAnimation: React.FC = () => (
+// ── TORSO TWISTS ──
+const Twist: React.FC = () => (
   <svg viewBox="0 0 200 160" className="w-full h-full">
-    {/* Head */}
-    <circle cx="100" cy="20" r="10" fill={C} opacity="0.9" />
-    {/* Torso */}
-    <rect x="93" y="30" width="14" height="36" rx="5" fill={C} opacity="0.8" />
-    {/* Left arm - swings up and down */}
-    <rect x="60" y="34" width="33" height="6" rx="3" fill={C} opacity="0.7">
-      <animateTransform attributeName="transform" type="rotate" values="0 93 37;-140 93 37;0 93 37" dur="1s" repeatCount="indefinite" />
-    </rect>
-    {/* Right arm - swings up and down */}
-    <rect x="107" y="34" width="33" height="6" rx="3" fill={C} opacity="0.7">
-      <animateTransform attributeName="transform" type="rotate" values="0 107 37;140 107 37;0 107 37" dur="1s" repeatCount="indefinite" />
-    </rect>
-    {/* Left leg - spreads out */}
-    <rect x="89" y="66" width="7" height="38" rx="3.5" fill={C} opacity="0.6">
-      <animateTransform attributeName="transform" type="rotate" values="0 93 66;-35 93 66;0 93 66" dur="1s" repeatCount="indefinite" />
-    </rect>
-    {/* Right leg - spreads out */}
-    <rect x="104" y="66" width="7" height="38" rx="3.5" fill={C} opacity="0.6">
-      <animateTransform attributeName="transform" type="rotate" values="0 107 66;35 107 66;0 107 66" dur="1s" repeatCount="indefinite" />
-    </rect>
+    <g>
+      <circle cx="100" cy="18" r="8" fill={C} opacity="0.9">
+        <animate attributeName="cx" values="100;88;112;100" dur="2s" repeatCount="indefinite" />
+      </circle>
+      <line x1="100" y1="26" x2="100" y2="30" stroke={C} strokeWidth="3" strokeLinecap="round" opacity="0.8" />
+      {/* Torso */}
+      <line x1="100" y1="30" x2="100" y2="64" stroke={C} strokeWidth="5" strokeLinecap="round" opacity="0.8">
+        <animate attributeName="x1" values="100;88;112;100" dur="2s" repeatCount="indefinite" />
+        <animate attributeName="x2" values="100;88;112;100" dur="2s" repeatCount="indefinite" />
+      </line>
+      {/* Arms out to sides */}
+      <line x1="100" y1="34" x2="65" y2="38" stroke={C} strokeWidth="3.5" strokeLinecap="round" opacity="0.7">
+        <animate attributeName="x1" values="100;88;112;100" dur="2s" repeatCount="indefinite" />
+        <animate attributeName="x2" values="65;55;75;65" dur="2s" repeatCount="indefinite" />
+      </line>
+      <line x1="100" y1="34" x2="135" y2="38" stroke={C} strokeWidth="3.5" strokeLinecap="round" opacity="0.7">
+        <animate attributeName="x1" values="100;88;112;100" dur="2s" repeatCount="indefinite" />
+        <animate attributeName="x2" values="135;125;145;135" dur="2s" repeatCount="indefinite" />
+      </line>
+      {/* Legs */}
+      <line x1="96" y1="64" x2="90" y2="110" stroke={C} strokeWidth="4.5" strokeLinecap="round" opacity="0.6" />
+      <line x1="104" y1="64" x2="110" y2="110" stroke={C} strokeWidth="4.5" strokeLinecap="round" opacity="0.6" />
+    </g>
   </svg>
 );
 
-/* ── LUNGE: step forward, lower back knee, push back ── */
-const LungeAnimation: React.FC = () => (
-  <svg viewBox="0 0 200 160" className="w-full h-full">
-    {/* Head */}
-    <circle cx="100" cy="20" r="10" fill={C} opacity="0.9">
-      <animate attributeName="cy" values="20;30;20" dur="2.5s" repeatCount="indefinite" />
-    </circle>
-    {/* Torso - upright */}
-    <rect x="93" y="30" width="14" height="38" rx="5" fill={C} opacity="0.8">
-      <animate attributeName="y" values="30;40;30" dur="2.5s" repeatCount="indefinite" />
-    </rect>
-    {/* Front thigh - bends forward */}
-    <rect x="85" y="66" width="8" height="22" rx="4" fill={C} opacity="0.6">
-      <animateTransform attributeName="transform" type="rotate" values="0 89 66;70 89 66;0 89 66" dur="2.5s" repeatCount="indefinite" />
-    </rect>
-    {/* Front shin - mostly vertical */}
-    <rect x="83" y="88" width="7" height="26" rx="3.5" fill={C} opacity="0.5">
-      <animateTransform attributeName="transform" type="rotate" values="0 86 88;-10 86 88;0 86 88" dur="2.5s" repeatCount="indefinite" />
-    </rect>
-    {/* Back thigh - extends back */}
-    <rect x="107" y="66" width="8" height="24" rx="4" fill={C} opacity="0.5">
-      <animateTransform attributeName="transform" type="rotate" values="0 111 66;-50 111 66;0 111 66" dur="2.5s" repeatCount="indefinite" />
-    </rect>
-    {/* Back shin */}
-    <rect x="118" y="88" width="7" height="22" rx="3.5" fill={C} opacity="0.4">
-      <animateTransform attributeName="transform" type="rotate" values="0 121 88;20 121 88;0 121 88" dur="2.5s" repeatCount="indefinite" />
-    </rect>
+// ── TRICEP DIPS ──
+const Dip: React.FC = () => (
+  <svg viewBox="0 0 200 120" className="w-full h-full">
+    {/* Chair */}
+    <rect x="55" y="20" width="6" height="60" rx="3" fill={C} opacity="0.15" />
+    <rect x="55" y="20" width="40" height="5" rx="2.5" fill={C} opacity="0.15" />
+    <g>
+      {/* Head */}
+      <circle cx="105" cy="24" r="7" fill={C} opacity="0.9">
+        <animate attributeName="cy" values="24;40;24" dur="2s" repeatCount="indefinite" />
+      </circle>
+      {/* Torso */}
+      <line x1="105" y1="31" x2="105" y2="58" stroke={C} strokeWidth="5" strokeLinecap="round" opacity="0.8">
+        <animate attributeName="y1" values="31;47;31" dur="2s" repeatCount="indefinite" />
+        <animate attributeName="y2" values="58;74;58" dur="2s" repeatCount="indefinite" />
+      </line>
+      {/* Upper arms - bend at elbow */}
+      <line x1="98" y1="34" x2="78" y2="40" stroke={C} strokeWidth="3.5" strokeLinecap="round" opacity="0.7">
+        <animate attributeName="y1" values="34;50;34" dur="2s" repeatCount="indefinite" />
+        <animate attributeName="y2" values="40;52;40" dur="2s" repeatCount="indefinite" />
+      </line>
+      {/* Forearms on chair */}
+      <line x1="78" y1="40" x2="62" y2="28" stroke={C} strokeWidth="3" strokeLinecap="round" opacity="0.6" />
+      {/* Legs extended */}
+      <line x1="102" y1="58" x2="115" y2="82" stroke={C} strokeWidth="4" strokeLinecap="round" opacity="0.6">
+        <animate attributeName="y1" values="58;74;58" dur="2s" repeatCount="indefinite" />
+        <animate attributeName="y2" values="82;98;82" dur="2s" repeatCount="indefinite" />
+      </line>
+      <line x1="115" y1="82" x2="120" y2="100" stroke={C} strokeWidth="3.5" strokeLinecap="round" opacity="0.5">
+        <animate attributeName="y1" values="82;98;82" dur="2s" repeatCount="indefinite" />
+        <animate attributeName="y2" values="100;116;100" dur="2s" repeatCount="indefinite" />
+      </line>
+    </g>
   </svg>
 );
 
-/* ── MOUNTAIN CLIMBERS: plank, alternating knees to chest ── */
-const MountainClimberAnimation: React.FC = () => (
+// ── GLUTE BRIDGE ──
+const GluteBridge: React.FC = () => (
   <svg viewBox="0 0 200 90" className="w-full h-full">
-    {/* Head */}
-    <circle cx="158" cy="22" r="7" fill={C} opacity="0.9" />
-    {/* Torso */}
-    <rect x="65" y="24" width="93" height="7" rx="3.5" fill={C} opacity="0.8" />
-    {/* Arms - supporting */}
-    <rect x="152" y="31" width="5" height="18" rx="2.5" fill={C} opacity="0.7" />
-    {/* Left knee drives forward */}
-    <rect x="75" y="31" width="6" height="20" rx="3" fill={C} opacity="0.6">
-      <animateTransform attributeName="transform" type="rotate" values="0 78 31;-60 78 31;0 78 31" dur="0.8s" repeatCount="indefinite" />
-    </rect>
-    {/* Right knee drives forward */}
-    <rect x="95" y="31" width="6" height="20" rx="3" fill={C} opacity="0.5">
-      <animateTransform attributeName="transform" type="rotate" values="0 98 31;-60 98 31;0 98 31" dur="0.8s" repeatCount="indefinite" begin="0.4s" />
-    </rect>
-    {/* Back foot */}
-    <rect x="55" y="34" width="14" height="4" rx="2" fill={C} opacity="0.4" />
+    <line x1="25" y1="72" x2="175" y2="72" stroke={C} strokeWidth="1" opacity="0.1" />
+    <g>
+      {/* Head on ground */}
+      <circle cx="155" cy="58" r="6" fill={C} opacity="0.9" />
+      {/* Torso + hips - lifts up */}
+      <line x1="148" y1="62" x2="80" y2="60" stroke={C} strokeWidth="5" strokeLinecap="round" opacity="0.8">
+        <animate attributeName="y2" values="60;40;60" dur="2.5s" repeatCount="indefinite" />
+      </line>
+      {/* Arms on ground */}
+      <line x1="140" y1="64" x2="130" y2="72" stroke={C} strokeWidth="3" strokeLinecap="round" opacity="0.6" />
+      {/* Upper legs */}
+      <line x1="80" y1="60" x2="72" y2="52" stroke={C} strokeWidth="4" strokeLinecap="round" opacity="0.6">
+        <animate attributeName="y1" values="60;40;60" dur="2.5s" repeatCount="indefinite" />
+      </line>
+      {/* Lower legs */}
+      <line x1="72" y1="52" x2="68" y2="72" stroke={C} strokeWidth="3.5" strokeLinecap="round" opacity="0.5" />
+      <line x1="90" y1="60" x2="82" y2="52" stroke={C} strokeWidth="4" strokeLinecap="round" opacity="0.6">
+        <animate attributeName="y1" values="60;40;60" dur="2.5s" repeatCount="indefinite" />
+      </line>
+      <line x1="82" y1="52" x2="78" y2="72" stroke={C} strokeWidth="3.5" strokeLinecap="round" opacity="0.5" />
+    </g>
   </svg>
 );
 
-/* ── ARM CIRCLES: standing, arms extended, making circles ── */
-const ArmCirclesAnimation: React.FC = () => (
+// ── SIDE PLANK ──
+const SidePlank: React.FC = () => (
+  <svg viewBox="0 0 200 90" className="w-full h-full">
+    <line x1="25" y1="72" x2="175" y2="72" stroke={C} strokeWidth="1" opacity="0.1" />
+    <g>
+      <circle cx="160" cy="22" r="6" fill={C} opacity="0.9" />
+      <line x1="155" y1="26" x2="152" y2="30" stroke={C} strokeWidth="3" strokeLinecap="round" opacity="0.8" />
+      {/* Torso - angled */}
+      <line x1="152" y1="30" x2="60" y2="45" stroke={C} strokeWidth="5" strokeLinecap="round" opacity="0.8" />
+      {/* Supporting forearm */}
+      <line x1="148" y1="32" x2="148" y2="55" stroke={C} strokeWidth="4" strokeLinecap="round" opacity="0.7" />
+      <line x1="148" y1="55" x2="155" y2="72" stroke={C} strokeWidth="3.5" strokeLinecap="round" opacity="0.6" />
+      {/* Top arm on hip */}
+      <line x1="120" y1="35" x2="100" y2="42" stroke={C} strokeWidth="3" strokeLinecap="round" opacity="0.5" />
+      {/* Feet */}
+      <line x1="60" y1="45" x2="50" y2="72" stroke={C} strokeWidth="4" strokeLinecap="round" opacity="0.5" />
+    </g>
+  </svg>
+);
+
+// ── SKATER JUMPS ──
+const Skater: React.FC = () => (
   <svg viewBox="0 0 200 160" className="w-full h-full">
-    {/* Head */}
-    <circle cx="100" cy="22" r="10" fill={C} opacity="0.9" />
-    {/* Torso */}
-    <rect x="93" y="32" width="14" height="40" rx="5" fill={C} opacity="0.8" />
-    {/* Left arm - circles */}
-    <rect x="55" y="38" width="38" height="5" rx="2.5" fill={C} opacity="0.7">
-      <animateTransform attributeName="transform" type="rotate" values="0 93 40;360 93 40" dur="3s" repeatCount="indefinite" />
-    </rect>
-    {/* Right arm - circles opposite */}
-    <rect x="107" y="38" width="38" height="5" rx="2.5" fill={C} opacity="0.7">
-      <animateTransform attributeName="transform" type="rotate" values="0 107 40;-360 107 40" dur="3s" repeatCount="indefinite" />
-    </rect>
-    {/* Legs - standing */}
-    <rect x="90" y="72" width="7" height="40" rx="3.5" fill={C} opacity="0.6" />
-    <rect x="103" y="72" width="7" height="40" rx="3.5" fill={C} opacity="0.6" />
+    <g>
+      <circle cx="100" cy="16" r="8" fill={C} opacity="0.9">
+        <animate attributeName="cx" values="100;68;132;100" dur="1.5s" repeatCount="indefinite" />
+      </circle>
+      <line x1="100" y1="24" x2="100" y2="28" stroke={C} strokeWidth="3" strokeLinecap="round" opacity="0.8">
+        <animate attributeName="x1" values="100;68;132;100" dur="1.5s" repeatCount="indefinite" />
+        <animate attributeName="x2" values="100;68;132;100" dur="1.5s" repeatCount="indefinite" />
+      </line>
+      <line x1="100" y1="28" x2="100" y2="62" stroke={C} strokeWidth="5" strokeLinecap="round" opacity="0.8">
+        <animate attributeName="x1" values="100;68;132;100" dur="1.5s" repeatCount="indefinite" />
+        <animate attributeName="x2" values="100;68;132;100" dur="1.5s" repeatCount="indefinite" />
+      </line>
+      {/* Arms for balance */}
+      <line x1="100" y1="32" x2="75" y2="42" stroke={C} strokeWidth="3" strokeLinecap="round" opacity="0.7">
+        <animate attributeName="x1" values="100;68;132;100" dur="1.5s" repeatCount="indefinite" />
+        <animate attributeName="x2" values="75;45;105;75" dur="1.5s" repeatCount="indefinite" />
+      </line>
+      <line x1="100" y1="32" x2="125" y2="42" stroke={C} strokeWidth="3" strokeLinecap="round" opacity="0.7">
+        <animate attributeName="x1" values="100;68;132;100" dur="1.5s" repeatCount="indefinite" />
+        <animate attributeName="x2" values="125;95;165;125" dur="1.5s" repeatCount="indefinite" />
+      </line>
+      {/* Landing leg */}
+      <line x1="96" y1="62" x2="88" y2="95" stroke={C} strokeWidth="4.5" strokeLinecap="round" opacity="0.6">
+        <animate attributeName="x1" values="96;64;128;96" dur="1.5s" repeatCount="indefinite" />
+        <animate attributeName="x2" values="88;60;120;88" dur="1.5s" repeatCount="indefinite" />
+      </line>
+      <line x1="88" y1="95" x2="82" y2="128" stroke={C} strokeWidth="4" strokeLinecap="round" opacity="0.5">
+        <animate attributeName="x1" values="88;60;120;88" dur="1.5s" repeatCount="indefinite" />
+        <animate attributeName="x2" values="82;55;115;82" dur="1.5s" repeatCount="indefinite" />
+      </line>
+      {/* Trail leg */}
+      <line x1="104" y1="62" x2="120" y2="90" stroke={C} strokeWidth="4" strokeLinecap="round" opacity="0.4">
+        <animate attributeName="x1" values="104;72;136;104" dur="1.5s" repeatCount="indefinite" />
+        <animate attributeName="x2" values="120;85;155;120" dur="1.5s" repeatCount="indefinite" />
+      </line>
+    </g>
   </svg>
 );
 
-/* ── HIGH KNEES: running in place, knees drive up high ── */
-const HighKneesAnimation: React.FC = () => (
+// ── LEG RAISE ──
+const LegRaise: React.FC = () => (
   <svg viewBox="0 0 200 160" className="w-full h-full">
-    {/* Head */}
-    <circle cx="100" cy="18" r="10" fill={C} opacity="0.9" />
-    {/* Torso - slight forward lean */}
-    <rect x="93" y="28" width="14" height="38" rx="5" fill={C} opacity="0.8" />
-    {/* Left arm - swings forward */}
-    <rect x="78" y="34" width="6" height="22" rx="3" fill={C} opacity="0.7">
-      <animateTransform attributeName="transform" type="rotate" values="25 81 34;-25 81 34;25 81 34" dur="0.6s" repeatCount="indefinite" />
-    </rect>
-    {/* Right arm - swings back */}
-    <rect x="116" y="34" width="6" height="22" rx="3" fill={C} opacity="0.7">
-      <animateTransform attributeName="transform" type="rotate" values="-25 119 34;25 119 34;-25 119 34" dur="0.6s" repeatCount="indefinite" />
-    </rect>
-    {/* Left knee drives up high */}
-    <rect x="88" y="66" width="7" height="22" rx="3.5" fill={C} opacity="0.6">
-      <animateTransform attributeName="transform" type="rotate" values="0 91 66;-100 91 66;0 91 66" dur="0.6s" repeatCount="indefinite" />
-    </rect>
-    {/* Left shin */}
-    <rect x="85" y="88" width="6" height="18" rx="3" fill={C} opacity="0.5">
-      <animateTransform attributeName="transform" type="rotate" values="0 88 88;60 88 88;0 88 88" dur="0.6s" repeatCount="indefinite" />
-    </rect>
-    {/* Right knee drives up */}
-    <rect x="105" y="66" width="7" height="22" rx="3.5" fill={C} opacity="0.5">
-      <animateTransform attributeName="transform" type="rotate" values="0 108 66;-100 108 66;0 108 66" dur="0.6s" repeatCount="indefinite" begin="0.3s" />
-    </rect>
-    {/* Right shin */}
-    <rect x="108" y="88" width="6" height="18" rx="3" fill={C} opacity="0.4">
-      <animateTransform attributeName="transform" type="rotate" values="0 111 88;60 111 88;0 111 88" dur="0.6s" repeatCount="indefinite" begin="0.3s" />
-    </rect>
+    <g>
+      <circle cx="100" cy="16" r="8" fill={C} opacity="0.9" />
+      <line x1="100" y1="24" x2="100" y2="28" stroke={C} strokeWidth="3" strokeLinecap="round" opacity="0.8" />
+      <line x1="100" y1="28" x2="100" y2="62" stroke={C} strokeWidth="5" strokeLinecap="round" opacity="0.8" />
+      {/* Arms at sides */}
+      <line x1="94" y1="32" x2="88" y2="52" stroke={C} strokeWidth="3" strokeLinecap="round" opacity="0.6" />
+      <line x1="106" y1="32" x2="112" y2="52" stroke={C} strokeWidth="3" strokeLinecap="round" opacity="0.6" />
+      {/* Standing leg */}
+      <line x1="104" y1="62" x2="108" y2="110" stroke={C} strokeWidth="4.5" strokeLinecap="round" opacity="0.6" />
+      {/* Raising leg - lifts to side */}
+      <line x1="96" y1="62" x2="72" y2="85" stroke={C} strokeWidth="4.5" strokeLinecap="round" opacity="0.5">
+        <animate attributeName="x2" values="72;68;72" dur="2s" repeatCount="indefinite" />
+        <animate attributeName="y2" values="85;55;85" dur="2s" repeatCount="indefinite" />
+      </line>
+    </g>
   </svg>
 );
 
-/* ── BUTT KICKS: heels kick back toward glutes ── */
-const ButtKicksAnimation: React.FC = () => (
-  <svg viewBox="0 0 200 160" className="w-full h-full">
-    {/* Head */}
-    <circle cx="100" cy="20" r="10" fill={C} opacity="0.9" />
-    {/* Torso */}
-    <rect x="93" y="30" width="14" height="38" rx="5" fill={C} opacity="0.8" />
-    {/* Arms swing */}
-    <rect x="80" y="36" width="6" height="20" rx="3" fill={C} opacity="0.7">
-      <animateTransform attributeName="transform" type="rotate" values="-20 83 36;20 83 36;-20 83 36" dur="0.6s" repeatCount="indefinite" />
-    </rect>
-    <rect x="114" y="36" width="6" height="20" rx="3" fill={C} opacity="0.7">
-      <animateTransform attributeName="transform" type="rotate" values="20 117 36;-20 117 36;20 117 36" dur="0.6s" repeatCount="indefinite" />
-    </rect>
-    {/* Left leg - heel kicks back to glute */}
-    <rect x="88" y="68" width="7" height="20" rx="3.5" fill={C} opacity="0.6">
-      <animateTransform attributeName="transform" type="rotate" values="0 91 68;80 91 68;0 91 68" dur="0.6s" repeatCount="indefinite" />
-    </rect>
-    <rect x="85" y="88" width="6" height="16" rx="3" fill={C} opacity="0.5">
-      <animateTransform attributeName="transform" type="rotate" values="0 88 88;-80 88 88;0 88 88" dur="0.6s" repeatCount="indefinite" />
-    </rect>
-    {/* Right leg */}
-    <rect x="105" y="68" width="7" height="20" rx="3.5" fill={C} opacity="0.5">
-      <animateTransform attributeName="transform" type="rotate" values="0 108 68;80 108 68;0 108 68" dur="0.6s" repeatCount="indefinite" begin="0.3s" />
-    </rect>
-    <rect x="108" y="88" width="6" height="16" rx="3" fill={C} opacity="0.4">
-      <animateTransform attributeName="transform" type="rotate" values="0 111 88;-80 111 88;0 111 88" dur="0.6s" repeatCount="indefinite" begin="0.3s" />
-    </rect>
-  </svg>
-);
-
-/* ── WALK / MARCH: steady walking motion ── */
-const WalkAnimation: React.FC = () => (
-  <svg viewBox="0 0 200 160" className="w-full h-full">
-    <circle cx="100" cy="20" r="10" fill={C} opacity="0.9" />
-    <rect x="93" y="30" width="14" height="38" rx="5" fill={C} opacity="0.8" />
-    {/* Arms swing naturally */}
-    <rect x="80" y="36" width="6" height="20" rx="3" fill={C} opacity="0.7">
-      <animateTransform attributeName="transform" type="rotate" values="15 83 36;-15 83 36;15 83 36" dur="1.5s" repeatCount="indefinite" />
-    </rect>
-    <rect x="114" y="36" width="6" height="20" rx="3" fill={C} opacity="0.7">
-      <animateTransform attributeName="transform" type="rotate" values="-15 117 36;15 117 36;-15 117 36" dur="1.5s" repeatCount="indefinite" />
-    </rect>
-    {/* Left leg strides forward */}
-    <rect x="88" y="68" width="7" height="30" rx="3.5" fill={C} opacity="0.6">
-      <animateTransform attributeName="transform" type="rotate" values="20 91 68;-20 91 68;20 91 68" dur="1.5s" repeatCount="indefinite" />
-    </rect>
-    {/* Right leg strides back */}
-    <rect x="105" y="68" width="7" height="30" rx="3.5" fill={C} opacity="0.5">
-      <animateTransform attributeName="transform" type="rotate" values="-20 108 68;20 108 68;-20 108 68" dur="1.5s" repeatCount="indefinite" />
-    </rect>
-  </svg>
-);
-
-/* ── CAT-COW STRETCH: on all fours, arch and round back ── */
-const StretchAnimation: React.FC = () => (
-  <svg viewBox="0 0 200 100" className="w-full h-full">
-    {/* Head */}
-    <circle cx="160" cy="32" r="7" fill={C} opacity="0.9">
-      <animate attributeName="cy" values="32;40;32" dur="3s" repeatCount="indefinite" />
-    </circle>
-    {/* Spine - arches up (cat) and dips down (cow) */}
-    <path d="M 70,40 Q 110,30 155,35" stroke={C} strokeWidth="6" strokeLinecap="round" fill="none" opacity="0.8">
-      <animate attributeName="d" values="M 70,40 Q 110,30 155,35;M 70,40 Q 110,50 155,38;M 70,40 Q 110,30 155,35" dur="3s" repeatCount="indefinite" />
-    </path>
-    {/* Front arms */}
-    <rect x="148" y="40" width="5" height="24" rx="2.5" fill={C} opacity="0.7" />
-    {/* Back legs */}
-    <rect x="65" y="40" width="5" height="24" rx="2.5" fill={C} opacity="0.6" />
-  </svg>
-);
-
-/* ── TORSO TWISTS: standing, upper body rotates side to side ── */
-const TwistAnimation: React.FC = () => (
-  <svg viewBox="0 0 200 160" className="w-full h-full">
-    {/* Head */}
-    <circle cx="100" cy="22" r="10" fill={C} opacity="0.9">
-      <animate attributeName="cx" values="100;90;110;100" dur="2s" repeatCount="indefinite" />
-    </circle>
-    {/* Torso - rotates */}
-    <rect x="93" y="32" width="14" height="40" rx="5" fill={C} opacity="0.8">
-      <animate attributeName="x" values="93;83;103;93" dur="2s" repeatCount="indefinite" />
-    </rect>
-    {/* Arms out to sides - swing with twist */}
-    <rect x="62" y="40" width="31" height="6" rx="3" fill={C} opacity="0.7">
-      <animateTransform attributeName="transform" type="rotate" values="0 93 43;-30 93 43;0 93 43" dur="2s" repeatCount="indefinite" />
-    </rect>
-    <rect x="107" y="40" width="31" height="6" rx="3" fill={C} opacity="0.7">
-      <animateTransform attributeName="transform" type="rotate" values="0 107 43;30 107 43;0 107 43" dur="2s" repeatCount="indefinite" />
-    </rect>
-    {/* Legs - stable */}
-    <rect x="90" y="72" width="7" height="40" rx="3.5" fill={C} opacity="0.6" />
-    <rect x="103" y="72" width="7" height="40" rx="3.5" fill={C} opacity="0.6" />
-  </svg>
-);
-
-/* ── TRICEP DIPS: hands on chair, lower and raise body ── */
-const DipAnimation: React.FC = () => (
-  <svg viewBox="0 0 200 130" className="w-full h-full">
-    {/* Chair back */}
-    <rect x="55" y="25" width="8" height="70" rx="4" fill={C} opacity="0.2" />
-    <rect x="55" y="25" width="50" height="6" rx="3" fill={C} opacity="0.2" />
-    {/* Head */}
-    <circle cx="100" cy="28" r="9" fill={C} opacity="0.9">
-      <animate attributeName="cy" values="28;42;28" dur="2s" repeatCount="indefinite" />
-    </circle>
-    {/* Torso */}
-    <rect x="93" y="37" width="14" height="32" rx="5" fill={C} opacity="0.8">
-      <animate attributeName="y" values="37;51;37" dur="2s" repeatCount="indefinite" />
-    </rect>
-    {/* Upper arms - bend at elbow */}
-    <rect x="82" y="42" width="6" height="18" rx="3" fill={C} opacity="0.7">
-      <animate attributeName="height" values="18;10;18" dur="2s" repeatCount="indefinite" />
-      <animate attributeName="y" values="42;50;42" dur="2s" repeatCount="indefinite" />
-    </rect>
-    {/* Hands on chair */}
-    <rect x="80" y="60" width="8" height="5" rx="2.5" fill={C} opacity="0.5" />
-    {/* Legs extended */}
-    <rect x="90" y="69" width="7" height="28" rx="3.5" fill={C} opacity="0.6">
-      <animate attributeName="y" values="69;83;69" dur="2s" repeatCount="indefinite" />
-    </rect>
-    <rect x="103" y="69" width="7" height="28" rx="3.5" fill={C} opacity="0.5">
-      <animate attributeName="y" values="69;83;69" dur="2s" repeatCount="indefinite" />
-    </rect>
-  </svg>
-);
-
-/* ── GLUTE BRIDGE: lying on back, hips lift up ── */
-const GluteBridgeAnimation: React.FC = () => (
-  <svg viewBox="0 0 200 100" className="w-full h-full">
-    {/* Head on ground */}
-    <circle cx="155" cy="65" r="7" fill={C} opacity="0.9" />
-    {/* Torso + hips - lifts up */}
-    <rect x="70" y="58" width="85" height="8" rx="4" fill={C} opacity="0.8">
-      <animate attributeName="y" values="58;42;58" dur="2.5s" repeatCount="indefinite" />
-    </rect>
-    {/* Upper arms on ground */}
-    <rect x="140" y="66" width="12" height="5" rx="2.5" fill={C} opacity="0.6" />
-    {/* Upper legs - bend at knee */}
-    <rect x="72" y="62" width="7" height="20" rx="3.5" fill={C} opacity="0.6">
-      <animateTransform attributeName="transform" type="rotate" values="0 75 62;-30 75 62;0 75 62" dur="2.5s" repeatCount="indefinite" />
-    </rect>
-    <rect x="88" y="62" width="7" height="20" rx="3.5" fill={C} opacity="0.6">
-      <animateTransform attributeName="transform" type="rotate" values="0 91 62;-30 91 62;0 91 62" dur="2.5s" repeatCount="indefinite" />
-    </rect>
-    {/* Lower legs - feet flat */}
-    <rect x="62" y="82" width="18" height="5" rx="2.5" fill={C} opacity="0.5" />
-    <rect x="80" y="82" width="18" height="5" rx="2.5" fill={C} opacity="0.5" />
-  </svg>
-);
-
-/* ── SIDE PLANK: side-lying, propped on forearm, body straight ── */
-const SidePlankAnimation: React.FC = () => (
-  <svg viewBox="0 0 200 100" className="w-full h-full">
-    {/* Head */}
-    <circle cx="158" cy="25" r="7" fill={C} opacity="0.9" />
-    {/* Torso - angled line */}
-    <rect x="65" y="38" width="93" height="7" rx="3.5" fill={C} opacity="0.8" transform="rotate(-8 111 41)" />
-    {/* Supporting forearm */}
-    <rect x="152" y="32" width="5" height="22" rx="2.5" fill={C} opacity="0.7" />
-    {/* Top arm on hip */}
-    <rect x="110" y="32" width="25" height="5" rx="2.5" fill={C} opacity="0.6" transform="rotate(10 122 34)" />
-    {/* Feet stacked */}
-    <rect x="55" y="42" width="15" height="5" rx="2.5" fill={C} opacity="0.5" />
-  </svg>
-);
-
-/* ── SKATER JUMPS: lateral leap, landing on one foot ── */
-const SkaterAnimation: React.FC = () => (
-  <svg viewBox="0 0 200 160" className="w-full h-full">
-    {/* Head */}
-    <circle cx="100" cy="20" r="10" fill={C} opacity="0.9">
-      <animate attributeName="cx" values="100;70;130;100" dur="1.5s" repeatCount="indefinite" />
-    </circle>
-    {/* Torso */}
-    <rect x="93" y="30" width="14" height="38" rx="5" fill={C} opacity="0.8">
-      <animate attributeName="x" values="93;63;123;93" dur="1.5s" repeatCount="indefinite" />
-    </rect>
-    {/* Arms swing for balance */}
-    <rect x="75" y="38" width="18" height="5" rx="2.5" fill={C} opacity="0.7">
-      <animateTransform attributeName="transform" type="rotate" values="0 93 40;-30 93 40;0 93 40" dur="1.5s" repeatCount="indefinite" />
-    </rect>
-    {/* Landing leg */}
-    <rect x="88" y="68" width="7" height="35" rx="3.5" fill={C} opacity="0.6">
-      <animateTransform attributeName="transform" type="rotate" values="10 91 68;-10 91 68;10 91 68" dur="1.5s" repeatCount="indefinite" />
-    </rect>
-    {/* Trail leg swings behind */}
-    <rect x="105" y="68" width="7" height="30" rx="3.5" fill={C} opacity="0.5">
-      <animateTransform attributeName="transform" type="rotate" values="-30 108 68;30 108 68;-30 108 68" dur="1.5s" repeatCount="indefinite" />
-    </rect>
-  </svg>
-);
-
-/* ── LEG RAISE: standing, one leg lifts to the side ── */
-const LegRaiseAnimation: React.FC = () => (
-  <svg viewBox="0 0 200 160" className="w-full h-full">
-    {/* Head */}
-    <circle cx="100" cy="20" r="10" fill={C} opacity="0.9" />
-    {/* Torso */}
-    <rect x="93" y="30" width="14" height="40" rx="5" fill={C} opacity="0.8" />
-    {/* Arms at sides */}
-    <rect x="78" y="36" width="6" height="22" rx="3" fill={C} opacity="0.6" />
-    <rect x="116" y="36" width="6" height="22" rx="3" fill={C} opacity="0.6" />
-    {/* Standing leg */}
-    <rect x="103" y="70" width="7" height="42" rx="3.5" fill={C} opacity="0.6" />
-    {/* Raising leg - lifts to the side */}
-    <rect x="88" y="70" width="7" height="38" rx="3.5" fill={C} opacity="0.5">
-      <animateTransform attributeName="transform" type="rotate" values="0 91 70;-50 91 70;0 91 70" dur="2s" repeatCount="indefinite" />
-    </rect>
-  </svg>
-);
-
-/* ── PULL-UP: hanging from bar, pull body up ── */
-const PullUpAnimation: React.FC = () => (
+// ── PULL-UP ──
+const PullUp: React.FC = () => (
   <svg viewBox="0 0 200 160" className="w-full h-full">
     {/* Bar */}
-    <rect x="50" y="10" width="100" height="4" rx="2" fill={C} opacity="0.3" />
-    {/* Head */}
-    <circle cx="100" cy="25" r="9" fill={C} opacity="0.9">
-      <animate attributeName="cy" values="45;20;45" dur="2.5s" repeatCount="indefinite" />
-    </circle>
-    {/* Torso */}
-    <rect x="93" y="34" width="14" height="35" rx="5" fill={C} opacity="0.8">
-      <animate attributeName="y" values="54;29;54" dur="2.5s" repeatCount="indefinite" />
-    </rect>
-    {/* Arms reaching up to bar */}
-    <rect x="84" y="14" width="5" height="24" rx="2.5" fill={C} opacity="0.7">
-      <animate attributeName="y" values="34;14;34" dur="2.5s" repeatCount="indefinite" />
-      <animate attributeName="height" values="24;18;24" dur="2.5s" repeatCount="indefinite" />
-    </rect>
-    <rect x="111" y="14" width="5" height="24" rx="2.5" fill={C} opacity="0.7">
-      <animate attributeName="y" values="34;14;34" dur="2.5s" repeatCount="indefinite" />
-      <animate attributeName="height" values="24;18;24" dur="2.5s" repeatCount="indefinite" />
-    </rect>
-    {/* Legs - hang straight */}
-    <rect x="90" y="69" width="7" height="35" rx="3.5" fill={C} opacity="0.6">
-      <animate attributeName="y" values="89;64;89" dur="2.5s" repeatCount="indefinite" />
-    </rect>
-    <rect x="103" y="69" width="7" height="35" rx="3.5" fill={C} opacity="0.5">
-      <animate attributeName="y" values="89;64;89" dur="2.5s" repeatCount="indefinite" />
-    </rect>
+    <line x1="50" y1="12" x2="150" y2="12" stroke={C} strokeWidth="3" strokeLinecap="round" opacity="0.3" />
+    <g>
+      {/* Head */}
+      <circle cx="100" cy="28" r="7" fill={C} opacity="0.9">
+        <animate attributeName="cy" values="48;22;48" dur="2.5s" repeatCount="indefinite" />
+      </circle>
+      {/* Torso */}
+      <line x1="100" y1="35" x2="100" y2="68" stroke={C} strokeWidth="5" strokeLinecap="round" opacity="0.8">
+        <animate attributeName="y1" values="55;29;55" dur="2.5s" repeatCount="indefinite" />
+        <animate attributeName="y2" values="88;62;88" dur="2.5s" repeatCount="indefinite" />
+      </line>
+      {/* Arms to bar */}
+      <line x1="94" y1="12" x2="94" y2="35" stroke={C} strokeWidth="3.5" strokeLinecap="round" opacity="0.7">
+        <animate attributeName="y1" values="32;12;32" dur="2.5s" repeatCount="indefinite" />
+        <animate attributeName="y2" values="55;35;55" dur="2.5s" repeatCount="indefinite" />
+      </line>
+      <line x1="106" y1="12" x2="106" y2="35" stroke={C} strokeWidth="3.5" strokeLinecap="round" opacity="0.7">
+        <animate attributeName="y1" values="32;12;32" dur="2.5s" repeatCount="indefinite" />
+        <animate attributeName="y2" values="55;35;55" dur="2.5s" repeatCount="indefinite" />
+      </line>
+      {/* Legs */}
+      <line x1="97" y1="68" x2="94" y2="110" stroke={C} strokeWidth="4" strokeLinecap="round" opacity="0.6">
+        <animate attributeName="y1" values="88;62;88" dur="2.5s" repeatCount="indefinite" />
+        <animate attributeName="y2" values="130;104;130" dur="2.5s" repeatCount="indefinite" />
+      </line>
+      <line x1="103" y1="68" x2="106" y2="110" stroke={C} strokeWidth="4" strokeLinecap="round" opacity="0.5">
+        <animate attributeName="y1" values="88;62;88" dur="2.5s" repeatCount="indefinite" />
+        <animate attributeName="y2" values="130;104;130" dur="2.5s" repeatCount="indefinite" />
+      </line>
+    </g>
   </svg>
 );
 
-/* ── CALF RAISE: standing, rise onto toes ── */
-const CalfAnimation: React.FC = () => (
+// ── CALF RAISE ──
+const Calf: React.FC = () => (
   <svg viewBox="0 0 200 160" className="w-full h-full">
-    {/* Head */}
-    <circle cx="100" cy="18" r="10" fill={C} opacity="0.9">
-      <animate attributeName="cy" values="18;12;18" dur="2s" repeatCount="indefinite" />
-    </circle>
-    {/* Torso */}
-    <rect x="93" y="28" width="14" height="40" rx="5" fill={C} opacity="0.8">
-      <animate attributeName="y" values="28;22;28" dur="2s" repeatCount="indefinite" />
-    </rect>
-    {/* Arms on wall for balance */}
-    <rect x="78" y="34" width="15" height="5" rx="2.5" fill={C} opacity="0.6" />
-    <rect x="107" y="34" width="15" height="5" rx="2.5" fill={C} opacity="0.6" />
-    {/* Upper legs */}
-    <rect x="90" y="68" width="7" height="28" rx="3.5" fill={C} opacity="0.6">
-      <animate attributeName="y" values="68;62;68" dur="2s" repeatCount="indefinite" />
-    </rect>
-    <rect x="103" y="68" width="7" height="28" rx="3.5" fill={C} opacity="0.6">
-      <animate attributeName="y" values="68;62;68" dur="2s" repeatCount="indefinite" />
-    </rect>
-    {/* Lower legs */}
-    <rect x="90" y="96" width="7" height="24" rx="3.5" fill={C} opacity="0.5">
-      <animate attributeName="y" values="96;90;96" dur="2s" repeatCount="indefinite" />
-    </rect>
-    <rect x="103" y="96" width="7" height="24" rx="3.5" fill={C} opacity="0.5">
-      <animate attributeName="y" values="96;90;96" dur="2s" repeatCount="indefinite" />
-    </rect>
-    {/* Feet - rise onto toes */}
-    <rect x="84" y="120" width="16" height="5" rx="2.5" fill={C} opacity="0.4">
-      <animate attributeName="y" values="120;114;120" dur="2s" repeatCount="indefinite" />
-    </rect>
-    <rect x="100" y="120" width="16" height="5" rx="2.5" fill={C} opacity="0.4">
-      <animate attributeName="y" values="120;114;120" dur="2s" repeatCount="indefinite" />
-    </rect>
+    <g>
+      <circle cx="100" cy="14" r="8" fill={C} opacity="0.9">
+        <animate attributeName="cy" values="14;8;14" dur="2s" repeatCount="indefinite" />
+      </circle>
+      <line x1="100" y1="22" x2="100" y2="26" stroke={C} strokeWidth="3" strokeLinecap="round" opacity="0.8" />
+      <line x1="100" y1="26" x2="100" y2="60" stroke={C} strokeWidth="5" strokeLinecap="round" opacity="0.8">
+        <animate attributeName="y1" values="26;20;26" dur="2s" repeatCount="indefinite" />
+        <animate attributeName="y2" values="60;54;60" dur="2s" repeatCount="indefinite" />
+      </line>
+      {/* Arms on wall */}
+      <line x1="94" y1="30" x2="75" y2="34" stroke={C} strokeWidth="3" strokeLinecap="round" opacity="0.6" />
+      <line x1="106" y1="30" x2="125" y2="34" stroke={C} strokeWidth="3" strokeLinecap="round" opacity="0.6" />
+      {/* Upper legs */}
+      <line x1="96" y1="60" x2="92" y2="90" stroke={C} strokeWidth="4.5" strokeLinecap="round" opacity="0.6">
+        <animate attributeName="y1" values="60;54;60" dur="2s" repeatCount="indefinite" />
+        <animate attributeName="y2" values="90;84;90" dur="2s" repeatCount="indefinite" />
+      </line>
+      <line x1="104" y1="60" x2="108" y2="90" stroke={C} strokeWidth="4.5" strokeLinecap="round" opacity="0.6">
+        <animate attributeName="y1" values="60;54;60" dur="2s" repeatCount="indefinite" />
+        <animate attributeName="y2" values="90;84;90" dur="2s" repeatCount="indefinite" />
+      </line>
+      {/* Lower legs */}
+      <line x1="92" y1="90" x2="90" y2="118" stroke={C} strokeWidth="4" strokeLinecap="round" opacity="0.5">
+        <animate attributeName="y1" values="90;84;90" dur="2s" repeatCount="indefinite" />
+        <animate attributeName="y2" values="118;112;118" dur="2s" repeatCount="indefinite" />
+      </line>
+      <line x1="108" y1="90" x2="110" y2="118" stroke={C} strokeWidth="4" strokeLinecap="round" opacity="0.5">
+        <animate attributeName="y1" values="90;84;90" dur="2s" repeatCount="indefinite" />
+        <animate attributeName="y2" values="118;112;118" dur="2s" repeatCount="indefinite" />
+      </line>
+      {/* Feet - rise onto toes */}
+      <line x1="85" y1="118" x2="78" y2="120" stroke={C} strokeWidth="3" strokeLinecap="round" opacity="0.4">
+        <animate attributeName="y1" values="118;112;118" dur="2s" repeatCount="indefinite" />
+        <animate attributeName="y2" values="120;114;120" dur="2s" repeatCount="indefinite" />
+      </line>
+      <line x1="115" y1="118" x2="122" y2="120" stroke={C} strokeWidth="3" strokeLinecap="round" opacity="0.4">
+        <animate attributeName="y1" values="118;112;118" dur="2s" repeatCount="indefinite" />
+        <animate attributeName="y2" values="120;114;120" dur="2s" repeatCount="indefinite" />
+      </line>
+    </g>
   </svg>
 );
 
-/* ── HOLD: static standing pose with breathing ── */
-const HoldAnimation: React.FC = () => (
+// ── HOLD ──
+const Hold: React.FC = () => (
   <svg viewBox="0 0 200 160" className="w-full h-full">
-    <circle cx="100" cy="20" r="10" fill={C} opacity="0.9">
-      <animate attributeName="r" values="10;10.5;10" dur="2s" repeatCount="indefinite" />
-    </circle>
-    <rect x="93" y="30" width="14" height="40" rx="5" fill={C} opacity="0.8" />
-    <rect x="78" y="36" width="15" height="5" rx="2.5" fill={C} opacity="0.6" transform="rotate(-20 85 38)" />
-    <rect x="107" y="36" width="15" height="5" rx="2.5" fill={C} opacity="0.6" transform="rotate(20 114 38)" />
-    <rect x="90" y="70" width="7" height="40" rx="3.5" fill={C} opacity="0.6" />
-    <rect x="103" y="70" width="7" height="40" rx="3.5" fill={C} opacity="0.6" />
+    <g>
+      <circle cx="100" cy="16" r="8" fill={C} opacity="0.9">
+        <animate attributeName="r" values="8;8.5;8" dur="2s" repeatCount="indefinite" />
+      </circle>
+      <line x1="100" y1="24" x2="100" y2="28" stroke={C} strokeWidth="3" strokeLinecap="round" opacity="0.8" />
+      <line x1="100" y1="28" x2="100" y2="62" stroke={C} strokeWidth="5" strokeLinecap="round" opacity="0.8" />
+      <line x1="94" y1="32" x2="78" y2="42" stroke={C} strokeWidth="3" strokeLinecap="round" opacity="0.6" />
+      <line x1="106" y1="32" x2="122" y2="42" stroke={C} strokeWidth="3" strokeLinecap="round" opacity="0.6" />
+      <line x1="96" y1="62" x2="90" y2="110" stroke={C} strokeWidth="4.5" strokeLinecap="round" opacity="0.6" />
+      <line x1="104" y1="62" x2="110" y2="110" stroke={C} strokeWidth="4.5" strokeLinecap="round" opacity="0.6" />
+    </g>
   </svg>
 );
 
-/* ── DEFAULT: standing with arm swing ── */
-const DefaultAnimation: React.FC = () => (
+// ── DEFAULT ──
+const Default: React.FC = () => (
   <svg viewBox="0 0 200 160" className="w-full h-full">
-    <circle cx="100" cy="20" r="10" fill={C} opacity="0.9">
-      <animate attributeName="cy" values="20;18;20" dur="1.5s" repeatCount="indefinite" />
-    </circle>
-    <rect x="93" y="30" width="14" height="40" rx="5" fill={C} opacity="0.8" />
-    <rect x="78" y="36" width="15" height="5" rx="2.5" fill={C} opacity="0.7">
-      <animateTransform attributeName="transform" type="rotate" values="-15 93 38;15 93 38;-15 93 38" dur="2s" repeatCount="indefinite" />
-    </rect>
-    <rect x="107" y="36" width="15" height="5" rx="2.5" fill={C} opacity="0.7">
-      <animateTransform attributeName="transform" type="rotate" values="15 107 38;-15 107 38;15 107 38" dur="2s" repeatCount="indefinite" />
-    </rect>
-    <rect x="90" y="70" width="7" height="40" rx="3.5" fill={C} opacity="0.6" />
-    <rect x="103" y="70" width="7" height="40" rx="3.5" fill={C} opacity="0.6" />
+    <g>
+      <circle cx="100" cy="16" r="8" fill={C} opacity="0.9">
+        <animate attributeName="cy" values="16;14;16" dur="1.5s" repeatCount="indefinite" />
+      </circle>
+      <line x1="100" y1="24" x2="100" y2="28" stroke={C} strokeWidth="3" strokeLinecap="round" opacity="0.8" />
+      <line x1="100" y1="28" x2="100" y2="62" stroke={C} strokeWidth="5" strokeLinecap="round" opacity="0.8" />
+      <line x1="94" y1="32" x2="78" y2="42" stroke={C} strokeWidth="3" strokeLinecap="round" opacity="0.7">
+        <animate attributeName="y2" values="42;32;42" dur="2s" repeatCount="indefinite" />
+      </line>
+      <line x1="106" y1="32" x2="122" y2="42" stroke={C} strokeWidth="3" strokeLinecap="round" opacity="0.7">
+        <animate attributeName="y2" values="42;32;42" dur="2s" repeatCount="indefinite" begin="1s" />
+      </line>
+      <line x1="96" y1="62" x2="90" y2="110" stroke={C} strokeWidth="4.5" strokeLinecap="round" opacity="0.6" />
+      <line x1="104" y1="62" x2="110" y2="110" stroke={C} strokeWidth="4.5" strokeLinecap="round" opacity="0.6" />
+    </g>
   </svg>
 );
 
-const ANIMATION_COMPONENTS: Record<AnimationType, React.FC> = {
-  pushup: PushUpAnimation,
-  squat: SquatAnimation,
-  plank: PlankAnimation,
-  jumpingjacks: JumpingJacksAnimation,
-  lunge: LungeAnimation,
-  mountainclimber: MountainClimberAnimation,
-  armcircles: ArmCirclesAnimation,
-  highknees: HighKneesAnimation,
-  buttkicks: ButtKicksAnimation,
-  sideplank: SidePlankAnimation,
-  glutebridge: GluteBridgeAnimation,
-  walk: WalkAnimation,
-  stretch: StretchAnimation,
-  twist: TwistAnimation,
-  dip: DipAnimation,
-  legraise: LegRaiseAnimation,
-  skater: SkaterAnimation,
-  hold: HoldAnimation,
-  calf: CalfAnimation,
-  pullup: PullUpAnimation,
-  default: DefaultAnimation,
+const ANIMS: Record<AnimType, React.FC> = {
+  pushup: PushUp, squat: Squat, plank: Plank, jumpingjacks: JumpingJacks,
+  lunge: Lunge, mountainclimber: MountainClimber, armcircles: ArmCircles,
+  highknees: HighKnees, buttkicks: ButtKicks, sideplank: SidePlank,
+  glutebridge: GluteBridge, walk: Walk, stretch: Stretch, twist: Twist,
+  dip: Dip, legraise: LegRaise, skater: Skater, hold: Hold, calf: Calf,
+  pullup: PullUp, default: Default,
 };
 
 interface ExerciseAnimationProps {
@@ -586,12 +744,12 @@ interface ExerciseAnimationProps {
 }
 
 export const ExerciseAnimation: React.FC<ExerciseAnimationProps> = ({ exerciseName, className = '' }) => {
-  const animType = getAnimationType(exerciseName);
-  const AnimComponent = ANIMATION_COMPONENTS[animType];
+  const animType = MAP[exerciseName] || 'default';
+  const Anim = ANIMS[animType];
   return (
     <div className={`w-full aspect-[4/3] rounded-2xl flex items-center justify-center bg-white/[0.05] border border-white/10 overflow-hidden ${className}`}>
-      <div className="w-full h-full p-6">
-        <AnimComponent />
+      <div className="w-full h-full p-4">
+        <Anim />
       </div>
     </div>
   );
