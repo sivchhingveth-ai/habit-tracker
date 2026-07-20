@@ -1,6 +1,7 @@
 import React from 'react';
 import { X, ChevronLeft, ChevronRight, AlertTriangle, Dumbbell } from 'lucide-react';
 import { EXERCISE_DETAILS, type ExerciseDetail as ExerciseDetailType } from '../utils/workouts';
+import { ExerciseAnimation } from './ExerciseAnimation';
 
 interface ExerciseDetailProps {
   exerciseName: string;
@@ -11,31 +12,6 @@ interface ExerciseDetailProps {
   onClose: () => void;
   onPrevious?: () => void;
   onNext?: () => void;
-}
-
-function ExerciseSilhouette({ color }: { color: string }) {
-  return (
-    <div className="w-full aspect-[4/3] rounded-2xl flex items-center justify-center" style={{ backgroundColor: `${color}10` }}>
-      <svg width="120" height="160" viewBox="0 0 120 160" fill="none">
-        {/* Head */}
-        <circle cx="60" cy="22" r="14" fill={color} opacity="0.7" />
-        {/* Body */}
-        <rect x="48" y="36" width="24" height="50" rx="8" fill={color} opacity="0.6" />
-        {/* Left arm */}
-        <rect x="28" y="40" width="18" height="8" rx="4" fill={color} opacity="0.5" transform="rotate(-15 28 44)" />
-        {/* Right arm */}
-        <rect x="74" y="40" width="18" height="8" rx="4" fill={color} opacity="0.5" transform="rotate(15 74 44)" />
-        {/* Left leg */}
-        <rect x="44" y="86" width="10" height="44" rx="5" fill={color} opacity="0.5" transform="rotate(-5 44 86)" />
-        {/* Right leg */}
-        <rect x="66" y="86" width="10" height="44" rx="5" fill={color} opacity="0.5" transform="rotate(5 66 86)" />
-        {/* Left foot */}
-        <rect x="38" y="128" width="16" height="6" rx="3" fill={color} opacity="0.4" />
-        {/* Right foot */}
-        <rect x="66" y="128" width="16" height="6" rx="3" fill={color} opacity="0.4" />
-      </svg>
-    </div>
-  );
 }
 
 export const ExerciseDetail: React.FC<ExerciseDetailProps> = ({
@@ -87,7 +63,7 @@ export const ExerciseDetail: React.FC<ExerciseDetailProps> = ({
           </h1>
 
           {/* Illustration */}
-          <ExerciseSilhouette color={color} />
+          <ExerciseAnimation exerciseName={exerciseName} />
 
           {/* Duration */}
           <div className="flex items-center justify-between">
