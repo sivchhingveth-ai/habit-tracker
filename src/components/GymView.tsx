@@ -5,6 +5,7 @@ import { ExerciseTimer } from './ExerciseTimer';
 import { ExerciseDetail } from './ExerciseDetail';
 import { AddWorkoutModal } from './AddWorkoutModal';
 import { PlanView } from './PlanView';
+import { CalorieCalculator } from './CalorieCalculator';
 import { WORKOUTS, Gender, Level, Workout, Exercise, isRepsExercise } from '../utils/workouts';
 import { getCustomWorkouts, deleteCustomWorkout } from '../utils/customWorkouts';
 import { addWorkoutLog, estimateCaloriesBurned, addXP } from '../utils/fitnessData';
@@ -229,6 +230,7 @@ export const GymView: React.FC<GymViewProps> = ({
           style={{ paddingBottom: 'max(8rem, env(safe-area-inset-bottom) + 4rem)' }}
         >
           <PlanView onStartWorkout={handleStartPlanWorkout} />
+          <CalorieCalculator />
         </div>
       </div>
 
