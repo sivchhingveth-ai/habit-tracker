@@ -134,9 +134,19 @@ export const Tabs: React.FC<TabsProps> = ({
                     {tab}
                   </span>
                   {isGym && (
-                    gymDropdownOpen
-                      ? <ChevronUp className="w-3 h-3 ml-0.5" />
-                      : <ChevronDown className="w-3 h-3 ml-0.5" />
+                    <span
+                      role="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (onGymToggle) onGymToggle();
+                      }}
+                      className="flex items-center justify-center ml-0.5"
+                    >
+                      {gymDropdownOpen
+                        ? <ChevronUp className="w-3 h-3" />
+                        : <ChevronDown className="w-3 h-3" />
+                      }
+                    </span>
                   )}
                   {isActive && <div className="nav-underline absolute bottom-0 left-1/2 -translate-x-1/2 h-[2px] w-6 sm:w-8 rounded-t-full" />}
                 </button>
