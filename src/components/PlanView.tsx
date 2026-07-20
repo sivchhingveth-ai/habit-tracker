@@ -361,10 +361,10 @@ export const PlanView: React.FC<PlanViewProps> = ({ onStartWorkout }) => {
               </div>
             </div>
             <div className="flex gap-2">
-              <button onClick={() => setStep(2)} className="flex-1 py-3.5 rounded-2xl flex items-center justify-center gap-2 text-[14px] font-bold bg-[var(--bg-soft)] text-[var(--text-muted)] active:scale-[0.98]">
+              <button onClick={() => setStep(2)} className="flex-1 py-3.5 rounded-2xl flex items-center justify-center gap-2 text-[14px] font-bold bg-white/10 border border-white/10 text-white/70 active:scale-[0.98] backdrop-blur-xl">
                 <ChevronLeft className="w-4 h-4" /> Back
               </button>
-              <button onClick={handleStartPlan} className="flex-[2] py-3.5 rounded-2xl flex items-center justify-center gap-2 text-[14px] font-bold text-white active:scale-[0.98] shadow-lg" style={{ backgroundColor: 'var(--accent)' }}>
+              <button onClick={handleStartPlan} className="flex-[2] py-3.5 rounded-2xl flex items-center justify-center gap-2 text-[14px] font-bold text-[#0b0d10] active:scale-[0.98] shadow-lg backdrop-blur-xl bg-white/90 border border-white/20 hover:bg-white transition-all">
                 <Play className="w-5 h-5" fill="currentColor" /> Start Plan
               </button>
             </div>
