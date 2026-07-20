@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ChevronDown, ChevronUp, Calculator, Flame } from 'lucide-react';
+import { ChevronDown, ChevronUp, Calculator, Flame, Beef } from 'lucide-react';
 
 interface CalorieResult {
   bmr: number;
@@ -7,6 +7,8 @@ interface CalorieResult {
   loseWeight: number;
   maintainWeight: number;
   gainWeight: number;
+  proteinLow: number;
+  proteinHigh: number;
 }
 
 function calculateCalories(
@@ -34,12 +36,18 @@ function calculateCalories(
   const multiplier = activityMultipliers[activityLevel] || 1.2;
   const tdee = Math.round(bmr * multiplier);
 
+  // Protein: 1.6–2.2g per kg body weight
+  const proteinLow = Math.round(weightKg * 1.6);
+  const proteinHigh = Math.round(weightKg * 2.2);
+
   return {
     bmr: Math.round(bmr),
     tdee,
     loseWeight: Math.round(tdee - 500),
     maintainWeight: tdee,
     gainWeight: Math.round(tdee + 300),
+    proteinLow,
+    proteinHigh,
   };
 }
 
@@ -275,6 +283,19 @@ export const CalorieCalculator: React.FC<CalorieCalculatorProps> = ({ className 
                   <p className="text-[22px] font-black text-white tabular-nums">{result.tdee}</p>
                   <p className="text-[10px] text-white/30">cal/day</p>
                 </div>
+              </div>
+
+              {/* Protein */}
+              <div className="bg-white/[0.04] border border-white/10 rounded-xl p-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <Beef className="w-4 h-4 text-white/40" />
+                  <p className="text-[11px] font-bold tracking-widest uppercase text-white/40">Daily Protein</p>
+                </div>
+                <div className="flex items-baseline gap-1">
+                  <span className="text-[26px] font-black text-white tabular-nums">{result.proteinLow}–{result.proteinHigh}</span>
+                  <span className="text-[12px] font-bold text-white/40">g/day</span>
+                </div>
+                <p className="text-[11px] text-white/30 mt-1">Based on {weight}kg body weight (1.6–2.2g/kg)</p>
               </div>
 
               <div className="space-y-2 pt-2">

@@ -222,6 +222,7 @@ export const GymView: React.FC<GymViewProps> = ({
           onLogout={onLogout}
           isLoggingOut={isLoggingOut}
         />
+        <CalorieCalculator />
       </div>
 
       <div className="flex-1 overflow-y-auto custom-scrollbar">
@@ -230,7 +231,6 @@ export const GymView: React.FC<GymViewProps> = ({
           style={{ paddingBottom: 'max(8rem, env(safe-area-inset-bottom) + 4rem)' }}
         >
           <PlanView onStartWorkout={handleStartPlanWorkout} />
-          <CalorieCalculator />
         </div>
       </div>
 
