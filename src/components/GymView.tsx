@@ -46,7 +46,7 @@ export const GymView: React.FC<GymViewProps> = ({
   const [planWorkout, setPlanWorkout] = useState<Workout | null>(null);
   const [planDayKey, setPlanDayKey] = useState<string | null>(null);
   const [gymNavExpanded, setGymNavExpanded] = useState(false);
-  const [activeGymSection, setActiveGymSection] = useState<'plan' | 'calculator' | null>(null);
+  const [activeGymSection, setActiveGymSection] = useState<'plan' | 'calculator'>('plan');
   const gymNavRef = useRef<HTMLDivElement>(null);
 
   // Calorie calculator state
@@ -264,7 +264,7 @@ export const GymView: React.FC<GymViewProps> = ({
           isLoggingOut={isLoggingOut}
         />
 
-        {/* Gym expandable nav — Dumbbell row with arrow */}
+        {/* Gym expandable nav */}
         <div className="relative px-4 pb-2">
           <button
             onClick={() => setGymNavExpanded(!gymNavExpanded)}
@@ -273,7 +273,9 @@ export const GymView: React.FC<GymViewProps> = ({
             <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-white/[0.08] border border-white/10">
               <Dumbbell className="w-4 h-4 text-white/60" />
             </div>
-            <span className="flex-1 text-left text-[13px] font-bold text-white/80">Gym</span>
+            <span className="flex-1 text-left text-[13px] font-bold text-white/80">
+              {activeGymSection === 'calculator' ? 'Calorie Calculator' : '3-Month Plan'}
+            </span>
             {gymNavExpanded ? (
               <ChevronUp className="w-4 h-4 text-white/30" />
             ) : (
@@ -281,173 +283,28 @@ export const GymView: React.FC<GymViewProps> = ({
             )}
           </button>
 
-          {/* Expanded dropdown menu */}
+          {/* Dropdown menu */}
           {gymNavExpanded && (
             <div className="mt-1 rounded-2xl bg-[#12161c]/95 backdrop-blur-2xl border border-white/10 shadow-2xl overflow-hidden animate-slide-up">
-              {/* Calorie Calculator */}
               <button
-                onClick={() => setActiveGymSection(activeGymSection === 'calculator' ? null : 'calculator')}
-                className="w-full flex items-center gap-3 px-4 py-3.5 transition-all active:bg-white/[0.04]"
+                onClick={() => { setActiveGymSection('calculator'); setGymNavExpanded(false); }}
+                className={`w-full flex items-center gap-3 px-4 py-3.5 transition-all active:bg-white/[0.04] ${activeGymSection === 'calculator' ? 'bg-white/[0.06]' : ''}`}
               >
                 <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-white/[0.06] border border-white/8">
                   <Flame className="w-4 h-4 text-white/50" />
                 </div>
                 <span className="flex-1 text-left text-[13px] font-bold text-white/70">Calorie Calculator</span>
-                {activeGymSection === 'calculator' ? (
-                  <ChevronUp className="w-4 h-4 text-white/30" />
-                ) : (
-                  <ChevronDown className="w-4 h-4 text-white/30" />
-                )}
+                {activeGymSection === 'calculator' && <Check className="w-4 h-4 text-white/50" />}
               </button>
-
-              {/* Calculator sub-panel */}
-              {activeGymSection === 'calculator' && (
-                <div className="px-4 pb-4 space-y-4 border-t border-white/5 pt-3 animate-slide-up">
-                  {/* Gender */}
-                  <div>
-                    <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-white/30 mb-1.5">Gender</p>
-                    <div className="flex gap-2">
-                      {(['male', 'female'] as const).map((g) => (
-                        <button
-                          key={g}
-                          onClick={() => setCalcGender(g)}
-                          className={`flex-1 py-2 rounded-lg text-[12px] font-bold transition-all ${
-                            calcGender === g
-                              ? 'bg-white/[0.12] border border-white/30 text-white'
-                              : 'bg-white/[0.03] border border-white/6 text-white/30'
-                          }`}
-                        >
-                          {g === 'male' ? 'Male' : 'Female'}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Age / Height / Weight row */}
-                  <div className="grid grid-cols-3 gap-2">
-                    <div className="text-center">
-                      <p className="text-[9px] font-bold tracking-widest uppercase text-white/25 mb-1">Age</p>
-                      <div className="bg-white/[0.04] border border-white/6 rounded-lg py-2">
-                        <input
-                          type="number"
-                          value={calcAge}
-                          onChange={(e) => setCalcAge(Math.max(13, Math.min(99, +e.target.value || 13)))}
-                          className="w-full text-center text-[16px] font-black text-white bg-transparent outline-none tabular-nums"
-                        />
-                        <p className="text-[9px] text-white/20">years</p>
-                      </div>
-                    </div>
-                    <div className="text-center">
-                      <p className="text-[9px] font-bold tracking-widest uppercase text-white/25 mb-1">Height</p>
-                      <div className="bg-white/[0.04] border border-white/6 rounded-lg py-2">
-                        <input
-                          type="number"
-                          value={calcHeight}
-                          onChange={(e) => setCalcHeight(Math.max(120, Math.min(220, +e.target.value || 120)))}
-                          className="w-full text-center text-[16px] font-black text-white bg-transparent outline-none tabular-nums"
-                        />
-                        <p className="text-[9px] text-white/20">cm</p>
-                      </div>
-                    </div>
-                    <div className="text-center">
-                      <p className="text-[9px] font-bold tracking-widest uppercase text-white/25 mb-1">Weight</p>
-                      <div className="bg-white/[0.04] border border-white/6 rounded-lg py-2">
-                        <input
-                          type="number"
-                          value={calcWeight}
-                          onChange={(e) => setCalcWeight(Math.max(30, Math.min(200, +e.target.value || 30)))}
-                          className="w-full text-center text-[16px] font-black text-white bg-transparent outline-none tabular-nums"
-                        />
-                        <p className="text-[9px] text-white/20">kg</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Activity Level */}
-                  <div>
-                    <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-white/30 mb-1.5">Activity Level</p>
-                    <select
-                      value={calcActivity}
-                      onChange={(e) => setCalcActivity(e.target.value)}
-                      className="w-full py-2 px-3 rounded-lg bg-white/[0.04] border border-white/6 text-white text-[12px] font-bold appearance-none cursor-pointer"
-                    >
-                      <option value="sedentary" className="bg-[#12161c]">Sedentary (little/no exercise)</option>
-                      <option value="light" className="bg-[#12161c]">Light (1-3x/week)</option>
-                      <option value="moderate" className="bg-[#12161c]">Moderate (3-5x/week)</option>
-                      <option value="active" className="bg-[#12161c]">Active (6-7x/week)</option>
-                      <option value="very_active" className="bg-[#12161c]">Very Active (intense daily)</option>
-                    </select>
-                  </div>
-
-                  {/* Goal */}
-                  <div>
-                    <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-white/30 mb-1.5">Goal</p>
-                    <select
-                      value={calcGoal}
-                      onChange={(e) => setCalcGoal(e.target.value)}
-                      className="w-full py-2 px-3 rounded-lg bg-white/[0.04] border border-white/6 text-white text-[12px] font-bold appearance-none cursor-pointer"
-                    >
-                      <option value="lose" className="bg-[#12161c]">Lose Weight</option>
-                      <option value="maintain" className="bg-[#12161c]">Maintain Weight</option>
-                      <option value="gain" className="bg-[#12161c]">Gain Weight</option>
-                    </select>
-                  </div>
-
-                  {/* Calculate button */}
-                  <button
-                    onClick={handleCalcCalculate}
-                    className="w-full py-2.5 rounded-xl flex items-center justify-center gap-2 text-[12px] font-bold bg-white/[0.10] border border-white/15 text-white transition-all active:scale-[0.98]"
-                  >
-                    <Calculator className="w-3.5 h-3.5" />
-                    Calculate
-                  </button>
-
-                  {/* Results */}
-                  {calcResult && (
-                    <div className="space-y-2 animate-slide-up">
-                      <div className="grid grid-cols-2 gap-2">
-                        <div className="bg-white/[0.03] border border-white/6 rounded-lg p-2.5 text-center">
-                          <p className="text-[8px] font-bold tracking-widest uppercase text-white/25 mb-0.5">BMR</p>
-                          <p className="text-[18px] font-black text-white tabular-nums">{calcResult.bmr}</p>
-                          <p className="text-[8px] text-white/20">cal/day</p>
-                        </div>
-                        <div className="bg-white/[0.03] border border-white/6 rounded-lg p-2.5 text-center">
-                          <p className="text-[8px] font-bold tracking-widest uppercase text-white/25 mb-0.5">TDEE</p>
-                          <p className="text-[18px] font-black text-white tabular-nums">{calcResult.tdee}</p>
-                          <p className="text-[8px] text-white/20">cal/day</p>
-                        </div>
-                      </div>
-                      <div className="bg-white/[0.03] border border-white/6 rounded-lg p-2.5">
-                        <div className="flex items-center gap-1.5 mb-1">
-                          <Beef className="w-3 h-3 text-white/30" />
-                          <p className="text-[9px] font-bold tracking-widest uppercase text-white/30">Daily Protein</p>
-                        </div>
-                        <p className="text-[18px] font-black text-white tabular-nums">{calcResult.proteinLow}–{calcResult.proteinHigh} <span className="text-[10px] text-white/30">g/day</span></p>
-                      </div>
-                      <div className="bg-white/[0.03] border border-white/6 rounded-lg p-2.5 flex items-center justify-between">
-                        <span className="text-[11px] font-bold text-white/40">
-                          {calcGoal === 'lose' ? 'Target (lose)' : calcGoal === 'gain' ? 'Target (gain)' : 'Target'}
-                        </span>
-                        <span className="text-[14px] font-black text-white tabular-nums">
-                          {calcGoal === 'lose' ? calcResult.lose : calcGoal === 'gain' ? calcResult.gain : calcResult.maintain}
-                          <span className="text-[9px] text-white/30 ml-1">cal</span>
-                        </span>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* 3-Month Plan */}
               <button
-                onClick={() => { setActiveGymSection(activeGymSection === 'plan' ? null : 'plan'); setGymNavExpanded(false); }}
-                className="w-full flex items-center gap-3 px-4 py-3.5 border-t border-white/5 transition-all active:bg-white/[0.04]"
+                onClick={() => { setActiveGymSection('plan'); setGymNavExpanded(false); }}
+                className={`w-full flex items-center gap-3 px-4 py-3.5 border-t border-white/5 transition-all active:bg-white/[0.04] ${activeGymSection === 'plan' ? 'bg-white/[0.06]' : ''}`}
               >
                 <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-white/[0.06] border border-white/8">
                   <Calendar className="w-4 h-4 text-white/50" />
                 </div>
                 <span className="flex-1 text-left text-[13px] font-bold text-white/70">3-Month Plan</span>
-                <ChevronDown className="w-4 h-4 text-white/30" />
+                {activeGymSection === 'plan' && <Check className="w-4 h-4 text-white/50" />}
               </button>
             </div>
           )}
@@ -459,7 +316,154 @@ export const GymView: React.FC<GymViewProps> = ({
           className="p-4 sm:p-5 md:p-6 space-y-5 animate-slide-up"
           style={{ paddingBottom: 'max(8rem, env(safe-area-inset-bottom) + 4rem)' }}
         >
-          <PlanView onStartWorkout={handleStartPlanWorkout} />
+          {/* Calorie Calculator Card */}
+          {activeGymSection === 'calculator' && (
+            <div className="rounded-2xl bg-white/[0.06] backdrop-blur-2xl border border-white/10 p-5 space-y-5">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-white/[0.08] border border-white/10">
+                  <Flame className="w-5 h-5 text-white/60" />
+                </div>
+                <h2 className="text-[18px] font-black text-white">Calorie Calculator</h2>
+              </div>
+
+              {/* Gender */}
+              <div>
+                <p className="text-[11px] font-bold tracking-[0.2em] uppercase text-white/40 mb-2">Gender</p>
+                <div className="flex gap-2">
+                  {(['male', 'female'] as const).map((g) => (
+                    <button
+                      key={g}
+                      onClick={() => setCalcGender(g)}
+                      className={`flex-1 py-3 rounded-xl text-[13px] font-bold transition-all ${
+                        calcGender === g
+                          ? 'bg-white/[0.12] border border-white/30 text-white'
+                          : 'bg-white/[0.04] border border-white/8 text-white/40'
+                      }`}
+                    >
+                      {g === 'male' ? 'Male' : 'Female'}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Age / Height / Weight */}
+              <div className="grid grid-cols-3 gap-3">
+                <div>
+                  <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-white/35 mb-1.5">Age</p>
+                  <input
+                    type="number"
+                    value={calcAge}
+                    onChange={(e) => setCalcAge(Math.max(13, Math.min(99, +e.target.value || 13)))}
+                    className="w-full py-3 px-3 rounded-xl bg-white/[0.04] border border-white/8 text-center text-[16px] font-black text-white outline-none focus:border-white/20 transition-all tabular-nums"
+                  />
+                  <p className="text-[9px] text-white/25 text-center mt-1">13–99</p>
+                </div>
+                <div>
+                  <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-white/35 mb-1.5">Height</p>
+                  <input
+                    type="number"
+                    value={calcHeight}
+                    onChange={(e) => setCalcHeight(Math.max(120, Math.min(220, +e.target.value || 120)))}
+                    className="w-full py-3 px-3 rounded-xl bg-white/[0.04] border border-white/8 text-center text-[16px] font-black text-white outline-none focus:border-white/20 transition-all tabular-nums"
+                  />
+                  <p className="text-[9px] text-white/25 text-center mt-1">cm</p>
+                </div>
+                <div>
+                  <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-white/35 mb-1.5">Weight</p>
+                  <input
+                    type="number"
+                    value={calcWeight}
+                    onChange={(e) => setCalcWeight(Math.max(30, Math.min(200, +e.target.value || 30)))}
+                    className="w-full py-3 px-3 rounded-xl bg-white/[0.04] border border-white/8 text-center text-[16px] font-black text-white outline-none focus:border-white/20 transition-all tabular-nums"
+                  />
+                  <p className="text-[9px] text-white/25 text-center mt-1">kg</p>
+                </div>
+              </div>
+
+              {/* Activity Level */}
+              <div>
+                <p className="text-[11px] font-bold tracking-[0.2em] uppercase text-white/40 mb-2">Activity Level</p>
+                <select
+                  value={calcActivity}
+                  onChange={(e) => setCalcActivity(e.target.value)}
+                  className="w-full py-3 px-4 rounded-xl bg-white/[0.04] border border-white/8 text-white text-[13px] font-bold appearance-none cursor-pointer"
+                >
+                  <option value="sedentary" className="bg-[#0b0c0f]">Sedentary (little/no exercise)</option>
+                  <option value="light" className="bg-[#0b0c0f]">Light (exercise 1-3x/week)</option>
+                  <option value="moderate" className="bg-[#0b0c0f]">Moderate (exercise 3-5x/week)</option>
+                  <option value="active" className="bg-[#0b0c0f]">Active (exercise 6-7x/week)</option>
+                  <option value="very_active" className="bg-[#0b0c0f]">Very Active (intense daily)</option>
+                </select>
+              </div>
+
+              {/* Goal */}
+              <div>
+                <p className="text-[11px] font-bold tracking-[0.2em] uppercase text-white/40 mb-2">Goal</p>
+                <select
+                  value={calcGoal}
+                  onChange={(e) => setCalcGoal(e.target.value)}
+                  className="w-full py-3 px-4 rounded-xl bg-white/[0.04] border border-white/8 text-white text-[13px] font-bold appearance-none cursor-pointer"
+                >
+                  <option value="lose" className="bg-[#0b0c0f]">Lose Weight</option>
+                  <option value="maintain" className="bg-[#0b0c0f]">Maintain Weight</option>
+                  <option value="gain" className="bg-[#0b0c0f]">Gain Weight</option>
+                </select>
+              </div>
+
+              {/* Calculate button */}
+              <button
+                onClick={handleCalcCalculate}
+                className="w-full py-3.5 rounded-2xl flex items-center justify-center gap-2 text-[14px] font-bold bg-white/[0.10] backdrop-blur-xl border border-white/15 text-white transition-all active:scale-[0.98]"
+              >
+                <Calculator className="w-4 h-4" />
+                Calculate
+              </button>
+
+              {/* Results */}
+              {calcResult && (
+                <div className="space-y-3 pt-1 animate-slide-up">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="bg-white/[0.04] border border-white/8 rounded-xl p-4 text-center">
+                      <p className="text-[10px] font-bold tracking-widest uppercase text-white/30 mb-1">BMR</p>
+                      <p className="text-[24px] font-black text-white tabular-nums">{calcResult.bmr}</p>
+                      <p className="text-[10px] text-white/25">cal/day</p>
+                    </div>
+                    <div className="bg-white/[0.04] border border-white/8 rounded-xl p-4 text-center">
+                      <p className="text-[10px] font-bold tracking-widest uppercase text-white/30 mb-1">TDEE</p>
+                      <p className="text-[24px] font-black text-white tabular-nums">{calcResult.tdee}</p>
+                      <p className="text-[10px] text-white/25">cal/day</p>
+                    </div>
+                  </div>
+
+                  {/* Protein */}
+                  <div className="bg-white/[0.04] border border-white/8 rounded-xl p-4">
+                    <div className="flex items-center gap-2 mb-1.5">
+                      <Beef className="w-4 h-4 text-white/40" />
+                      <p className="text-[11px] font-bold tracking-widest uppercase text-white/40">Daily Protein</p>
+                    </div>
+                    <p className="text-[24px] font-black text-white tabular-nums">{calcResult.proteinLow}–{calcResult.proteinHigh} <span className="text-[12px] text-white/35">g/day</span></p>
+                    <p className="text-[10px] text-white/25 mt-1">1.6–2.2g per kg body weight</p>
+                  </div>
+
+                  {/* Goal target */}
+                  <div className="bg-white/[0.04] border border-white/8 rounded-xl p-4 flex items-center justify-between">
+                    <span className="text-[13px] font-bold text-white/50">
+                      {calcGoal === 'lose' ? 'Target (lose)' : calcGoal === 'gain' ? 'Target (gain)' : 'Target (maintain)'}
+                    </span>
+                    <span className="text-[18px] font-black text-white tabular-nums">
+                      {calcGoal === 'lose' ? calcResult.lose : calcGoal === 'gain' ? calcResult.gain : calcResult.maintain}
+                      <span className="text-[10px] text-white/35 ml-1">cal</span>
+                    </span>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* 3-Month Plan */}
+          {activeGymSection === 'plan' && (
+            <PlanView onStartWorkout={handleStartPlanWorkout} />
+          )}
         </div>
       </div>
 
