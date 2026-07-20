@@ -227,7 +227,7 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
           onComplete();
         } else {
           stopMusic();
-          speak('Rest');
+          speak('Rest Session');
           onComplete();
         }
       }
@@ -313,7 +313,7 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
     }, 800);
   };
 
-  const accentColor = isRest ? 'var(--brand)' : color;
+  const accentColor = isRest ? color : color;
 
   return (
     <div className="fixed inset-0 z-[200] flex flex-col animate-fade-in" style={{ backgroundColor: 'var(--bg-page)' }}>
@@ -367,13 +367,26 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
           </div>
         ) : phase === 'ready' && isRest ? (
           /* Rest ready — auto-starts */
-          <div className="flex flex-col items-center gap-4 animate-slide-up">
+          <div className="flex flex-col items-center gap-5 animate-slide-up">
             <p className="text-[13px] font-bold tracking-widest uppercase" style={{ color: 'var(--text-muted)' }}>
-              Rest
+              Rest Session
             </p>
-            <span className="text-[72px] sm:text-[80px] font-black leading-none tabular-nums" style={{ color: 'var(--text-primary)' }}>
-              {formatTime(remaining)}
-            </span>
+            {/* Timer ring — same style as exercise */}
+            <div className="relative w-[200px] h-[200px] sm:w-[240px] sm:h-[240px]">
+              <svg className="w-full h-full -rotate-90" viewBox="0 0 180 180">
+                <circle cx="90" cy="90" r={RADIUS} fill="transparent" stroke="var(--border-soft)" strokeWidth="8" />
+                <circle
+                  cx="90" cy="90" r={RADIUS} fill="transparent" stroke="#fff" strokeWidth="8"
+                  strokeDasharray={CIRCUMFERENCE} strokeDashoffset={CIRCUMFERENCE * (1 - remaining / maxSeconds)}
+                  strokeLinecap="round" className="transition-[stroke-dashoffset] duration-200 ease-linear"
+                />
+              </svg>
+              <div className="absolute inset-0 flex flex-col items-center justify-center">
+                <span className="text-[48px] sm:text-[56px] font-black leading-none tabular-nums" style={{ color: 'var(--text-primary)' }}>
+                  {formatTime(remaining)}
+                </span>
+              </div>
+            </div>
           </div>
         ) : phase === 'ready' ? (
           /* Exercise ready state */
@@ -403,25 +416,31 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
           /* Active rest state — the main rest screen */
           <div className="flex flex-col items-center gap-5 w-full animate-slide-up">
             <p className="text-[13px] font-bold tracking-widest uppercase" style={{ color: 'var(--text-muted)' }}>
-              Rest
+              Rest Session
             </p>
 
-            {/* Timer ring */}
-            <div className="relative w-[180px] h-[180px] sm:w-[200px] sm:h-[200px]">
+            {/* Timer ring — same size/style as exercise */}
+            <div className="relative w-[200px] h-[200px] sm:w-[240px] sm:h-[240px]">
               <svg className="w-full h-full -rotate-90" viewBox="0 0 180 180">
                 <circle cx="90" cy="90" r={RADIUS} fill="transparent" stroke="var(--border-soft)" strokeWidth="8" />
                 <circle
                   cx="90" cy="90" r={RADIUS} fill="transparent" stroke="#fff" strokeWidth="8"
                   strokeDasharray={CIRCUMFERENCE} strokeDashoffset={strokeDashoffset}
                   strokeLinecap="round" className="transition-[stroke-dashoffset] duration-200 ease-linear"
+                  style={{ filter: `drop-shadow(0 0 8px ${color}40)` }}
                 />
               </svg>
-              <div className="absolute inset-0 flex items-center justify-center">
+              <div className="absolute inset-0 flex flex-col items-center justify-center">
                 <span className="text-[48px] sm:text-[56px] font-black leading-none tabular-nums" style={{ color: 'var(--text-primary)' }}>
                   {formatTime(remaining)}
                 </span>
               </div>
             </div>
+            {!isDone && (
+              <p className="text-[12px] font-bold tracking-wider" style={{ color: 'var(--text-muted)' }}>
+                {Math.round(progress * 100)}% COMPLETE
+              </p>
+            )}
 
             {/* +20s and Skip */}
             <div className="flex items-center gap-3 mt-2">
@@ -714,14 +733,14 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
               {/* Silhouette preview */}
               <div className="w-full h-[140px] rounded-2xl flex items-center justify-center" style={{ backgroundColor: 'var(--bg-soft)' }}>
                 <svg width="80" height="120" viewBox="0 0 120 160" fill="none">
-                  <circle cx="60" cy="22" r="14" fill="var(--text-muted)" opacity="0.5" />
-                  <rect x="48" y="36" width="24" height="50" rx="8" fill="var(--text-muted)" opacity="0.4" />
-                  <rect x="28" y="40" width="18" height="8" rx="4" fill="var(--text-muted)" opacity="0.35" transform="rotate(-15 28 44)" />
-                  <rect x="74" y="40" width="18" height="8" rx="4" fill="var(--text-muted)" opacity="0.35" transform="rotate(15 74 44)" />
-                  <rect x="44" y="86" width="10" height="44" rx="5" fill="var(--text-muted)" opacity="0.35" transform="rotate(-5 44 86)" />
-                  <rect x="66" y="86" width="10" height="44" rx="5" fill="var(--text-muted)" opacity="0.35" transform="rotate(5 66 86)" />
-                  <rect x="38" y="128" width="16" height="6" rx="3" fill="var(--text-muted)" opacity="0.3" />
-                  <rect x="66" y="128" width="16" height="6" rx="3" fill="var(--text-muted)" opacity="0.3" />
+                  <circle cx="60" cy="22" r="14" fill={color} opacity="0.5" />
+                  <rect x="48" y="36" width="24" height="50" rx="8" fill={color} opacity="0.4" />
+                  <rect x="28" y="40" width="18" height="8" rx="4" fill={color} opacity="0.35" transform="rotate(-15 28 44)" />
+                  <rect x="74" y="40" width="18" height="8" rx="4" fill={color} opacity="0.35" transform="rotate(15 74 44)" />
+                  <rect x="44" y="86" width="10" height="44" rx="5" fill={color} opacity="0.35" transform="rotate(-5 44 86)" />
+                  <rect x="66" y="86" width="10" height="44" rx="5" fill={color} opacity="0.35" transform="rotate(5 66 86)" />
+                  <rect x="38" y="128" width="16" height="6" rx="3" fill={color} opacity="0.3" />
+                  <rect x="66" y="128" width="16" height="6" rx="3" fill={color} opacity="0.3" />
                 </svg>
               </div>
             </div>

@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
-import { Play, ChevronRight, ChevronLeft, Check, Target, Zap, Trophy, Dumbbell, Flame, Heart, Sparkles, Calendar, ChevronDown, Flag, SlidersHorizontal, X } from 'lucide-react';
-import { Exercise, Level, ExerciseCategory, CATEGORY_LABELS, generateWorkout, EXERCISE_DETAILS, getWarmupForDay } from '../utils/workouts';
+import { Play, ChevronRight, ChevronLeft, Check, Target, Zap, Trophy, Dumbbell, Flame, Heart, Sparkles, Calendar, ChevronDown, Flag, SlidersHorizontal, X, RefreshCw, Search } from 'lucide-react';
+import { Exercise, Level, ExerciseCategory, CATEGORY_LABELS, generateWorkout, EXERCISE_DETAILS, getWarmupForDay, ALL_EXERCISES } from '../utils/workouts';
 import { ExerciseDetail } from './ExerciseDetail';
 import { estimateCaloriesBurned } from '../utils/fitnessData';
 import { getPlanProgress, PlanProgress, PLAN_PROGRESS_EVENT } from '../utils/planProgress';
@@ -154,6 +154,8 @@ export const PlanView: React.FC<PlanViewProps> = ({ onStartWorkout }) => {
   const [custLevel, setCustLevel] = useState<Level>('beginner');
   const [celebrateDay, setCelebrateDay] = useState<number | null>(null);
   const completedRef = useRef<Set<string>>(new Set(plan?.completedDays || []));
+  const [replaceExercise, setReplaceExercise] = useState<{ dayKey: string; exerciseIdx: number; exercise: Exercise } | null>(null);
+  const [replaceSearch, setReplaceSearch] = useState('');
 
   useEffect(() => {
     const handler = () => {
@@ -228,6 +230,16 @@ export const PlanView: React.FC<PlanViewProps> = ({ onStartWorkout }) => {
   const toggleCustCategory = useCallback((cat: ExerciseCategory) => {
     setCustCategories((prev) => prev.includes(cat) ? prev.filter((c) => c !== cat) : [...prev, cat]);
   }, []);
+
+  const handleReplaceExercise = useCallback((dayKey: string, exerciseIdx: number, newExercise: Exercise) => {
+    if (!plan) return;
+    const [m, w, d] = dayKey.split('-').map(Number);
+    const updated = { ...plan, months: plan.months.map((mo, mi) => mi === m ? { ...mo, weeks: mo.weeks.map((wk, wi) => wi === w ? { ...wk, days: wk.days.map((dy, di) => di === d ? { ...dy, exercises: dy.exercises.map((ex, ei) => ei === exerciseIdx ? { ...newExercise, duration: ex.duration } : ex) } : dy) } : wk) } : mo) };
+    setPlan(updated);
+    savePlan(updated);
+    setReplaceExercise(null);
+    setReplaceSearch('');
+  }, [plan]);
 
   const handleSaveCustomize = useCallback(() => {
     if (!plan || custCategories.length === 0) return;
@@ -386,8 +398,43 @@ export const PlanView: React.FC<PlanViewProps> = ({ onStartWorkout }) => {
     }
   }
 
+  // Current month/level indicator
+  const currentMonthIdx = (() => {
+    for (let m = 0; m < plan.months.length; m++) {
+      for (let w = 0; w < plan.months[m].weeks.length; w++) {
+        for (let d = 0; d < plan.months[m].weeks[w].days.length; d++) {
+          const key = `${m}-${w}-${d}`;
+          if (dayPercent(key) < 100) return m;
+        }
+      }
+    }
+    return plan.months.length - 1;
+  })();
+  const currentMonth = plan.months[currentMonthIdx];
+  const currentLevel = LEVELS.find((l) => l.key === currentMonth?.level);
+
   return (
     <div className="space-y-4 animate-slide-up">
+      {/* Plan Badge */}
+      <div className="flex items-center gap-2.5 px-4 py-3 rounded-2xl bg-white/[0.08] backdrop-blur-xl border border-white/10">
+        <div className="w-10 h-10 rounded-xl flex items-center justify-center text-white shrink-0" style={{ backgroundColor: currentLevel?.color || LEVELS[0].color }}>
+          {goal?.icon || <Dumbbell className="w-5 h-5" />}
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2">
+            <p className="text-[14px] font-black text-white truncate">{goal?.label || 'My Plan'}</p>
+            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider text-white/80" style={{ backgroundColor: `${currentLevel?.color || LEVELS[0].color}40` }}>
+              {currentLevel?.label || 'Beginner'}
+            </span>
+          </div>
+          <p className="text-[11px] text-white/45 mt-0.5">Month {currentMonthIdx + 1} of 3 — {currentMonth?.title}</p>
+        </div>
+        <div className="text-right shrink-0">
+          <p className="text-[18px] font-black text-white leading-none">{Math.round((completedCount / totalDays) * 100)}%</p>
+          <p className="text-[10px] text-white/40 mt-0.5">done</p>
+        </div>
+      </div>
+
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>
@@ -526,22 +573,30 @@ export const PlanView: React.FC<PlanViewProps> = ({ onStartWorkout }) => {
         const stats = getDayStats(day, dayNum);
         const { warmup, main } = getDayExercises(day, dayNum);
 
-        const exRow = (ex: Exercise, combinedIdx: number, displayNum: number) => {
+        const exRow = (ex: Exercise, combinedIdx: number, displayNum: number, originalIdx: number) => {
           const det = EXERCISE_DETAILS[ex.name];
           return (
-            <button
-              key={combinedIdx}
-              onClick={() => setDetailExIdx(combinedIdx)}
-              className="w-full flex items-center gap-3.5 px-4 py-3.5 rounded-2xl bg-white/[0.06] backdrop-blur-xl border border-white/10 text-left transition-all hover:bg-white/[0.1] active:scale-[0.99]"
-            >
-              <div className="w-8 h-8 rounded-full bg-white/10 border border-white/10 flex items-center justify-center text-[12px] font-black text-white shrink-0">{displayNum}</div>
-              <div className="flex-1 min-w-0">
-                <p className="text-[13px] font-bold text-white truncate">{ex.name}</p>
-                {det && <p className="text-[11px] text-white/45 truncate mt-0.5">{det.musclesWorked}</p>}
-              </div>
-              <span className="text-[11px] font-bold text-white/50 shrink-0">{ex.duration}</span>
-              <ChevronRight className="w-4 h-4 text-white/30 shrink-0" />
-            </button>
+            <div key={combinedIdx} className="flex items-center gap-2">
+              <button
+                onClick={() => setDetailExIdx(combinedIdx)}
+                className="flex-1 flex items-center gap-3.5 px-4 py-3.5 rounded-2xl bg-white/[0.06] backdrop-blur-xl border border-white/10 text-left transition-all hover:bg-white/[0.1] active:scale-[0.99]"
+              >
+                <div className="w-8 h-8 rounded-full bg-white/10 border border-white/10 flex items-center justify-center text-[12px] font-black text-white shrink-0">{displayNum}</div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-[13px] font-bold text-white truncate">{ex.name}</p>
+                  {det && <p className="text-[11px] text-white/45 truncate mt-0.5">{det.musclesWorked}</p>}
+                </div>
+                <span className="text-[11px] font-bold text-white/50 shrink-0">{ex.duration}</span>
+                <ChevronRight className="w-4 h-4 text-white/30 shrink-0" />
+              </button>
+              <button
+                onClick={() => setReplaceExercise({ dayKey: detailDay!, exerciseIdx: originalIdx, exercise: ex })}
+                className="w-9 h-9 rounded-xl bg-white/10 border border-white/10 flex items-center justify-center shrink-0 transition-all hover:bg-white/20 active:scale-90"
+                title="Replace exercise"
+              >
+                <RefreshCw className="w-3.5 h-3.5 text-white/60" />
+              </button>
+            </div>
           );
         };
 
@@ -593,7 +648,7 @@ export const PlanView: React.FC<PlanViewProps> = ({ onStartWorkout }) => {
                   <>
                     <p className="text-[18px] font-black text-white mt-8 mb-3">Warm-up</p>
                     <div className="space-y-2">
-                      {warmup.map((ex, i) => exRow(ex, i, i + 1))}
+                      {warmup.map((ex, i) => exRow(ex, i, i + 1, i))}
                     </div>
                   </>
                 )}
@@ -601,7 +656,7 @@ export const PlanView: React.FC<PlanViewProps> = ({ onStartWorkout }) => {
                 {/* Exercises */}
                 <p className="text-[18px] font-black text-white mt-7 mb-3">Exercises</p>
                 <div className="space-y-2">
-                  {main.map((ex, i) => exRow(ex, warmup.length + i, i + 1))}
+                  {main.map((ex, i) => exRow(ex, warmup.length + i, i + 1, warmup.length + i))}
                 </div>
               </div>
             </div>
@@ -724,6 +779,139 @@ export const PlanView: React.FC<PlanViewProps> = ({ onStartWorkout }) => {
           </div>
         </div>
       )}
+
+      {/* ─── Replace Exercise Modal ─── */}
+      {replaceExercise && (() => {
+        const currentEx = replaceExercise.exercise;
+        const currentDet = EXERCISE_DETAILS[currentEx.name];
+        const currentCategories = currentDet?.categories || [];
+        const searchLower = replaceSearch.toLowerCase();
+
+        // Find similar exercises (same categories, excluding current)
+        const similar = ALL_EXERCISES.filter((ex) => {
+          if (ex.name === currentEx.name) return false;
+          const det = EXERCISE_DETAILS[ex.name];
+          if (!det) return false;
+          return det.categories.some((c) => currentCategories.includes(c));
+        });
+
+        // All exercises matching search
+        const allMatching = ALL_EXERCISES.filter((ex) => {
+          if (ex.name === currentEx.name) return false;
+          if (!searchLower) return true;
+          return ex.name.toLowerCase().includes(searchLower);
+        });
+
+        // Group alphabetically
+        const grouped: Record<string, typeof ALL_EXERCISES> = {};
+        allMatching.forEach((ex) => {
+          const letter = ex.name[0].toUpperCase();
+          if (!grouped[letter]) grouped[letter] = [];
+          grouped[letter].push(ex);
+        });
+
+        return (
+          <div className="fixed inset-0 z-[160] flex flex-col animate-fade-in" style={{ backgroundColor: 'var(--bg-page)' }}>
+            {/* Header */}
+            <div className="px-5 pt-5 pb-3 safe-area-top">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3 min-w-0">
+                  {currentDet && (
+                    <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: `${LEVELS[0].color}15` }}>
+                      <Dumbbell className="w-5 h-5" style={{ color: LEVELS[0].color }} />
+                    </div>
+                  )}
+                  <div className="min-w-0">
+                    <p className="text-[11px] font-bold uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>Current: {currentEx.name}</p>
+                    <p className="text-[16px] font-black" style={{ color: 'var(--text-primary)' }}>Replace it with...</p>
+                  </div>
+                </div>
+                <button onClick={() => { setReplaceExercise(null); setReplaceSearch(''); }} className="w-9 h-9 rounded-full flex items-center justify-center shrink-0" style={{ backgroundColor: 'var(--bg-soft)' }}>
+                  <X className="w-4 h-4" style={{ color: 'var(--text-primary)' }} />
+                </button>
+              </div>
+              {/* Search */}
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: 'var(--text-muted)' }} />
+                <input
+                  type="text"
+                  placeholder="Search exercises"
+                  value={replaceSearch}
+                  onChange={(e) => setReplaceSearch(e.target.value)}
+                  className="w-full pl-10 pr-4 py-3 rounded-xl text-[14px] font-medium outline-none"
+                  style={{ backgroundColor: 'var(--bg-soft)', color: 'var(--text-primary)' }}
+                  autoFocus
+                />
+              </div>
+            </div>
+
+            {/* Exercise list */}
+            <div className="flex-1 overflow-y-auto px-5 pb-8">
+              <div className="max-w-lg mx-auto">
+                {/* Recommended (similar) */}
+                {!searchLower && similar.length > 0 && (
+                  <>
+                    <p className="text-[12px] font-bold uppercase tracking-widest mt-4 mb-2.5" style={{ color: 'var(--accent)' }}>Recommended</p>
+                    <div className="space-y-2">
+                      {similar.slice(0, 5).map((ex) => {
+                        const det = EXERCISE_DETAILS[ex.name];
+                        const sameDifficulty = det && currentDet && det.categories.some((c) => currentDet.categories.includes(c));
+                        return (
+                          <button
+                            key={ex.name}
+                            onClick={() => handleReplaceExercise(replaceExercise.dayKey, replaceExercise.exerciseIdx, { name: ex.name, duration: currentEx.duration })}
+                            className="w-full flex items-center gap-3.5 px-4 py-3.5 rounded-2xl text-left transition-all active:scale-[0.98]"
+                            style={{ backgroundColor: 'var(--bg-soft)' }}
+                          >
+                            <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: `${LEVELS[0].color}15` }}>
+                              <Dumbbell className="w-5 h-5" style={{ color: LEVELS[0].color, opacity: 0.6 }} />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-[13px] font-bold truncate" style={{ color: 'var(--text-primary)' }}>{ex.name}</p>
+                              {det && <p className="text-[11px] truncate mt-0.5" style={{ color: 'var(--text-muted)' }}>{det.musclesWorked}</p>}
+                            </div>
+                            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold shrink-0" style={{ backgroundColor: 'var(--bg-page)', color: 'var(--text-muted)' }}>
+                              {sameDifficulty ? 'Similar' : 'Easier'}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </>
+                )}
+
+                {/* Alphabetical */}
+                {Object.keys(grouped).sort().map((letter) => (
+                  <div key={letter}>
+                    <p className="text-[18px] font-black mt-5 mb-2" style={{ color: 'var(--accent)' }}>{letter}</p>
+                    <div className="space-y-2">
+                      {grouped[letter].map((ex) => {
+                        const det = EXERCISE_DETAILS[ex.name];
+                        return (
+                          <button
+                            key={ex.name}
+                            onClick={() => handleReplaceExercise(replaceExercise.dayKey, replaceExercise.exerciseIdx, { name: ex.name, duration: currentEx.duration })}
+                            className="w-full flex items-center gap-3.5 px-4 py-3.5 rounded-2xl text-left transition-all active:scale-[0.98]"
+                            style={{ backgroundColor: 'var(--bg-soft)' }}
+                          >
+                            <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: `${LEVELS[0].color}15` }}>
+                              <Dumbbell className="w-5 h-5" style={{ color: LEVELS[0].color, opacity: 0.6 }} />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-[13px] font-bold truncate" style={{ color: 'var(--text-primary)' }}>{ex.name}</p>
+                              {det && <p className="text-[11px] truncate mt-0.5" style={{ color: 'var(--text-muted)' }}>{det.musclesWorked}</p>}
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        );
+      })()}
 
       {/* ─── Day Complete Celebration ─── */}
       {celebrateDay !== null && (
