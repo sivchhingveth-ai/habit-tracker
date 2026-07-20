@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ChevronDown, ChevronUp, Calculator, Flame, Beef } from 'lucide-react';
+import { ChevronDown, ChevronUp, Flame, Beef, Calculator } from 'lucide-react';
 
 interface CalorieResult {
   bmr: number;
@@ -35,8 +35,6 @@ function calculateCalories(
 
   const multiplier = activityMultipliers[activityLevel] || 1.2;
   const tdee = Math.round(bmr * multiplier);
-
-  // Protein: 1.6–2.2g per kg body weight
   const proteinLow = Math.round(weightKg * 1.6);
   const proteinHigh = Math.round(weightKg * 2.2);
 
@@ -96,8 +94,6 @@ const ScrollInput: React.FC<ScrollInputProps> = ({ value, onChange, min, max, st
 
   const handleTouchEnd = () => { isDragging.current = false; };
 
-  const handleClick = (v: number) => onChange(v);
-
   return (
     <div className="flex flex-col items-center gap-1">
       <div className="text-[28px] font-black text-white tabular-nums">
@@ -114,11 +110,9 @@ const ScrollInput: React.FC<ScrollInputProps> = ({ value, onChange, min, max, st
           {values.map((v) => (
             <button
               key={v}
-              onClick={() => handleClick(v)}
+              onClick={() => onChange(v)}
               className={`h-[30px] flex items-center justify-center text-[13px] font-bold transition-all shrink-0 ${
-                v === value
-                  ? 'text-white text-[15px]'
-                  : 'text-white/25'
+                v === value ? 'text-white text-[15px]' : 'text-white/25'
               }`}
             >
               {v}
@@ -144,182 +138,163 @@ export const CalorieCalculator: React.FC<CalorieCalculatorProps> = ({ className 
   const [activityLevel, setActivityLevel] = useState('sedentary');
   const [goal, setGoal] = useState('maintain');
   const [result, setResult] = useState<CalorieResult | null>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    if (isOpen) document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isOpen]);
 
   const handleCalculate = () => {
-    const r = calculateCalories(gender, age, height, weight, activityLevel);
-    setResult(r);
+    setResult(calculateCalories(gender, age, height, weight, activityLevel));
   };
 
-  const activityLevels = [
-    { value: 'sedentary', label: 'Sedentary (little/no exercise)' },
-    { value: 'light', label: 'Light (exercise 1-3x/week)' },
-    { value: 'moderate', label: 'Moderate (exercise 3-5x/week)' },
-    { value: 'active', label: 'Active (exercise 6-7x/week)' },
-    { value: 'very_active', label: 'Very Active (intense daily)' },
-  ];
-
-  const goals = [
-    { value: 'lose', label: 'Lose Weight' },
-    { value: 'maintain', label: 'Maintain Weight' },
-    { value: 'gain', label: 'Gain Weight' },
-  ];
-
   return (
-    <div className={`w-full ${className}`}>
-      {/* Toggle Header */}
+    <div ref={dropdownRef} className={`relative ${className}`}>
+      {/* Toggle Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between px-5 py-4 rounded-2xl bg-white/[0.06] backdrop-blur-xl border border-white/10 transition-all active:scale-[0.99]"
+        className="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all active:scale-[0.98] hover:bg-white/[0.04]"
       >
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-white/[0.08] border border-white/10">
-            <Flame className="w-5 h-5 text-white/60" />
-          </div>
-          <div className="text-left">
-            <p className="text-[14px] font-bold text-white">Calorie Calculator</p>
-            <p className="text-[11px] text-white/40">Calculate your daily calorie needs</p>
-          </div>
+        <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-white/[0.06] border border-white/10">
+          <Flame className="w-4 h-4 text-white/50" />
         </div>
+        <span className="flex-1 text-left text-[13px] font-bold text-white/70">Calorie Calculator</span>
         {isOpen ? (
-          <ChevronUp className="w-5 h-5 text-white/40" />
+          <ChevronUp className="w-4 h-4 text-white/30" />
         ) : (
-          <ChevronDown className="w-5 h-5 text-white/40" />
+          <ChevronDown className="w-4 h-4 text-white/30" />
         )}
       </button>
 
-      {/* Expandable Content */}
+      {/* Dropdown Panel */}
       {isOpen && (
-        <div className="mt-3 px-5 py-6 rounded-2xl bg-white/[0.06] backdrop-blur-xl border border-white/10 space-y-6 animate-slide-up">
-          {/* Gender */}
-          <div>
-            <p className="text-[11px] font-bold tracking-[0.2em] uppercase text-white/40 mb-2">Gender</p>
-            <div className="flex gap-2">
-              {(['male', 'female'] as const).map((g) => (
-                <button
-                  key={g}
-                  onClick={() => setGender(g)}
-                  className={`flex-1 py-3 rounded-xl text-[13px] font-bold transition-all ${
-                    gender === g
-                      ? 'bg-white/[0.14] border border-white/40 text-white'
-                      : 'bg-white/[0.04] border border-white/10 text-white/40'
-                  }`}
-                >
-                  {g === 'male' ? 'Male' : 'Female'}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Age */}
-          <div>
-            <p className="text-[11px] font-bold tracking-[0.2em] uppercase text-white/40 mb-2">Age</p>
-            <ScrollInput value={age} onChange={setAge} min={13} max={99} unit="years" />
-          </div>
-
-          {/* Height */}
-          <div>
-            <p className="text-[11px] font-bold tracking-[0.2em] uppercase text-white/40 mb-2">Height</p>
-            <ScrollInput value={height} onChange={setHeight} min={120} max={220} unit="cm" />
-          </div>
-
-          {/* Weight */}
-          <div>
-            <p className="text-[11px] font-bold tracking-[0.2em] uppercase text-white/40 mb-2">Weight</p>
-            <ScrollInput value={weight} onChange={setWeight} min={30} max={200} unit="kg" />
-          </div>
-
-          {/* Activity Level */}
-          <div>
-            <p className="text-[11px] font-bold tracking-[0.2em] uppercase text-white/40 mb-2">Activity Level</p>
-            <select
-              value={activityLevel}
-              onChange={(e) => setActivityLevel(e.target.value)}
-              className="w-full py-3 px-4 rounded-xl bg-white/[0.06] border border-white/10 text-white text-[13px] font-bold appearance-none cursor-pointer"
-            >
-              {activityLevels.map((l) => (
-                <option key={l.value} value={l.value} className="bg-[#0b0c0f] text-white">
-                  {l.label}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Goal */}
-          <div>
-            <p className="text-[11px] font-bold tracking-[0.2em] uppercase text-white/40 mb-2">Goal</p>
-            <select
-              value={goal}
-              onChange={(e) => setGoal(e.target.value)}
-              className="w-full py-3 px-4 rounded-xl bg-white/[0.06] border border-white/10 text-white text-[13px] font-bold appearance-none cursor-pointer"
-            >
-              {goals.map((g) => (
-                <option key={g.value} value={g.value} className="bg-[#0b0c0f] text-white">
-                  {g.label}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Calculate Button */}
-          <button
-            onClick={handleCalculate}
-            className="w-full py-4 rounded-2xl flex items-center justify-center gap-2 text-[15px] font-bold bg-white/[0.12] backdrop-blur-xl border border-white/20 text-white transition-all active:scale-[0.97] shadow-[0_0_30px_rgba(255,255,255,0.06)]"
-          >
-            <Calculator className="w-5 h-5" />
-            Calculate
-          </button>
-
-          {/* Results */}
-          {result && (
-            <div className="space-y-3 animate-slide-up">
-              <div className="grid grid-cols-2 gap-3">
-                <div className="bg-white/[0.04] border border-white/10 rounded-xl p-3 text-center">
-                  <p className="text-[10px] font-bold tracking-widest uppercase text-white/35 mb-1">BMR</p>
-                  <p className="text-[22px] font-black text-white tabular-nums">{result.bmr}</p>
-                  <p className="text-[10px] text-white/30">cal/day</p>
-                </div>
-                <div className="bg-white/[0.04] border border-white/10 rounded-xl p-3 text-center">
-                  <p className="text-[10px] font-bold tracking-widest uppercase text-white/35 mb-1">TDEE</p>
-                  <p className="text-[22px] font-black text-white tabular-nums">{result.tdee}</p>
-                  <p className="text-[10px] text-white/30">cal/day</p>
-                </div>
-              </div>
-
-              {/* Protein */}
-              <div className="bg-white/[0.04] border border-white/10 rounded-xl p-4">
-                <div className="flex items-center gap-2 mb-2">
-                  <Beef className="w-4 h-4 text-white/40" />
-                  <p className="text-[11px] font-bold tracking-widest uppercase text-white/40">Daily Protein</p>
-                </div>
-                <div className="flex items-baseline gap-1">
-                  <span className="text-[26px] font-black text-white tabular-nums">{result.proteinLow}–{result.proteinHigh}</span>
-                  <span className="text-[12px] font-bold text-white/40">g/day</span>
-                </div>
-                <p className="text-[11px] text-white/30 mt-1">Based on {weight}kg body weight (1.6–2.2g/kg)</p>
-              </div>
-
-              <div className="space-y-2 pt-2">
-                {goal === 'lose' && (
-                  <div className="flex items-center justify-between px-4 py-3 rounded-xl bg-white/[0.04] border border-white/10">
-                    <span className="text-[13px] font-bold text-white/60">Target (lose)</span>
-                    <span className="text-[16px] font-black text-white tabular-nums">{result.loseWeight} <span className="text-[11px] text-white/40">cal</span></span>
-                  </div>
-                )}
-                {goal === 'gain' && (
-                  <div className="flex items-center justify-between px-4 py-3 rounded-xl bg-white/[0.04] border border-white/10">
-                    <span className="text-[13px] font-bold text-white/60">Target (gain)</span>
-                    <span className="text-[16px] font-black text-white tabular-nums">{result.gainWeight} <span className="text-[11px] text-white/40">cal</span></span>
-                  </div>
-                )}
-                {goal === 'maintain' && (
-                  <div className="flex items-center justify-between px-4 py-3 rounded-xl bg-white/[0.04] border border-white/10">
-                    <span className="text-[13px] font-bold text-white/60">Target (maintain)</span>
-                    <span className="text-[16px] font-black text-white tabular-nums">{result.maintainWeight} <span className="text-[11px] text-white/40">cal</span></span>
-                  </div>
-                )}
+        <div className="absolute left-0 right-0 mt-1 mx-4 rounded-2xl bg-[#12161c]/95 backdrop-blur-2xl border border-white/10 shadow-2xl z-50 overflow-hidden animate-slide-up">
+          <div className="p-5 space-y-5 max-h-[70vh] overflow-y-auto custom-scrollbar">
+            {/* Gender */}
+            <div>
+              <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-white/35 mb-2">Gender</p>
+              <div className="flex gap-2">
+                {(['male', 'female'] as const).map((g) => (
+                  <button
+                    key={g}
+                    onClick={() => setGender(g)}
+                    className={`flex-1 py-2.5 rounded-lg text-[12px] font-bold transition-all ${
+                      gender === g
+                        ? 'bg-white/[0.12] border border-white/30 text-white'
+                        : 'bg-white/[0.04] border border-white/8 text-white/35'
+                    }`}
+                  >
+                    {g === 'male' ? 'Male' : 'Female'}
+                  </button>
+                ))}
               </div>
             </div>
-          )}
+
+            {/* Age */}
+            <div>
+              <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-white/35 mb-2">Age</p>
+              <ScrollInput value={age} onChange={setAge} min={13} max={99} unit="years" />
+            </div>
+
+            {/* Height */}
+            <div>
+              <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-white/35 mb-2">Height</p>
+              <ScrollInput value={height} onChange={setHeight} min={120} max={220} unit="cm" />
+            </div>
+
+            {/* Weight */}
+            <div>
+              <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-white/35 mb-2">Weight</p>
+              <ScrollInput value={weight} onChange={setWeight} min={30} max={200} unit="kg" />
+            </div>
+
+            {/* Activity Level */}
+            <div>
+              <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-white/35 mb-2">Activity Level</p>
+              <select
+                value={activityLevel}
+                onChange={(e) => setActivityLevel(e.target.value)}
+                className="w-full py-2.5 px-3 rounded-lg bg-white/[0.04] border border-white/8 text-white text-[12px] font-bold appearance-none cursor-pointer"
+              >
+                <option value="sedentary" className="bg-[#12161c]">Sedentary (little/no exercise)</option>
+                <option value="light" className="bg-[#12161c]">Light (exercise 1-3x/week)</option>
+                <option value="moderate" className="bg-[#12161c]">Moderate (exercise 3-5x/week)</option>
+                <option value="active" className="bg-[#12161c]">Active (exercise 6-7x/week)</option>
+                <option value="very_active" className="bg-[#12161c]">Very Active (intense daily)</option>
+              </select>
+            </div>
+
+            {/* Goal */}
+            <div>
+              <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-white/35 mb-2">Goal</p>
+              <select
+                value={goal}
+                onChange={(e) => setGoal(e.target.value)}
+                className="w-full py-2.5 px-3 rounded-lg bg-white/[0.04] border border-white/8 text-white text-[12px] font-bold appearance-none cursor-pointer"
+              >
+                <option value="lose" className="bg-[#12161c]">Lose Weight</option>
+                <option value="maintain" className="bg-[#12161c]">Maintain Weight</option>
+                <option value="gain" className="bg-[#12161c]">Gain Weight</option>
+              </select>
+            </div>
+
+            {/* Calculate */}
+            <button
+              onClick={handleCalculate}
+              className="w-full py-3 rounded-xl flex items-center justify-center gap-2 text-[13px] font-bold bg-white/[0.10] border border-white/15 text-white transition-all active:scale-[0.98]"
+            >
+              <Calculator className="w-4 h-4" />
+              Calculate
+            </button>
+
+            {/* Results */}
+            {result && (
+              <div className="space-y-3 pt-1 animate-slide-up">
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="bg-white/[0.04] border border-white/8 rounded-xl p-3 text-center">
+                    <p className="text-[9px] font-bold tracking-widest uppercase text-white/30 mb-1">BMR</p>
+                    <p className="text-[20px] font-black text-white tabular-nums">{result.bmr}</p>
+                    <p className="text-[9px] text-white/25">cal/day</p>
+                  </div>
+                  <div className="bg-white/[0.04] border border-white/8 rounded-xl p-3 text-center">
+                    <p className="text-[9px] font-bold tracking-widest uppercase text-white/30 mb-1">TDEE</p>
+                    <p className="text-[20px] font-black text-white tabular-nums">{result.tdee}</p>
+                    <p className="text-[9px] text-white/25">cal/day</p>
+                  </div>
+                </div>
+
+                {/* Protein */}
+                <div className="bg-white/[0.04] border border-white/8 rounded-xl p-3">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Beef className="w-3.5 h-3.5 text-white/35" />
+                    <p className="text-[10px] font-bold tracking-widest uppercase text-white/35">Daily Protein</p>
+                  </div>
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-[22px] font-black text-white tabular-nums">{result.proteinLow}–{result.proteinHigh}</span>
+                    <span className="text-[11px] font-bold text-white/35">g/day</span>
+                  </div>
+                  <p className="text-[10px] text-white/25 mt-0.5">1.6–2.2g per kg body weight</p>
+                </div>
+
+                {/* Goal target */}
+                <div className="bg-white/[0.04] border border-white/8 rounded-xl p-3 flex items-center justify-between">
+                  <span className="text-[12px] font-bold text-white/50">
+                    {goal === 'lose' ? 'Target (lose)' : goal === 'gain' ? 'Target (gain)' : 'Target (maintain)'}
+                  </span>
+                  <span className="text-[16px] font-black text-white tabular-nums">
+                    {goal === 'lose' ? result.loseWeight : goal === 'gain' ? result.gainWeight : result.maintainWeight}
+                    <span className="text-[10px] text-white/35 ml-1">cal</span>
+                  </span>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>
