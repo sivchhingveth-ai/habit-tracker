@@ -1,5 +1,5 @@
-import React, { useState, useCallback, useEffect, useRef } from 'react';
-import { Sparkles, Play, Check, Plus, Pencil, Trash2, Dumbbell, Info, Trophy, ChevronDown, ChevronUp, Flame, Beef, Calculator, Calendar } from 'lucide-react';
+import React, { useState, useCallback, useEffect } from 'react';
+import { Sparkles, Play, Check, Plus, Pencil, Trash2, Dumbbell, Info, Trophy, Flame, Beef, Calculator, Calendar } from 'lucide-react';
 import { Tabs } from './Tabs';
 import { ExerciseTimer } from './ExerciseTimer';
 import { ExerciseDetail } from './ExerciseDetail';
@@ -47,7 +47,6 @@ export const GymView: React.FC<GymViewProps> = ({
   const [planDayKey, setPlanDayKey] = useState<string | null>(null);
   const [gymNavExpanded, setGymNavExpanded] = useState(false);
   const [activeGymSection, setActiveGymSection] = useState<'plan' | 'calculator'>('plan');
-  const gymNavRef = useRef<HTMLDivElement>(null);
 
   // Calorie calculator state
   const [calcGender, setCalcGender] = useState<'male' | 'female'>('male');
@@ -57,16 +56,6 @@ export const GymView: React.FC<GymViewProps> = ({
   const [calcActivity, setCalcActivity] = useState('sedentary');
   const [calcGoal, setCalcGoal] = useState('maintain');
   const [calcResult, setCalcResult] = useState<{ bmr: number; tdee: number; proteinLow: number; proteinHigh: number; lose: number; maintain: number; gain: number } | null>(null);
-
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (gymNavRef.current && !gymNavRef.current.contains(e.target as Node)) {
-        setGymNavExpanded(false);
-      }
-    };
-    if (gymNavExpanded) document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [gymNavExpanded]);
 
   const handleCalcCalculate = () => {
     let bmr: number;
@@ -255,60 +244,32 @@ export const GymView: React.FC<GymViewProps> = ({
 
   return (
     <div className="flex flex-col relative w-full h-full">
-      <div ref={gymNavRef} className="sticky top-0 z-20">
+      <div className="sticky top-0 z-20">
         <Tabs
           tabs={tabs}
           activeTab={activeTab}
           onTabChange={onTabChange}
           onLogout={onLogout}
           isLoggingOut={isLoggingOut}
+          gymDropdownOpen={gymNavExpanded}
+          onGymToggle={() => setGymNavExpanded(!gymNavExpanded)}
+          gymDropdownItems={[
+            {
+              key: 'calculator',
+              label: 'Calorie Calculator',
+              icon: <Flame className="w-3.5 h-3.5 text-white/50" />,
+              active: activeGymSection === 'calculator',
+              onClick: () => { setActiveGymSection('calculator'); setGymNavExpanded(false); },
+            },
+            {
+              key: 'plan',
+              label: '3-Month Plan',
+              icon: <Calendar className="w-3.5 h-3.5 text-white/50" />,
+              active: activeGymSection === 'plan',
+              onClick: () => { setActiveGymSection('plan'); setGymNavExpanded(false); },
+            },
+          ]}
         />
-
-        {/* Gym expandable nav */}
-        <div className="relative px-4 pb-2">
-          <button
-            onClick={() => setGymNavExpanded(!gymNavExpanded)}
-            className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-white/[0.06] border border-white/10 backdrop-blur-xl transition-all active:scale-[0.99]"
-          >
-            <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-white/[0.08] border border-white/10">
-              <Dumbbell className="w-4 h-4 text-white/60" />
-            </div>
-            <span className="flex-1 text-left text-[13px] font-bold text-white/80">
-              {activeGymSection === 'calculator' ? 'Calorie Calculator' : '3-Month Plan'}
-            </span>
-            {gymNavExpanded ? (
-              <ChevronUp className="w-4 h-4 text-white/30" />
-            ) : (
-              <ChevronDown className="w-4 h-4 text-white/30" />
-            )}
-          </button>
-
-          {/* Dropdown menu */}
-          {gymNavExpanded && (
-            <div className="mt-1 rounded-2xl bg-[#12161c]/95 backdrop-blur-2xl border border-white/10 shadow-2xl overflow-hidden animate-slide-up">
-              <button
-                onClick={() => { setActiveGymSection('calculator'); setGymNavExpanded(false); }}
-                className={`w-full flex items-center gap-3 px-4 py-3.5 transition-all active:bg-white/[0.04] ${activeGymSection === 'calculator' ? 'bg-white/[0.06]' : ''}`}
-              >
-                <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-white/[0.06] border border-white/8">
-                  <Flame className="w-4 h-4 text-white/50" />
-                </div>
-                <span className="flex-1 text-left text-[13px] font-bold text-white/70">Calorie Calculator</span>
-                {activeGymSection === 'calculator' && <Check className="w-4 h-4 text-white/50" />}
-              </button>
-              <button
-                onClick={() => { setActiveGymSection('plan'); setGymNavExpanded(false); }}
-                className={`w-full flex items-center gap-3 px-4 py-3.5 border-t border-white/5 transition-all active:bg-white/[0.04] ${activeGymSection === 'plan' ? 'bg-white/[0.06]' : ''}`}
-              >
-                <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-white/[0.06] border border-white/8">
-                  <Calendar className="w-4 h-4 text-white/50" />
-                </div>
-                <span className="flex-1 text-left text-[13px] font-bold text-white/70">3-Month Plan</span>
-                {activeGymSection === 'plan' && <Check className="w-4 h-4 text-white/50" />}
-              </button>
-            </div>
-          )}
-        </div>
       </div>
 
       <div className="flex-1 overflow-y-auto custom-scrollbar">
