@@ -103,53 +103,47 @@ export const Tabs: React.FC<TabsProps> = ({
               const isGym = tab === 'Gym';
 
               return (
-                <button
-                  key={tab}
-                  ref={(el) => {
-                    if (isActive) activeTabRef.current = el;
-                    if (isGym) gymTabRef.current = el;
-                  }}
-                  onClick={() => {
-                    if (isGym && onGymToggle) {
-                      if (activeTab !== tab) onTabChange(tab);
-                      onGymToggle();
-                    } else {
-                      onTabChange(tab);
-                    }
-                  }}
-                  className={`nav-tab relative h-full flex items-center justify-center gap-1.5 shrink-0 touch-manipulation group px-3 md:px-4 ${
-                    isActive ? 'is-active' : ''
-                  }`}
-                  style={{ touchAction: 'manipulation' }}
-                  title={tab}
-                >
-                  {isAdd ? (
-                    <div className="nav-add-icon-wrap flex items-center justify-center">
+                <div key={tab} className="relative flex h-full">
+                  <button
+                    ref={(el) => {
+                      if (isActive) activeTabRef.current = el;
+                      if (isGym) gymTabRef.current = el;
+                    }}
+                    onClick={() => onTabChange(tab)}
+                    className={`nav-tab relative h-full flex items-center justify-center gap-1.5 shrink-0 touch-manipulation group px-3 md:px-4 ${
+                      isActive ? 'is-active' : ''
+                    }`}
+                    style={{ touchAction: 'manipulation' }}
+                    title={tab}
+                  >
+                    {isAdd ? (
+                      <div className="nav-add-icon-wrap flex items-center justify-center">
+                        <Icon className="nav-tab-icon w-4 h-4 transition-all" strokeWidth={isActive ? 2.5 : 2} />
+                      </div>
+                    ) : (
                       <Icon className="nav-tab-icon w-4 h-4 transition-all" strokeWidth={isActive ? 2.5 : 2} />
-                    </div>
-                  ) : (
-                    <Icon className="nav-tab-icon w-4 h-4 transition-all" strokeWidth={isActive ? 2.5 : 2} />
-                  )}
-                  <span className={`nav-tab-label text-[11px] font-semibold tracking-wide transition-colors ${isActive ? 'font-bold' : ''}`}>
-                    {tab}
-                  </span>
+                    )}
+                    <span className={`nav-tab-label text-[11px] font-semibold tracking-wide transition-colors ${isActive ? 'font-bold' : ''}`}>
+                      {tab}
+                    </span>
+                    {isActive && <div className="nav-underline absolute bottom-0 left-1/2 -translate-x-1/2 h-[2px] w-6 sm:w-8 rounded-t-full" />}
+                  </button>
                   {isGym && (
-                    <span
-                      role="button"
+                    <button
                       onClick={(e) => {
                         e.stopPropagation();
                         if (onGymToggle) onGymToggle();
                       }}
-                      className="flex items-center justify-center ml-0.5"
+                      className="h-full px-1 flex items-center justify-center touch-manipulation"
+                      style={{ touchAction: 'manipulation' }}
                     >
                       {gymDropdownOpen
                         ? <ChevronUp className="w-3 h-3" />
                         : <ChevronDown className="w-3 h-3" />
                       }
-                    </span>
+                    </button>
                   )}
-                  {isActive && <div className="nav-underline absolute bottom-0 left-1/2 -translate-x-1/2 h-[2px] w-6 sm:w-8 rounded-t-full" />}
-                </button>
+                </div>
               );
             })}
           </div>
