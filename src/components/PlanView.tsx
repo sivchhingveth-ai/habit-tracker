@@ -278,7 +278,7 @@ export const PlanView: React.FC<PlanViewProps> = ({ onStartWorkout }) => {
               {GOALS.map((goal) => (
                 <button key={goal.key} onClick={() => handleGoalSelect(goal.key)}
                   className="w-full flex items-center gap-4 px-4 py-4 rounded-2xl border border-[var(--border-soft)] bg-[var(--bg-card)] hover:border-[var(--accent)] hover:bg-[var(--accent)]/5 transition-all active:scale-[0.98] text-left">
-                  <div className="w-12 h-12 rounded-xl bg-[var(--accent)]/10 flex items-center justify-center text-[var(--accent)] shrink-0">{goal.icon}</div>
+                  <div className="w-12 h-12 rounded-xl bg-white/[0.07] flex items-center justify-center text-white shrink-0">{goal.icon}</div>
                   <div className="flex-1 min-w-0">
                     <p className="text-[14px] font-bold text-[var(--text-primary)]">{goal.label}</p>
                     <p className="text-[11px] text-[var(--text-muted)] mt-0.5">{goal.desc}</p>
