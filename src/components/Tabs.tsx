@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { ListChecks, Plus, Clock, Dumbbell, LogOut, Loader2, User as UserIcon, ChevronDown, ChevronUp, Check, Menu, X } from 'lucide-react';
 import useAppStore from '../store/appStore';
 import { avatarSrc } from '../utils/avatars';
@@ -213,8 +214,8 @@ export const Tabs: React.FC<TabsProps> = ({
         </div>
       )}
 
-      {/* Mobile: Drawer overlay */}
-      {drawerOpen && (
+      {/* Mobile: Drawer overlay — rendered via portal to escape sticky stacking context */}
+      {drawerOpen && createPortal(
         <div className="fixed inset-0 z-[500] sm:hidden">
           <div
             className="absolute inset-0 bg-black/70 backdrop-blur-md animate-fade-in"
@@ -310,7 +311,8 @@ export const Tabs: React.FC<TabsProps> = ({
               )}
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
