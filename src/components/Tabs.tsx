@@ -207,17 +207,17 @@ export const Tabs: React.FC<TabsProps> = ({
 
       {/* Mobile: Drawer overlay */}
       {drawerOpen && (
-        <div className="fixed inset-0 z-[100] sm:hidden">
+        <div className="fixed inset-0 z-[500] sm:hidden">
           {/* Backdrop */}
           <div
-            className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-fade-in"
+            className="absolute inset-0 bg-black/70 backdrop-blur-md animate-fade-in"
             onClick={() => setDrawerOpen(false)}
           />
 
           {/* Drawer panel */}
-          <div className="absolute left-0 top-0 bottom-0 w-[260px] bg-[#0b0c0f] border-r border-white/10 flex flex-col animate-slide-in-left">
+          <div className="absolute left-0 top-0 bottom-0 w-[260px] bg-[#0b0c0f] border-r border-white/10 flex flex-col animate-slide-in-left shadow-2xl">
             {/* Header */}
-            <div className="flex items-center justify-between px-4 h-[48px] border-b border-white/8">
+            <div className="flex items-center justify-between px-4 h-[48px] border-b border-white/8 shrink-0">
               <span className="text-[13px] font-black text-white">Menu</span>
               <button
                 onClick={() => setDrawerOpen(false)}
@@ -228,7 +228,7 @@ export const Tabs: React.FC<TabsProps> = ({
             </div>
 
             {/* Nav items */}
-            <div className="flex-1 overflow-y-auto py-2">
+            <div className="flex-1 overflow-y-auto py-1">
               {tabs.map((tab) => {
                 const Icon = TAB_ICONS[tab] ?? ListChecks;
                 const isActive = activeTab === tab;
@@ -276,8 +276,8 @@ export const Tabs: React.FC<TabsProps> = ({
               })}
             </div>
 
-            {/* Bottom actions */}
-            <div className="border-t border-white/8 py-2">
+            {/* Bottom: Profile + Logout */}
+            <div className="border-t border-white/8 py-1 shrink-0">
               <button
                 onClick={() => { openProfileModal(); setDrawerOpen(false); }}
                 className="w-full flex items-center gap-3 px-4 py-3 active:bg-white/[0.04]"
