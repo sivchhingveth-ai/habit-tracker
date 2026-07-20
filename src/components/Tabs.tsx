@@ -171,13 +171,10 @@ export const Tabs: React.FC<TabsProps> = ({
               <button
                 key={item.key}
                 onClick={item.onClick}
-                className={`w-full flex items-center gap-3 px-4 py-2.5 transition-all active:bg-white/[0.04] ${item.active ? 'bg-white/[0.06]' : ''} ${i > 0 ? 'border-t border-white/5' : ''}`}
+                className={`w-full flex items-center gap-2 px-3 py-2 transition-all active:bg-white/[0.04] ${item.active ? 'bg-white/[0.06]' : ''} ${i > 0 ? 'border-t border-white/5' : ''}`}
               >
-                <div className="w-7 h-7 rounded-lg flex items-center justify-center bg-white/[0.06] border border-white/8 shrink-0">
-                  {item.icon}
-                </div>
-                <span className="flex-1 text-left text-[12px] font-bold text-white/70">{item.label}</span>
-                {item.active && <Check className="w-3.5 h-3.5 text-white/50 shrink-0" />}
+                <span className="flex-1 text-left text-[11px] font-bold text-white/70">{item.label}</span>
+                {item.active && <Check className="w-3 h-3 text-white/50 shrink-0" />}
               </button>
             ))}
           </div>
