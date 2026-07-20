@@ -305,13 +305,11 @@ export const PlanView: React.FC<PlanViewProps> = ({ onStartWorkout }) => {
                 {(['chest', 'back', 'shoulders', 'arms', 'core', 'legs', 'glutes', 'cardio', 'full-body'] as ExerciseCategory[]).map((cat) => {
                   const active = selectedCategories.includes(cat);
                   const labels: Record<string, string> = { chest: 'Chest', back: 'Back', shoulders: 'Shoulders', arms: 'Arms', core: 'Abs', legs: 'Legs', glutes: 'Glutes', cardio: 'Cardio', 'full-body': 'Full Body' };
-                  const icons: Record<string, string> = { chest: '💪', back: '🔙', shoulders: '🏋️', arms: '💪', core: '🎯', legs: '🦵', glutes: '🍑', cardio: '❤️', 'full-body': '⚡' };
                   return (
                     <button key={cat} onClick={() => toggleCategory(cat)}
-                      className={`relative flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl transition-all active:scale-95 ${active ? 'bg-[var(--accent)]/15 border-2 border-[var(--accent)]' : 'bg-[var(--bg-soft)] border-2 border-transparent'}`}>
+                      className={`relative flex flex-col items-center justify-center gap-1.5 py-4 px-2 rounded-xl transition-all active:scale-95 ${active ? 'bg-[var(--accent)]/15 border-2 border-[var(--accent)]' : 'bg-[var(--bg-soft)] border-2 border-transparent'}`}>
                       {active && <div className="absolute top-1.5 right-1.5 w-4 h-4 rounded-full bg-[var(--accent)] flex items-center justify-center"><Check className="w-2.5 h-2.5 text-white" strokeWidth={3} /></div>}
-                      <span className="text-[20px]">{icons[cat]}</span>
-                      <span className={`text-[11px] font-bold ${active ? 'text-[var(--accent)]' : 'text-[var(--text-muted)]'}`}>{labels[cat]}</span>
+                      <span className={`text-[12px] font-bold ${active ? 'text-white' : 'text-[var(--text-primary)]'}`}>{labels[cat]}</span>
                     </button>
                   );
                 })}
@@ -751,7 +749,6 @@ export const PlanView: React.FC<PlanViewProps> = ({ onStartWorkout }) => {
               <div className="grid grid-cols-2 gap-2">
                 {(['core', 'chest', 'back', 'arms', 'legs', 'glutes', 'shoulders', 'cardio', 'full-body'] as ExerciseCategory[]).map((cat) => {
                   const active = custCategories.includes(cat);
-                  const icons: Record<string, string> = { chest: '💪', back: '🔙', shoulders: '🏋️', arms: '💪', core: '🎯', legs: '🦵', glutes: '🍑', cardio: '❤️', 'full-body': '⚡' };
                   return (
                     <button
                       key={cat}
@@ -760,7 +757,6 @@ export const PlanView: React.FC<PlanViewProps> = ({ onStartWorkout }) => {
                         active ? 'bg-white/[0.14] border-white/60' : 'bg-white/[0.05] border-white/10'
                       }`}
                     >
-                      <span className="text-[20px]">{icons[cat]}</span>
                       <span className={`text-[13px] font-bold flex-1 ${active ? 'text-white' : 'text-white/55'}`}>{CATEGORY_LABELS[cat]}</span>
                       {active && (
                         <span className="w-5 h-5 rounded-full flex items-center justify-center shrink-0" style={{ backgroundColor: '#ffffff' }}>
