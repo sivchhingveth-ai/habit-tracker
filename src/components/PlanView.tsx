@@ -277,7 +277,7 @@ export const PlanView: React.FC<PlanViewProps> = ({ onStartWorkout }) => {
             <div className="space-y-2">
               {GOALS.map((goal) => (
                 <button key={goal.key} onClick={() => handleGoalSelect(goal.key)}
-                  className="w-full flex items-center gap-4 px-4 py-4 rounded-2xl border border-[var(--border-soft)] bg-[var(--bg-card)] hover:border-[var(--accent)] hover:bg-[var(--accent)]/5 transition-all active:scale-[0.98] text-left">
+                  className="w-full flex items-center gap-4 px-4 py-4 rounded-2xl border border-[var(--border-soft)] bg-[var(--bg-card)] hover:border-white/30 hover:bg-white/5 transition-all active:scale-[0.98] text-left">
                   <div className="flex-1 min-w-0">
                     <p className="text-[14px] font-bold text-[var(--text-primary)]">{goal.label}</p>
                     <p className="text-[11px] text-[var(--text-muted)] mt-0.5">{goal.desc}</p>
@@ -296,9 +296,9 @@ export const PlanView: React.FC<PlanViewProps> = ({ onStartWorkout }) => {
               <p className="text-[var(--text-muted)] text-[13px] font-medium mt-1">Adjust muscle groups if needed</p>
             </div>
             <div className="flex items-center justify-center gap-2 py-1">
-              <div className="h-1.5 w-8 rounded-full bg-[var(--accent)]" />
-              <div className="h-1.5 w-4 rounded-full bg-[var(--accent)]/40" />
-              <div className="h-1.5 w-4 rounded-full bg-[var(--bg-soft)]" />
+              <div className="h-1.5 w-8 rounded-full bg-white" />
+              <div className="h-1.5 w-4 rounded-full bg-white/40" />
+              <div className="h-1.5 w-4 rounded-full bg-white/20" />
             </div>
             <div className="rounded-2xl border border-[var(--border-soft)] bg-[var(--bg-card)] p-4">
               <div className="grid grid-cols-3 gap-2">
@@ -307,9 +307,11 @@ export const PlanView: React.FC<PlanViewProps> = ({ onStartWorkout }) => {
                   const labels: Record<string, string> = { chest: 'Chest', back: 'Back', shoulders: 'Shoulders', arms: 'Arms', core: 'Abs', legs: 'Legs', glutes: 'Glutes', cardio: 'Cardio', 'full-body': 'Full Body' };
                   return (
                     <button key={cat} onClick={() => toggleCategory(cat)}
-                      className={`relative flex flex-col items-center justify-center gap-1.5 py-4 px-2 rounded-xl transition-all active:scale-95 ${active ? 'bg-[var(--accent)]/15 border-2 border-[var(--accent)]' : 'bg-[var(--bg-soft)] border-2 border-transparent'}`}>
-                      {active && <div className="absolute top-1.5 right-1.5 w-4 h-4 rounded-full bg-[var(--accent)] flex items-center justify-center"><Check className="w-2.5 h-2.5 text-white" strokeWidth={3} /></div>}
-                      <span className={`text-[12px] font-bold ${active ? 'text-white' : 'text-[var(--text-primary)]'}`}>{labels[cat]}</span>
+                      className={`relative flex flex-col items-center justify-center gap-1.5 py-4 px-2 rounded-xl transition-all active:scale-95 backdrop-blur-xl border ${
+                        active ? 'bg-white/[0.14] border-white/60 shadow-lg' : 'bg-white/[0.06] border-white/10 hover:bg-white/[0.10]'
+                      }`}>
+                      {active && <div className="absolute top-1.5 right-1.5 w-4 h-4 rounded-full bg-white flex items-center justify-center"><Check className="w-2.5 h-2.5 text-[#0b0d10]" strokeWidth={3} /></div>}
+                      <span className="text-[12px] font-bold text-white">{labels[cat]}</span>
                     </button>
                   );
                 })}
@@ -335,9 +337,9 @@ export const PlanView: React.FC<PlanViewProps> = ({ onStartWorkout }) => {
               <p className="text-[var(--text-muted)] text-[13px] font-medium mt-1">Progressive difficulty over 12 weeks</p>
             </div>
             <div className="flex items-center justify-center gap-2 py-1">
-              <div className="h-1.5 w-8 rounded-full bg-[var(--accent)]" />
-              <div className="h-1.5 w-8 rounded-full bg-[var(--accent)]" />
-              <div className="h-1.5 w-8 rounded-full bg-[var(--accent)]" />
+              <div className="h-1.5 w-8 rounded-full bg-white" />
+              <div className="h-1.5 w-8 rounded-full bg-white" />
+              <div className="h-1.5 w-8 rounded-full bg-white" />
             </div>
             <div className="rounded-2xl border border-[var(--border-soft)] bg-[var(--bg-card)] p-4 space-y-3">
               {GOALS.find((g) => g.key === selectedGoal)?.monthFocus.map((focus, i) => (
@@ -354,7 +356,7 @@ export const PlanView: React.FC<PlanViewProps> = ({ onStartWorkout }) => {
               <p className="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider mb-2">Target Areas</p>
               <div className="flex flex-wrap gap-1.5">
                 {selectedCategories.map((c) => (
-                  <span key={c} className="px-2.5 py-1 rounded-lg bg-[var(--accent)]/10 text-[var(--accent)] text-[11px] font-bold">{CATEGORY_LABELS[c]}</span>
+                  <span key={c} className="px-2.5 py-1 rounded-lg bg-white/10 text-white text-[11px] font-bold">{CATEGORY_LABELS[c]}</span>
                 ))}
               </div>
             </div>
