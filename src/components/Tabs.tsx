@@ -91,19 +91,6 @@ export const Tabs: React.FC<TabsProps> = ({
             <Menu className="w-5 h-5 text-white" />
           </button>
           <span className="text-[13px] font-black text-white flex-1">{activeTab}</span>
-          {onLogout && (
-            <button
-              onClick={onLogout}
-              disabled={isLoggingOut}
-              className="w-8 h-8 flex items-center justify-center rounded-lg active:bg-white/[0.08] disabled:opacity-50"
-            >
-              {isLoggingOut ? (
-                <Loader2 className="w-4 h-4 text-white animate-spin" />
-              ) : (
-                <LogOut className="w-4 h-4 text-white" />
-              )}
-            </button>
-          )}
         </div>
 
         {/* Desktop: Tab group */}
