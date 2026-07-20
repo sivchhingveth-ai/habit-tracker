@@ -111,6 +111,7 @@ export const Tabs: React.FC<TabsProps> = ({
                   }}
                   onClick={() => {
                     if (isGym && onGymToggle) {
+                      if (activeTab !== tab) onTabChange(tab);
                       onGymToggle();
                     } else {
                       onTabChange(tab);
