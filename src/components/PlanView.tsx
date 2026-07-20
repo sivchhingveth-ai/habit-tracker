@@ -322,7 +322,7 @@ export const PlanView: React.FC<PlanViewProps> = ({ onStartWorkout }) => {
                 <ChevronLeft className="w-4 h-4" /> Back
               </button>
               <button onClick={() => setStep(3)} disabled={selectedCategories.length === 0}
-                className="flex-[2] py-3.5 rounded-2xl flex items-center justify-center gap-2 text-[14px] font-bold text-[#0b0d10] active:scale-[0.98] shadow-lg disabled:opacity-40 backdrop-blur-xl bg-white/90 border border-white/20 hover:bg-white transition-all disabled:bg-white/20 disabled:text-white/40">
+                className="flex-[2] py-3.5 rounded-2xl flex items-center justify-center gap-2 text-[14px] font-bold text-[#0b0d10] active:scale-[0.98] shadow-lg backdrop-blur-xl bg-white/90 border border-white/20 hover:bg-white transition-all disabled:bg-white/15 disabled:text-white/30 disabled:border-white/10 disabled:shadow-none disabled:cursor-not-allowed">
                 Next <ChevronRight className="w-4 h-4" />
               </button>
             </div>
