@@ -1,6 +1,9 @@
-import React, { useState, useCallback, useEffect } from 'react';
-import { Play, ChevronRight, ChevronLeft, Check, Target, Zap, Trophy, Dumbbell, Flame, Heart, Sparkles, Calendar, ChevronDown } from 'lucide-react';
-import { Exercise, Level, ExerciseCategory, CATEGORY_LABELS, generateWorkout, EXERCISE_DETAILS } from '../utils/workouts';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
+import { Play, ChevronRight, ChevronLeft, Check, Target, Zap, Trophy, Dumbbell, Flame, Heart, Sparkles, Calendar, ChevronDown, Flag, SlidersHorizontal, X } from 'lucide-react';
+import { Exercise, Level, ExerciseCategory, CATEGORY_LABELS, generateWorkout, EXERCISE_DETAILS, getWarmupForDay } from '../utils/workouts';
+import { ExerciseDetail } from './ExerciseDetail';
+import { estimateCaloriesBurned } from '../utils/fitnessData';
+import { getPlanProgress, PlanProgress, PLAN_PROGRESS_EVENT } from '../utils/planProgress';
 
 const LEVELS: { key: Level; label: string; color: string }[] = [
   { key: 'beginner', label: 'Beginner', color: '#8b9a7b' },
@@ -96,19 +99,81 @@ function getGlobalDayIndex(plan: ThreeMonthPlan, monthIdx: number, weekIdx: numb
   return idx;
 }
 
+function getDayExercises(day: DayWorkout, dayNumber: number): { warmup: Exercise[]; main: Exercise[] } {
+  const main = day.exercises.filter((e) => !e.name.toLowerCase().includes('rest'));
+  const warmup = getWarmupForDay(dayNumber, main.map((e) => e.name));
+  return { warmup, main };
+}
+
+function getDayStats(day: DayWorkout, dayNumber: number): { count: number; mins: number; kcal: number } {
+  const { warmup, main } = getDayExercises(day, dayNumber);
+  const all = [...warmup, ...main];
+  const totalSec = all.reduce((s, e) => s + (parseInt(e.duration) || 30) + 10, 0);
+  const kcal = all.reduce((s, e) => s + estimateCaloriesBurned(e.name, parseInt(e.duration) || 30), 0);
+  return { count: all.length, mins: Math.max(1, Math.round(totalSec / 60)), kcal };
+}
+
+const ProgressRing: React.FC<{ percent: number; color: string; checkColor?: string; size?: number }> = ({ percent, color, checkColor = '#ffffff', size = 46 }) => {
+  if (percent >= 100) {
+    return (
+      <div className="rounded-full flex items-center justify-center shrink-0" style={{ width: size, height: size, backgroundColor: color }}>
+        <Check className="w-5 h-5" strokeWidth={3} style={{ color: checkColor }} />
+      </div>
+    );
+  }
+  const stroke = 3.5;
+  const r = (size - stroke * 2) / 2;
+  const c = 2 * Math.PI * r;
+  return (
+    <div className="relative shrink-0" style={{ width: size, height: size }}>
+      <svg width={size} height={size} className="-rotate-90">
+        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke={color} strokeOpacity={0.22} strokeWidth={stroke} />
+        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke={color} strokeWidth={stroke} strokeLinecap="round"
+          strokeDasharray={c} strokeDashoffset={c * (1 - percent / 100)} className="transition-all duration-500" />
+      </svg>
+      <span className="absolute inset-0 flex items-center justify-center text-[11px] font-bold" style={{ color }}>{percent}%</span>
+    </div>
+  );
+};
+
 interface PlanViewProps {
-  onStartWorkout: (exercises: Exercise[], name: string) => void;
+  onStartWorkout: (exercises: Exercise[], name: string, dayKey?: string) => void;
 }
 
 export const PlanView: React.FC<PlanViewProps> = ({ onStartWorkout }) => {
-  const saved = loadPlan();
-  const [plan, setPlan] = useState<ThreeMonthPlan | null>(saved);
+  const [plan, setPlan] = useState<ThreeMonthPlan | null>(loadPlan);
+  const [progress, setProgress] = useState<PlanProgress>(getPlanProgress);
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [selectedGoal, setSelectedGoal] = useState<string | null>(null);
   const [selectedCategories, setSelectedCategories] = useState<ExerciseCategory[]>([]);
-  const [expandedMonth, setExpandedMonth] = useState<number | null>(saved ? 0 : null);
-  const [expandedWeek, setExpandedWeek] = useState<string | null>(null);
-  const [expandedDay, setExpandedDay] = useState<string | null>(null);
+  const [expandedMonth, setExpandedMonth] = useState<number | null>(plan ? 0 : null);
+  const [detailDay, setDetailDay] = useState<string | null>(null);
+  const [detailExIdx, setDetailExIdx] = useState<number | null>(null);
+  const [showCustomize, setShowCustomize] = useState(false);
+  const [custCategories, setCustCategories] = useState<ExerciseCategory[]>([]);
+  const [custLevel, setCustLevel] = useState<Level>('beginner');
+  const [celebrateDay, setCelebrateDay] = useState<number | null>(null);
+  const completedRef = useRef<Set<string>>(new Set(plan?.completedDays || []));
+
+  useEffect(() => {
+    const handler = () => {
+      const fresh = loadPlan();
+      if (fresh) {
+        const added = (fresh.completedDays || []).find((k) => !completedRef.current.has(k));
+        completedRef.current = new Set(fresh.completedDays || []);
+        if (added) {
+          const [am, aw, ad] = added.split('-').map(Number);
+          setCelebrateDay(getGlobalDayIndex(fresh, am, aw, ad) + 1);
+        }
+      } else {
+        completedRef.current = new Set();
+      }
+      setPlan(fresh);
+      setProgress(getPlanProgress());
+    };
+    window.addEventListener(PLAN_PROGRESS_EVENT, handler);
+    return () => window.removeEventListener(PLAN_PROGRESS_EVENT, handler);
+  }, []);
 
   const toggleCategory = useCallback((cat: ExerciseCategory) => {
     setSelectedCategories((prev) => prev.includes(cat) ? prev.filter((c) => c !== cat) : [...prev, cat]);
@@ -132,26 +197,12 @@ export const PlanView: React.FC<PlanViewProps> = ({ onStartWorkout }) => {
   const handleStartDay = useCallback((monthIdx: number, weekIdx: number, dayIdx: number, day: DayWorkout) => {
     if (!plan) return;
     const globalIdx = getGlobalDayIndex(plan, monthIdx, weekIdx, dayIdx);
+    const { warmup, main } = getDayExercises(day, globalIdx + 1);
     const updated = { ...plan, currentDay: globalIdx };
     setPlan(updated);
     savePlan(updated);
-    onStartWorkout(day.exercises, `${day.dayName} — ${plan.months[monthIdx].title}`);
+    onStartWorkout([...warmup, ...main], `Day ${globalIdx + 1} — ${plan.months[monthIdx].title}`, `${monthIdx}-${weekIdx}-${dayIdx}`);
   }, [plan, onStartWorkout]);
-
-  const handleMarkDone = useCallback((monthIdx: number, weekIdx: number, dayIdx: number) => {
-    if (!plan) return;
-    const globalIdx = getGlobalDayIndex(plan, monthIdx, weekIdx, dayIdx);
-    const key = `${monthIdx}-${weekIdx}-${dayIdx}`;
-    const completed = (plan.completedDays || []).includes(key);
-    const updated = {
-      ...plan,
-      completedDays: completed
-        ? (plan.completedDays || []).filter((d) => d !== key)
-        : [...(plan.completedDays || []), key],
-    };
-    setPlan(updated);
-    savePlan(updated);
-  }, [plan]);
 
   const handleResetPlan = useCallback(() => {
     setPlan(null);
@@ -159,10 +210,47 @@ export const PlanView: React.FC<PlanViewProps> = ({ onStartWorkout }) => {
     setSelectedGoal(null);
     setSelectedCategories([]);
     setExpandedMonth(null);
-    setExpandedWeek(null);
-    setExpandedDay(null);
+    setDetailDay(null);
+    setDetailExIdx(null);
+    setShowCustomize(false);
+    setCelebrateDay(null);
+    completedRef.current = new Set();
     savePlan(null);
   }, []);
+
+  const openCustomize = useCallback(() => {
+    if (!plan) return;
+    setCustCategories(plan.categories || []);
+    setCustLevel(plan.months[0]?.level || 'beginner');
+    setShowCustomize(true);
+  }, [plan]);
+
+  const toggleCustCategory = useCallback((cat: ExerciseCategory) => {
+    setCustCategories((prev) => prev.includes(cat) ? prev.filter((c) => c !== cat) : [...prev, cat]);
+  }, []);
+
+  const handleSaveCustomize = useCallback(() => {
+    if (!plan || custCategories.length === 0) return;
+    const done = new Set(plan.completedDays || []);
+    const updated: ThreeMonthPlan = {
+      ...plan,
+      categories: custCategories,
+      months: plan.months.map((m, mi) => ({
+        ...m,
+        level: custLevel,
+        weeks: m.weeks.map((wk, wi) => ({
+          ...wk,
+          // Keep the exercises of days already completed; regenerate the rest
+          days: wk.days.map((dy, di) => done.has(`${mi}-${wi}-${di}`)
+            ? dy
+            : { ...dy, exercises: generateWorkout(custCategories, custLevel) }),
+        })),
+      })),
+    };
+    setPlan(updated);
+    savePlan(updated);
+    setShowCustomize(false);
+  }, [plan, custCategories, custLevel]);
 
   // ─── Onboarding ─────────────────────────────────────────────
   if (!plan) {
@@ -280,29 +368,55 @@ export const PlanView: React.FC<PlanViewProps> = ({ onStartWorkout }) => {
   const totalDays = plan.months.reduce((s, m) => s + m.weeks.length * 5, 0);
   const completedCount = (plan.completedDays || []).length;
 
+  const dayPercent = (key: string): number => {
+    if ((plan.completedDays || []).includes(key)) return 100;
+    const p = progress[key];
+    if (!p || !p.total) return 0;
+    return Math.min(100, Math.round((p.done / p.total) * 100));
+  };
+
+  // First not-fully-completed day = the active "up next" day
+  let currentKey: string | null = null;
+  outer: for (let m = 0; m < plan.months.length; m++) {
+    for (let w = 0; w < plan.months[m].weeks.length; w++) {
+      for (let d = 0; d < plan.months[m].weeks[w].days.length; d++) {
+        const key = `${m}-${w}-${d}`;
+        if (dayPercent(key) < 100) { currentKey = key; break outer; }
+      }
+    }
+  }
+
   return (
     <div className="space-y-4 animate-slide-up">
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>
-          <h2 className="text-[20px] sm:text-[22px] md:text-[26px] font-black text-[var(--text-primary)] leading-tight tracking-tight">
+          <h2 className="text-[20px] sm:text-[22px] md:text-[26px] font-black text-white leading-tight tracking-tight">
             {goal?.label || 'My Plan'}
           </h2>
-          <p className="text-[var(--text-muted)] text-[13px] font-medium mt-1">
+          <p className="text-white/50 text-[13px] font-medium mt-1">
             {completedCount}/{totalDays} days completed
           </p>
         </div>
-        <button onClick={handleResetPlan} className="text-[11px] font-bold text-[var(--text-muted)] hover:text-red-500 transition-all">
-          Reset
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={openCustomize}
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-white/10 backdrop-blur-xl border border-white/10 text-[11px] font-bold text-white/85 hover:bg-white/[0.16] transition-all active:scale-95"
+          >
+            <SlidersHorizontal className="w-3.5 h-3.5" /> Customize
+          </button>
+          <button onClick={handleResetPlan} className="text-[11px] font-bold text-white/40 hover:text-red-400 transition-all">
+            Reset
+          </button>
+        </div>
       </div>
 
       {/* Overall progress */}
-      <div className="rounded-2xl border border-[var(--border-soft)] bg-[var(--bg-card)] p-4">
-        <div className="w-full h-2 rounded-full bg-[var(--bg-soft)] overflow-hidden">
-          <div className="h-full rounded-full bg-[var(--accent)] transition-all duration-500" style={{ width: `${(completedCount / totalDays) * 100}%` }} />
+      <div className="rounded-3xl bg-white/[0.06] backdrop-blur-xl border border-white/10 p-4">
+        <div className="w-full h-2 rounded-full bg-white/10 overflow-hidden">
+          <div className="h-full rounded-full transition-all duration-500" style={{ width: `${(completedCount / totalDays) * 100}%`, backgroundColor: '#ffffff' }} />
         </div>
-        <p className="text-[11px] text-[var(--text-muted)] mt-1.5 text-center">{Math.round((completedCount / totalDays) * 100)}% complete</p>
+        <p className="text-[11px] text-white/45 mt-1.5 text-center">{Math.round((completedCount / totalDays) * 100)}% complete</p>
       </div>
 
       {/* All 3 months */}
@@ -313,111 +427,85 @@ export const PlanView: React.FC<PlanViewProps> = ({ onStartWorkout }) => {
         const isExpanded = expandedMonth === mIdx;
 
         return (
-          <div key={mIdx} className="rounded-2xl border border-[var(--border-soft)] bg-[var(--bg-card)] overflow-hidden">
+          <div key={mIdx} className="rounded-3xl bg-white/[0.05] backdrop-blur-xl border border-white/10 overflow-hidden">
             {/* Month header */}
             <button
               onClick={() => setExpandedMonth(isExpanded ? null : mIdx)}
-              className="w-full flex items-center gap-3 p-4 text-left transition-all hover:bg-[var(--bg-soft)]"
+              className="w-full flex items-center gap-3 p-4 text-left transition-all hover:bg-white/[0.04]"
             >
               <div className="w-10 h-10 rounded-xl flex items-center justify-center text-[13px] font-black text-white shrink-0" style={{ backgroundColor: mColor }}>
                 M{mIdx + 1}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-[14px] font-bold text-[var(--text-primary)]">{month.title}</p>
-                <p className="text-[11px] text-[var(--text-muted)]">{LEVELS[mIdx].label} · {monthCompleted}/{monthTotal} done</p>
+                <p className="text-[14px] font-bold text-white">{month.title}</p>
+                <p className="text-[11px] text-white/45">{LEVELS.find((l) => l.key === month.level)?.label || LEVELS[mIdx].label} · {monthCompleted}/{monthTotal} done</p>
               </div>
-              <ChevronDown className={`w-5 h-5 text-[var(--text-muted)] transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
+              <ChevronDown className={`w-5 h-5 text-white/40 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
             </button>
 
             {/* Weeks */}
             {isExpanded && (
-              <div className="border-t border-[var(--border-soft)]">
+              <div className="border-t border-white/10 px-3 pb-3">
                 {month.weeks.map((week, wIdx) => {
-                  const weekKey = `${mIdx}-${wIdx}`;
-                  const weekExpanded = expandedWeek === weekKey;
+                  const weekDone = week.days.filter((_, dIdx) => dayPercent(`${mIdx}-${wIdx}-${dIdx}`) >= 100).length;
 
                   return (
-                    <div key={wIdx}>
+                    <div key={wIdx} className="space-y-2.5">
                       {/* Week header */}
-                      <button
-                        onClick={() => setExpandedWeek(weekExpanded ? null : weekKey)}
-                        className="w-full flex items-center gap-3 px-4 py-3 text-left border-b border-[var(--border-soft)] transition-all hover:bg-[var(--bg-soft)]"
-                      >
-                        <div className="w-6 h-6 rounded-lg flex items-center justify-center text-[10px] font-bold" style={{ backgroundColor: `${mColor}20`, color: mColor }}>
-                          {wIdx + 1}
+                      <div className="flex items-center gap-2.5 px-1 pt-4 pb-0.5">
+                        <div className="w-7 h-7 rounded-lg bg-white/10 border border-white/10 flex items-center justify-center shrink-0">
+                          <Flag className="w-3.5 h-3.5 text-white/80" fill={weekDone === week.days.length ? '#ffffff' : 'none'} />
                         </div>
-                        <span className="text-[12px] font-bold text-[var(--text-primary)] flex-1">Week {wIdx + 1}</span>
-                        <ChevronDown className={`w-4 h-4 text-[var(--text-muted)] transition-transform ${weekExpanded ? 'rotate-180' : ''}`} />
-                      </button>
+                        <span className="text-[11px] font-bold tracking-[0.15em] uppercase text-white/45 flex-1">Week {week.week}</span>
+                        <span className="text-[14px] font-bold">
+                          <span className="text-white">{weekDone}</span>
+                          <span className="text-white/40">/{week.days.length}</span>
+                        </span>
+                      </div>
 
-                      {/* Days */}
-                      {weekExpanded && (
-                        <div className="bg-[var(--bg)]">
-                          {week.days.map((day, dIdx) => {
-                            const dayKey = `${mIdx}-${wIdx}-${dIdx}`;
-                            const isDone = (plan.completedDays || []).includes(dayKey);
-                            const isDayExpanded = expandedDay === dayKey;
-                            const exCount = day.exercises.filter((e) => !e.name.toLowerCase().includes('rest')).length;
+                      {/* Day cards */}
+                      {week.days.map((day, dIdx) => {
+                        const dayKey = `${mIdx}-${wIdx}-${dIdx}`;
+                        const percent = dayPercent(dayKey);
+                        const isCurrent = dayKey === currentKey;
+                        const dayNum = getGlobalDayIndex(plan, mIdx, wIdx, dIdx) + 1;
+                        const stats = getDayStats(day, dayNum);
 
-                            return (
-                              <div key={dIdx} className="border-b border-[var(--border-soft)] last:border-b-0">
-                                {/* Day header */}
-                                <div className="flex items-center gap-3 px-4 py-3">
-                                  <button
-                                    onClick={() => handleMarkDone(mIdx, wIdx, dIdx)}
-                                    className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 transition-all active:scale-90 ${
-                                      isDone ? 'text-white' : 'border-2 border-[var(--border-medium)]'
-                                    }`}
-                                    style={isDone ? { backgroundColor: mColor } : {}}
-                                  >
-                                    {isDone && <Check className="w-3.5 h-3.5" strokeWidth={3} />}
-                                  </button>
-                                  <button
-                                    onClick={() => setExpandedDay(isDayExpanded ? null : dayKey)}
-                                    className="flex-1 text-left"
-                                  >
-                                    <p className={`text-[13px] font-bold ${isDone ? 'text-[var(--text-muted)] line-through' : 'text-[var(--text-primary)]'}`}>
-                                      {day.dayName}
-                                    </p>
-                                    <p className="text-[10px] text-[var(--text-muted)]">{exCount} exercises</p>
-                                  </button>
-                                  <button
-                                    onClick={() => handleStartDay(mIdx, wIdx, dIdx, day)}
-                                    className="px-3 py-1.5 rounded-xl text-[11px] font-bold text-white active:scale-95 transition-all"
-                                    style={{ backgroundColor: mColor }}
-                                  >
-                                    Start
-                                  </button>
-                                </div>
-
-                                {/* Expanded exercises */}
-                                {isDayExpanded && (
-                                  <div className="px-4 pb-3 space-y-1.5">
-                                    {day.exercises
-                                      .filter((e) => !e.name.toLowerCase().includes('rest'))
-                                      .map((ex, i) => {
-                                        const detail = EXERCISE_DETAILS[ex.name];
-                                        return (
-                                          <div key={i} className="flex items-center gap-2.5 px-3 py-2 rounded-xl bg-[var(--bg-soft)]">
-                                            <div className="w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-bold text-white shrink-0"
-                                              style={{ backgroundColor: mColor }}>
-                                              {i + 1}
-                                            </div>
-                                            <div className="flex-1 min-w-0">
-                                              <p className="text-[12px] font-medium text-[var(--text-primary)] truncate">{ex.name}</p>
-                                              {detail && <p className="text-[10px] text-[var(--text-muted)] truncate">{detail.musclesWorked}</p>}
-                                            </div>
-                                            <span className="text-[10px] text-[var(--text-muted)] shrink-0">{ex.duration}</span>
-                                          </div>
-                                        );
-                                      })}
-                                  </div>
-                                )}
+                        if (isCurrent) {
+                          return (
+                            <div key={dIdx} className="rounded-[24px] overflow-hidden backdrop-blur-xl shadow-xl" style={{ backgroundColor: 'rgba(255,255,255,0.96)' }}>
+                              <div className="flex items-center gap-3 px-5 py-5">
+                                <button onClick={() => setDetailDay(dayKey)} className="flex-1 min-w-0 text-left">
+                                  <p className="text-[24px] font-black text-[#0b0d10] leading-tight tracking-tight">Day {dayNum}</p>
+                                  <p className="text-[12px] font-semibold text-[#0b0d10]/55 mt-0.5">{stats.mins} mins · {stats.kcal} kcal{percent > 0 ? ` · ${percent}%` : ''}</p>
+                                </button>
+                                <button
+                                  onClick={() => setDetailDay(dayKey)}
+                                  className="px-6 py-2.5 rounded-full bg-[#0b0d10] text-white text-[14px] font-black shadow-md active:scale-95 transition-all shrink-0"
+                                >
+                                  Start
+                                </button>
                               </div>
-                            );
-                          })}
-                        </div>
-                      )}
+                            </div>
+                          );
+                        }
+
+                        return (
+                          <button
+                            key={dIdx}
+                            onClick={() => setDetailDay(dayKey)}
+                            className="w-full flex items-center gap-3 px-5 py-3.5 rounded-[22px] bg-white/[0.06] backdrop-blur-xl border border-white/10 text-left transition-all hover:bg-white/[0.09] active:scale-[0.99]"
+                          >
+                            <div className="flex-1 min-w-0">
+                              <p className={`text-[18px] font-black tracking-tight ${percent >= 100 ? 'text-white/40' : 'text-white'}`}>
+                                Day {dayNum}
+                              </p>
+                              <p className="text-[10px] text-white/40">{stats.count} exercises · {stats.mins} mins · {stats.kcal} kcal</p>
+                            </div>
+                            <ProgressRing percent={percent} color="#ffffff" checkColor="#0b0d10" />
+                          </button>
+                        );
+                      })}
                     </div>
                   );
                 })}
@@ -426,6 +514,253 @@ export const PlanView: React.FC<PlanViewProps> = ({ onStartWorkout }) => {
           </div>
         );
       })}
+
+      {/* ─── Day Detail Overlay ─── */}
+      {detailDay && (() => {
+        const [m, w, d] = detailDay.split('-').map(Number);
+        const month = plan.months[m];
+        const day = month?.weeks[w]?.days[d];
+        if (!day) return null;
+        const percent = dayPercent(detailDay);
+        const dayNum = getGlobalDayIndex(plan, m, w, d) + 1;
+        const stats = getDayStats(day, dayNum);
+        const { warmup, main } = getDayExercises(day, dayNum);
+
+        const exRow = (ex: Exercise, combinedIdx: number, displayNum: number) => {
+          const det = EXERCISE_DETAILS[ex.name];
+          return (
+            <button
+              key={combinedIdx}
+              onClick={() => setDetailExIdx(combinedIdx)}
+              className="w-full flex items-center gap-3.5 px-4 py-3.5 rounded-2xl bg-white/[0.06] backdrop-blur-xl border border-white/10 text-left transition-all hover:bg-white/[0.1] active:scale-[0.99]"
+            >
+              <div className="w-8 h-8 rounded-full bg-white/10 border border-white/10 flex items-center justify-center text-[12px] font-black text-white shrink-0">{displayNum}</div>
+              <div className="flex-1 min-w-0">
+                <p className="text-[13px] font-bold text-white truncate">{ex.name}</p>
+                {det && <p className="text-[11px] text-white/45 truncate mt-0.5">{det.musclesWorked}</p>}
+              </div>
+              <span className="text-[11px] font-bold text-white/50 shrink-0">{ex.duration}</span>
+              <ChevronRight className="w-4 h-4 text-white/30 shrink-0" />
+            </button>
+          );
+        };
+
+        return (
+          <div className="fixed inset-0 z-[150] flex flex-col animate-fade-in" style={{ background: 'linear-gradient(160deg, #0b0d10 0%, #14181f 55%, #0b0d10 100%)' }}>
+            <div className="flex-1 overflow-y-auto custom-scrollbar">
+              <div className="max-w-2xl mx-auto px-5 pt-5 pb-40 safe-area-top">
+                {/* Back */}
+                <button
+                  onClick={() => { setDetailDay(null); setDetailExIdx(null); }}
+                  className="w-11 h-11 rounded-full bg-white/10 border border-white/10 backdrop-blur-xl flex items-center justify-center text-white transition-all active:scale-90"
+                >
+                  <ChevronLeft className="w-5 h-5" />
+                </button>
+
+                {/* Title */}
+                <div className="mt-6 flex items-end justify-between gap-3">
+                  <div className="min-w-0">
+                    <h2 className="text-[34px] font-black text-white tracking-tight leading-none">Day {dayNum}</h2>
+                    <p className="text-[13px] font-medium text-white/50 mt-2.5">{month.title} · Week {w + 1}</p>
+                  </div>
+                  {percent >= 100 ? (
+                    <div className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-[12px] font-black shrink-0" style={{ backgroundColor: '#ffffff', color: '#0b0d10' }}>
+                      <Check className="w-3.5 h-3.5" strokeWidth={3} /> 100%
+                    </div>
+                  ) : percent > 0 ? (
+                    <div className="px-3.5 py-1.5 rounded-full bg-white/10 border border-white/10 text-white text-[12px] font-black shrink-0">{percent}%</div>
+                  ) : null}
+                </div>
+
+                {/* Stats */}
+                <div className="mt-6 grid grid-cols-3 rounded-3xl bg-white/[0.06] backdrop-blur-xl border border-white/10 py-5 divide-x divide-white/10">
+                  <div className="text-center px-2">
+                    <p className="text-[22px] font-black text-white leading-none">{stats.count}</p>
+                    <p className="text-[11px] font-medium text-white/45 mt-1.5">Exercises</p>
+                  </div>
+                  <div className="text-center px-2">
+                    <p className="text-[22px] font-black text-white leading-none">{stats.mins} <span className="text-[13px] font-bold">mins</span></p>
+                    <p className="text-[11px] font-medium text-white/45 mt-1.5">Duration</p>
+                  </div>
+                  <div className="text-center px-2">
+                    <p className="text-[22px] font-black text-white leading-none">{stats.kcal} <span className="text-[13px] font-bold">kcal</span></p>
+                    <p className="text-[11px] font-medium text-white/45 mt-1.5">Calories</p>
+                  </div>
+                </div>
+
+                {/* Warm-up */}
+                {warmup.length > 0 && (
+                  <>
+                    <p className="text-[18px] font-black text-white mt-8 mb-3">Warm-up</p>
+                    <div className="space-y-2">
+                      {warmup.map((ex, i) => exRow(ex, i, i + 1))}
+                    </div>
+                  </>
+                )}
+
+                {/* Exercises */}
+                <p className="text-[18px] font-black text-white mt-7 mb-3">Exercises</p>
+                <div className="space-y-2">
+                  {main.map((ex, i) => exRow(ex, warmup.length + i, i + 1))}
+                </div>
+              </div>
+            </div>
+
+            {/* START */}
+            <div className="absolute bottom-0 inset-x-0 px-5 pb-6 pt-12 bg-gradient-to-t from-[#0b0d10] via-[#0b0d10]/85 to-transparent">
+              <button
+                onClick={() => { setDetailDay(null); setDetailExIdx(null); handleStartDay(m, w, d, day); }}
+                className="w-full max-w-2xl mx-auto block py-4 rounded-full text-[15px] font-black tracking-[0.25em] shadow-2xl transition-all active:scale-[0.98]"
+                style={{ backgroundColor: '#ffffff', color: '#0b0d10' }}
+              >
+                START
+              </button>
+            </div>
+          </div>
+        );
+      })()}
+
+      {/* ─── Exercise Detail Overlay ─── */}
+      {detailDay && detailExIdx !== null && (() => {
+        const [m, w, d] = detailDay.split('-').map(Number);
+        const day = plan.months[m]?.weeks[w]?.days[d];
+        if (!day) return null;
+        const dayNum = getGlobalDayIndex(plan, m, w, d) + 1;
+        const { warmup, main } = getDayExercises(day, dayNum);
+        const all = [...warmup, ...main];
+        const ex = all[detailExIdx];
+        if (!ex) return null;
+        return (
+          <ExerciseDetail
+            exerciseName={ex.name}
+            duration={ex.duration}
+            color={LEVELS[m].color}
+            currentIndex={detailExIdx}
+            totalExercises={all.length}
+            onClose={() => setDetailExIdx(null)}
+            onPrevious={detailExIdx > 0 ? () => setDetailExIdx(detailExIdx - 1) : undefined}
+            onNext={detailExIdx < all.length - 1 ? () => setDetailExIdx(detailExIdx + 1) : undefined}
+          />
+        );
+      })()}
+
+      {/* ─── Customize Plan Modal ─── */}
+      {showCustomize && (
+        <div className="fixed inset-0 z-[160] flex items-end sm:items-center justify-center animate-fade-in" style={{ backgroundColor: 'rgba(5,6,8,0.75)', backdropFilter: 'blur(10px)' }}>
+          <div className="w-full sm:max-w-lg max-h-[90vh] flex flex-col rounded-t-[28px] sm:rounded-[28px] bg-[#12161c]/95 backdrop-blur-2xl border border-white/10 shadow-2xl">
+            {/* Modal header */}
+            <div className="flex items-center justify-between px-6 pt-6 pb-2 shrink-0">
+              <h3 className="text-[20px] font-black text-white tracking-tight">Customize Plan</h3>
+              <button onClick={() => setShowCustomize(false)} className="w-9 h-9 rounded-full bg-white/10 border border-white/10 flex items-center justify-center text-white/70 active:scale-90 transition-all">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto custom-scrollbar px-6 pb-2">
+              {/* Target areas */}
+              <p className="text-[11px] font-bold tracking-[0.15em] uppercase text-white/45 mt-3 mb-2.5">Target Areas</p>
+              <div className="grid grid-cols-2 gap-2">
+                {(['core', 'chest', 'back', 'arms', 'legs', 'glutes', 'shoulders', 'cardio', 'full-body'] as ExerciseCategory[]).map((cat) => {
+                  const active = custCategories.includes(cat);
+                  const icons: Record<string, string> = { chest: '💪', back: '🔙', shoulders: '🏋️', arms: '💪', core: '🎯', legs: '🦵', glutes: '🍑', cardio: '❤️', 'full-body': '⚡' };
+                  return (
+                    <button
+                      key={cat}
+                      onClick={() => toggleCustCategory(cat)}
+                      className={`relative flex items-center gap-3 px-4 py-3.5 rounded-2xl border transition-all active:scale-[0.98] text-left ${
+                        active ? 'bg-white/[0.14] border-white/60' : 'bg-white/[0.05] border-white/10'
+                      }`}
+                    >
+                      <span className="text-[20px]">{icons[cat]}</span>
+                      <span className={`text-[13px] font-bold flex-1 ${active ? 'text-white' : 'text-white/55'}`}>{CATEGORY_LABELS[cat]}</span>
+                      {active && (
+                        <span className="w-5 h-5 rounded-full flex items-center justify-center shrink-0" style={{ backgroundColor: '#ffffff' }}>
+                          <Check className="w-3 h-3" strokeWidth={3.5} style={{ color: '#0b0d10' }} />
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Difficulty */}
+              <p className="text-[11px] font-bold tracking-[0.15em] uppercase text-white/45 mt-6 mb-2.5">Difficulty</p>
+              <div className="flex gap-2">
+                {([['beginner', 'Easy'], ['intermediate', 'Medium'], ['advanced', 'Hard']] as [Level, string][]).map(([lvl, label]) => {
+                  const active = custLevel === lvl;
+                  return (
+                    <button
+                      key={lvl}
+                      onClick={() => setCustLevel(lvl)}
+                      className={`flex-1 py-3 rounded-full text-[13px] font-bold border transition-all active:scale-95 ${
+                        active ? 'border-white/60 text-[#0b0d10]' : 'bg-white/[0.05] border-white/10 text-white/55'
+                      }`}
+                      style={active ? { backgroundColor: '#ffffff' } : undefined}
+                    >
+                      {label}
+                    </button>
+                  );
+                })}
+              </div>
+              <p className="text-[11px] text-white/40 mt-2">
+                {custLevel === 'beginner' ? '5 exercises per day' : custLevel === 'intermediate' ? '6 exercises per day' : '7 exercises per day'} · applies to your whole plan
+              </p>
+            </div>
+
+            {/* Modal actions */}
+            <div className="flex gap-2.5 px-6 py-5 shrink-0 border-t border-white/10">
+              <button onClick={() => setShowCustomize(false)} className="flex-1 py-3.5 rounded-full text-[14px] font-bold bg-white/[0.07] border border-white/10 text-white/70 active:scale-[0.98] transition-all">
+                Cancel
+              </button>
+              <button
+                onClick={handleSaveCustomize}
+                disabled={custCategories.length === 0}
+                className="flex-[1.4] py-3.5 rounded-full text-[14px] font-black active:scale-[0.98] transition-all disabled:opacity-40"
+                style={{ backgroundColor: '#ffffff', color: '#0b0d10' }}
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ─── Day Complete Celebration ─── */}
+      {celebrateDay !== null && (
+        <div className="fixed inset-0 z-[300] flex items-center justify-center overflow-hidden animate-fade-in" style={{ backgroundColor: 'rgba(5,6,8,0.88)', backdropFilter: 'blur(14px)' }}>
+          {/* Confetti */}
+          {Array.from({ length: 60 }).map((_, i) => (
+            <div
+              key={i}
+              className="absolute rounded-[2px]"
+              style={{
+                left: `${(i * 61) % 100}%`,
+                top: '-6%',
+                width: i % 3 === 0 ? 10 : 7,
+                height: i % 3 === 0 ? 14 : 10,
+                backgroundColor: ['#ffffff', '#8b9a7b', '#e8b04b', '#6f9bd1', '#c96f6f'][i % 5],
+                animation: `confetti-fall ${2.4 + (i % 5) * 0.5}s linear ${(i % 12) * 0.18}s infinite`,
+              }}
+            />
+          ))}
+          <div className="relative text-center px-8 py-10 rounded-[32px] bg-white/[0.07] backdrop-blur-2xl border border-white/15 shadow-2xl max-w-sm mx-5" style={{ animation: 'pop-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both' }}>
+            <div className="text-[64px] leading-none">🎉</div>
+            <div className="mt-4 flex items-center justify-center gap-2">
+              <Trophy className="w-5 h-5 text-[#e8b04b]" />
+              <p className="text-[12px] font-bold tracking-[0.2em] uppercase text-white/60">Day {celebrateDay} complete</p>
+            </div>
+            <h3 className="text-[28px] font-black text-white mt-2 tracking-tight">You did it!</h3>
+            <p className="text-[13px] text-white/55 mt-2">Every exercise finished. That ring is 100% yours.</p>
+            <button
+              onClick={() => setCelebrateDay(null)}
+              className="mt-7 w-full py-3.5 rounded-full text-[14px] font-black tracking-[0.2em] transition-all active:scale-[0.98]"
+              style={{ backgroundColor: '#ffffff', color: '#0b0d10' }}
+            >
+              CONTINUE
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

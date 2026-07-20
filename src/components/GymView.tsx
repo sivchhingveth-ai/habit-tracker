@@ -8,6 +8,7 @@ import { PlanView } from './PlanView';
 import { WORKOUTS, Gender, Level, Workout, Exercise, isRepsExercise } from '../utils/workouts';
 import { getCustomWorkouts, deleteCustomWorkout } from '../utils/customWorkouts';
 import { addWorkoutLog, estimateCaloriesBurned, addXP } from '../utils/fitnessData';
+import { setPlanDayProgress } from '../utils/planProgress';
 
 const LEVELS: { key: Level; label: string; color: string; bg: string; text: string; restSec: number }[] = [
   { key: 'beginner', label: 'Beginner', color: '#8b9a7b', bg: '#8b9a7b', text: '#ffffff', restSec: 10 },
@@ -42,6 +43,8 @@ export const GymView: React.FC<GymViewProps> = ({
   const [workoutStarted, setWorkoutStarted] = useState(false);
   const [gender, setGender] = useState<Gender>('men');
   const [level, setLevel] = useState<Level>('beginner');
+  const [planWorkout, setPlanWorkout] = useState<Workout | null>(null);
+  const [planDayKey, setPlanDayKey] = useState<string | null>(null);
 
   const refreshCustom = useCallback(() => {
     setCustomWorkouts(getCustomWorkouts());
@@ -53,9 +56,23 @@ export const GymView: React.FC<GymViewProps> = ({
     (w) => w.gender === gender && w.level === level
   );
 
-  const activeWorkout = selectedWorkoutId
-    ? customWorkouts.find((w) => w.id === selectedWorkoutId) || builtinWorkout
-    : builtinWorkout;
+  const activeWorkout = activeTimer?.workoutId === 'plan-day' && planWorkout
+    ? planWorkout
+    : selectedWorkoutId
+      ? customWorkouts.find((w) => w.id === selectedWorkoutId) || builtinWorkout
+      : builtinWorkout;
+
+  const reportPlanProgress = useCallback((completed: Set<number>) => {
+    if (!planDayKey || !planWorkout) return;
+    const nonRest = planWorkout.exercises
+      .map((ex, i) => ({ ex, i }))
+      .filter(({ ex }) => {
+        const n = ex.name.toLowerCase();
+        return !n.includes('rest') && !n.includes('repeat');
+      });
+    const done = nonRest.filter(({ i }) => completed.has(i)).length;
+    setPlanDayProgress(planDayKey, done, nonRest.length);
+  }, [planDayKey, planWorkout]);
 
   const levelMeta = LEVELS.find((l) => l.key === level)!;
 
@@ -66,7 +83,9 @@ export const GymView: React.FC<GymViewProps> = ({
 
   const handleTimerComplete = useCallback(() => {
     if (!activeTimer || !activeWorkout) return;
-    setCompletedExercises((prev) => new Set(prev).add(activeTimer.exerciseIndex));
+    const updatedCompleted = new Set(completedExercises).add(activeTimer.exerciseIndex);
+    setCompletedExercises(updatedCompleted);
+    if (activeTimer.workoutId === 'plan-day') reportPlanProgress(updatedCompleted);
     const nextIdx = activeTimer.exerciseIndex + 1;
     if (nextIdx < activeWorkout.exercises.length) {
       setWorkoutStarted(true);
@@ -98,11 +117,13 @@ export const GymView: React.FC<GymViewProps> = ({
       addXP(xpEarned);
       setActiveTimer(null);
     }
-  }, [activeTimer, activeWorkout]);
+  }, [activeTimer, activeWorkout, completedExercises, reportPlanProgress]);
 
   const handleNextExercise = useCallback(() => {
     if (!activeWorkout || !activeTimer) return;
-    setCompletedExercises((prev) => new Set(prev).add(activeTimer.exerciseIndex));
+    const updatedCompleted = new Set(completedExercises).add(activeTimer.exerciseIndex);
+    setCompletedExercises(updatedCompleted);
+    if (activeTimer.workoutId === 'plan-day') reportPlanProgress(updatedCompleted);
     for (let j = activeTimer.exerciseIndex + 1; j < activeWorkout.exercises.length; j++) {
       const n = activeWorkout.exercises[j].name.toLowerCase();
       if (!n.includes('rest') && !n.includes('repeat')) {
@@ -115,7 +136,7 @@ export const GymView: React.FC<GymViewProps> = ({
       }
     }
     setActiveTimer(null);
-  }, [activeWorkout, activeTimer]);
+  }, [activeWorkout, activeTimer, completedExercises, reportPlanProgress]);
 
   const handlePreviousExercise = useCallback(() => {
     if (!activeWorkout || !activeTimer) return;
@@ -153,18 +174,24 @@ export const GymView: React.FC<GymViewProps> = ({
     setCompletedExercises(new Set());
   }, []);
 
-  const handleStartPlanWorkout = useCallback((exercises: Exercise[], name: string) => {
+  const handleStartPlanWorkout = useCallback((exercises: Exercise[], name: string, dayKey?: string) => {
+    const nonRest = exercises.filter((e) => {
+      const n = e.name.toLowerCase();
+      return !n.includes('rest') && !n.includes('repeat');
+    });
     const workout: Workout = {
       id: 'plan-day',
       title: name,
       tagline: '',
-      duration: `${exercises.length * 30}s`,
+      duration: `${nonRest.length * 30}s`,
       level: 'beginner',
       gender: gender,
-      exercises: exercises.flatMap((e) => [e, { name: 'Rest', duration: '10 sec' }]),
+      exercises: nonRest.flatMap((e, i) => (i < nonRest.length - 1 ? [e, { name: 'Rest', duration: '10 sec' }] : [e])),
       tip: '',
     };
     setSelectedWorkoutId(null);
+    setPlanWorkout(workout);
+    setPlanDayKey(dayKey ?? null);
     setActiveTimer({
       exerciseIndex: 0,
       exercise: workout.exercises[0],

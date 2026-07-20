@@ -765,3 +765,14 @@ html:not([data-theme="dark"]) .group:not(.bg-\[\#0a0a0a\]):hover .group-hover\:t
 /* Safe area utilities for fullscreen timer */
 .safe-area-top { padding-top: env(safe-area-inset-top, 0px); }
 .safe-area-bottom { padding-bottom: env(safe-area-inset-bottom, 0px); }
+
+/* Plan day-complete celebration */
+@keyframes confetti-fall {
+  0% { transform: translateY(-6vh) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(112vh) rotate(720deg); opacity: 0.75; }
+}
+@keyframes pop-in {
+  0% { transform: scale(0.4); opacity: 0; }
+  60% { transform: scale(1.08); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}

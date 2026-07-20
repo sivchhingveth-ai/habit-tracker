@@ -209,7 +209,65 @@ export const EXERCISE_DETAILS: Record<string, ExerciseDetail> = {
     musclesWorked: 'Glutes, quads, calves, cardio',
     categories: ['legs', 'cardio'],
   },
+  // Warm-up only exercises (categories intentionally empty so the
+  // training generator never picks them — see getWarmupForDay)
+  'Arm Circles': {
+    description: 'Stand tall with arms extended out to the sides. Make small circles forward, gradually increasing the size, then reverse direction.',
+    commonMistakes: ['Shrugging the shoulders', 'Moving too fast', 'Bending the elbows'],
+    musclesWorked: 'Shoulders, upper back, warm-up',
+    categories: [],
+  },
+  'High Knees': {
+    description: 'Run in place, driving each knee up toward your chest. Stay light on the balls of your feet and pump your arms.',
+    commonMistakes: ['Leaning back', 'Knees too low', 'Landing flat-footed'],
+    musclesWorked: 'Hip flexors, legs, cardio warm-up',
+    categories: [],
+  },
+  'Torso Twists': {
+    description: 'Stand with feet shoulder-width apart, arms bent in front of you. Rotate your upper body side to side, letting your arms swing naturally.',
+    commonMistakes: ['Twisting the knees', 'Moving only the arms', 'Holding your breath'],
+    musclesWorked: 'Obliques, spine mobility, warm-up',
+    categories: [],
+  },
+  'Butt Kicks': {
+    description: 'Jog in place, kicking your heels up toward your glutes with each step. Keep your knees pointing down and stay light on your feet.',
+    commonMistakes: ['Kicking too far back', 'Leaning forward', 'Slow arm swing'],
+    musclesWorked: 'Hamstrings, quads, cardio warm-up',
+    categories: [],
+  },
+  'Shoulder Rolls': {
+    description: 'Stand relaxed and roll your shoulders up, back and down in big slow circles. After several reps, reverse the direction.',
+    commonMistakes: ['Rushing the movement', 'Tensing the neck', 'Shallow circles'],
+    musclesWorked: 'Shoulders, neck, upper back mobility',
+    categories: [],
+  },
 };
+
+// Names available as day warm-ups. Includes a few light cardio /
+// mobility moves from the main pool for variety.
+export const WARMUP_POOL: string[] = [
+  'Arm Circles',
+  'High Knees',
+  'Torso Twists',
+  'Butt Kicks',
+  'Shoulder Rolls',
+  'Jumping Jacks',
+  'March in Place',
+  'Cat-Cow Stretch',
+];
+
+// Deterministic 2-exercise warm-up for a plan day: same day always
+// gets the same warm-up, and never duplicates the day's own exercises.
+export function getWarmupForDay(dayNumber: number, excludeNames: string[] = []): Exercise[] {
+  const exclude = new Set(excludeNames);
+  const picked: Exercise[] = [];
+  for (let i = 0; picked.length < 2 && i < WARMUP_POOL.length; i++) {
+    const name = WARMUP_POOL[(dayNumber + i * 3) % WARMUP_POOL.length];
+    if (exclude.has(name) || picked.some((p) => p.name === name)) continue;
+    picked.push({ name, duration: '30 sec' });
+  }
+  return picked;
+}
 
 export interface Workout {
   id: string;
