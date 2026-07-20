@@ -295,8 +295,8 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
   const strokeDashoffset = CIRCUMFERENCE * (1 - progress);
 
   const handleStart = () => { setPhase('countdown'); setCountdownNum(3); setIsDone(false); setIsRunning(false); };
-  const handlePause = () => setIsRunning(false);
-  const handleResume = () => setIsRunning(true);
+  const handlePause = () => { clearTimer(); setIsRunning(false); };
+  const handleResume = () => { setRemaining(totalSeconds); setMaxSeconds(totalSeconds); startRef.current = Date.now(); spokenRef.current = { half: false, ten: false, three: false, two: false, one: false, restHalf: false }; setIsRunning(true); };
   const handleReset = () => { clearTimer(); stopMusic(); setRemaining(totalSeconds); setMaxSeconds(totalSeconds); setIsRunning(false); setIsDone(false); setPhase('ready'); startRef.current = Date.now(); spokenRef.current = { half: false, ten: false, three: false, two: false, one: false, restHalf: false }; };
   const handleClose = () => { clearTimer(); stopMusic(); if (onClose) { onClose(); } else { onComplete(); } };
   const handleSkip = () => { clearTimer(); stopMusic(); if (onNext) { onNext(); } else { onComplete(); } };
@@ -627,13 +627,22 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
                   <SkipBack className="w-5 h-5 text-white/70" />
                 </button>
 
-                {/* Pause */}
+                {/* Pause / Resume */}
                 <button
-                  onClick={handleReset}
+                  onClick={isRunning ? handlePause : handleResume}
                   className="flex-1 h-14 rounded-2xl flex items-center justify-center gap-2 text-[15px] font-bold transition-all active:scale-[0.97] bg-white/[0.12] backdrop-blur-xl border border-white/20 text-white shadow-[0_0_30px_rgba(255,255,255,0.06)]"
                 >
-                  <Pause className="w-5 h-5" fill="currentColor" />
-                  Pause
+                  {isRunning ? (
+                    <>
+                      <Pause className="w-5 h-5" fill="currentColor" />
+                      Pause
+                    </>
+                  ) : (
+                    <>
+                      <Play className="w-5 h-5" fill="currentColor" />
+                      Resume
+                    </>
+                  )}
                 </button>
 
                 {/* Skip */}
