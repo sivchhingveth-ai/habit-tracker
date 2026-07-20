@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ListChecks, Plus, Clock, Dumbbell, LogOut, Loader2, User as UserIcon, ChevronDown, ChevronUp, Check } from 'lucide-react';
 import useAppStore from '../store/appStore';
 import { avatarSrc } from '../utils/avatars';
@@ -35,6 +35,7 @@ export const Tabs: React.FC<TabsProps> = ({
 }) => {
   const activeTabRef = useRef<HTMLButtonElement>(null);
   const gymTabRef = useRef<HTMLButtonElement>(null);
+  const [gymTabRect, setGymTabRect] = useState<{ left: number; width: number } | null>(null);
   const nickname = useAppStore((s) => s.nickname);
   const avatar = useAppStore((s) => s.avatar);
   const openProfileModal = useAppStore((s) => s.openProfileModal);
@@ -45,7 +46,18 @@ export const Tabs: React.FC<TabsProps> = ({
     }
   }, [activeTab]);
 
-  // Close gym dropdown on outside click
+  // Track Gym tab position
+  useEffect(() => {
+    if (gymTabRef.current) {
+      const rect = gymTabRef.current.getBoundingClientRect();
+      const navRect = gymTabRef.current.closest('.top-nav')?.getBoundingClientRect();
+      if (navRect) {
+        setGymTabRect({ left: rect.left - navRect.left, width: rect.width });
+      }
+    }
+  }, [gymDropdownOpen]);
+
+  // Close on outside click
   useEffect(() => {
     if (!gymDropdownOpen || !onGymToggle) return;
     const handleClick = (e: MouseEvent) => {
@@ -92,20 +104,12 @@ export const Tabs: React.FC<TabsProps> = ({
                 >
                   {isAdd ? (
                     <div className="nav-add-icon-wrap flex items-center justify-center">
-                      <Icon
-                        className="nav-tab-icon w-[18px] h-[18px] sm:w-5 sm:h-5 transition-all"
-                        strokeWidth={isActive ? 2.5 : 2}
-                      />
+                      <Icon className="nav-tab-icon w-[18px] h-[18px] sm:w-5 sm:h-5 transition-all" strokeWidth={isActive ? 2.5 : 2} />
                     </div>
                   ) : (
-                    <Icon
-                      className="nav-tab-icon w-[18px] h-[18px] sm:w-5 sm:h-5 transition-all"
-                      strokeWidth={isActive ? 2.5 : 2}
-                    />
+                    <Icon className="nav-tab-icon w-[18px] h-[18px] sm:w-5 sm:h-5 transition-all" strokeWidth={isActive ? 2.5 : 2} />
                   )}
-                  <span className={`nav-tab-label text-[10px] sm:text-[11px] font-semibold tracking-wide transition-colors hidden sm:inline ${
-                    isActive ? 'font-bold' : ''
-                  }`}>
+                  <span className={`nav-tab-label text-[10px] sm:text-[11px] font-semibold tracking-wide transition-colors hidden sm:inline ${isActive ? 'font-bold' : ''}`}>
                     {tab}
                   </span>
                   {isGym && (
@@ -113,9 +117,7 @@ export const Tabs: React.FC<TabsProps> = ({
                       ? <ChevronUp className="w-3 h-3 text-white/40 hidden sm:block ml-0.5" />
                       : <ChevronDown className="w-3 h-3 text-white/40 hidden sm:block ml-0.5" />
                   )}
-                  {isActive && (
-                    <div className="nav-underline absolute bottom-0 left-1/2 -translate-x-1/2 h-[2px] w-6 sm:w-8 rounded-t-full" />
-                  )}
+                  {isActive && <div className="nav-underline absolute bottom-0 left-1/2 -translate-x-1/2 h-[2px] w-6 sm:w-8 rounded-t-full" />}
                 </button>
               );
             })}
@@ -158,15 +160,18 @@ export const Tabs: React.FC<TabsProps> = ({
         </div>
       </div>
 
-      {/* Gym dropdown — positioned below the nav, same width as Gym tab */}
-      {gymDropdownOpen && gymDropdownItems.length > 0 && (
-        <div className="px-4 pb-2">
-          <div className="rounded-xl bg-[#12161c]/95 backdrop-blur-2xl border border-white/10 shadow-2xl overflow-hidden animate-slide-up max-w-[200px]">
+      {/* Gym dropdown — positioned below the Gym tab */}
+      {gymDropdownOpen && gymDropdownItems.length > 0 && gymTabRect && (
+        <div
+          className="absolute animate-slide-up"
+          style={{ left: gymTabRect.left, top: '100%' }}
+        >
+          <div className="mt-0.5 rounded-xl bg-[#12161c]/95 backdrop-blur-2xl border border-white/10 shadow-2xl overflow-hidden" style={{ width: gymTabRect.width + 40 }}>
             {gymDropdownItems.map((item, i) => (
               <button
                 key={item.key}
                 onClick={item.onClick}
-                className={`w-full flex items-center gap-3 px-4 py-3 transition-all active:bg-white/[0.04] ${item.active ? 'bg-white/[0.06]' : ''} ${i > 0 ? 'border-t border-white/5' : ''}`}
+                className={`w-full flex items-center gap-3 px-4 py-2.5 transition-all active:bg-white/[0.04] ${item.active ? 'bg-white/[0.06]' : ''} ${i > 0 ? 'border-t border-white/5' : ''}`}
               >
                 <div className="w-7 h-7 rounded-lg flex items-center justify-center bg-white/[0.06] border border-white/8 shrink-0">
                   {item.icon}
