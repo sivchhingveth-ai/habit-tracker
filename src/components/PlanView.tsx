@@ -852,30 +852,27 @@ export const PlanView: React.FC<PlanViewProps> = ({ onStartWorkout }) => {
             <div className="px-5 pt-5 pb-3 safe-area-top">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3 min-w-0">
-                  {currentDet && (
-                    <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: `${LEVELS[0].color}15` }}>
-                      <Dumbbell className="w-5 h-5" style={{ color: LEVELS[0].color }} />
-                    </div>
-                  )}
+                  <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center shrink-0 bg-white/[0.07] backdrop-blur-xl border border-white/10">
+                    <Dumbbell className="w-5 h-5 text-white/60" />
+                  </div>
                   <div className="min-w-0">
-                    <p className="text-[10px] sm:text-[11px] font-bold uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>Current: {currentEx.name}</p>
-                    <p className="text-[15px] sm:text-[16px] font-black" style={{ color: 'var(--text-primary)' }}>Replace it with...</p>
+                    <p className="text-[10px] sm:text-[11px] font-bold uppercase tracking-widest text-white/45">Current: {currentEx.name}</p>
+                    <p className="text-[15px] sm:text-[16px] font-black text-white">Replace it with...</p>
                   </div>
                 </div>
-                <button onClick={() => { setReplaceExercise(null); setReplaceSearch(''); }} className="w-11 h-11 rounded-full flex items-center justify-center shrink-0 touch-manipulation" style={{ backgroundColor: 'var(--bg-soft)' }}>
-                  <X className="w-5 h-5" style={{ color: 'var(--text-primary)' }} />
+                <button onClick={() => { setReplaceExercise(null); setReplaceSearch(''); }} className="w-11 h-11 rounded-full flex items-center justify-center shrink-0 touch-manipulation bg-white/[0.08] border border-white/10 backdrop-blur-xl">
+                  <X className="w-5 h-5 text-white/60" />
                 </button>
               </div>
               {/* Search */}
               <div className="relative">
-                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: 'var(--text-muted)' }} />
+                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
                 <input
                   type="text"
                   placeholder="Search exercises"
                   value={replaceSearch}
                   onChange={(e) => setReplaceSearch(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3.5 rounded-xl text-[14px] font-medium outline-none"
-                  style={{ backgroundColor: 'var(--bg-soft)', color: 'var(--text-primary)' }}
+                  className="w-full pl-10 pr-4 py-3.5 rounded-xl text-[14px] font-medium outline-none bg-white/[0.06] border border-white/10 text-white placeholder-white/30 backdrop-blur-xl"
                   autoFocus
                 />
               </div>
@@ -887,7 +884,7 @@ export const PlanView: React.FC<PlanViewProps> = ({ onStartWorkout }) => {
                 {/* Recommended (similar) */}
                 {!searchLower && similar.length > 0 && (
                   <>
-                    <p className="text-[12px] font-bold uppercase tracking-widest mt-4 mb-2.5" style={{ color: 'var(--accent)' }}>Recommended</p>
+                    <p className="text-[12px] font-bold uppercase tracking-widest mt-4 mb-2.5 text-white/45">Recommended</p>
                     <div className="space-y-2">
                       {similar.slice(0, 5).map((ex) => {
                         const det = EXERCISE_DETAILS[ex.name];
@@ -896,17 +893,16 @@ export const PlanView: React.FC<PlanViewProps> = ({ onStartWorkout }) => {
                           <button
                             key={ex.name}
                             onClick={() => handleReplaceExercise(replaceExercise.dayKey, replaceExercise.exerciseIdx, { name: ex.name, duration: currentEx.duration })}
-                            className="w-full flex items-center gap-3 px-3.5 sm:px-4 py-3.5 rounded-2xl text-left transition-all active:scale-[0.98] touch-manipulation"
-                            style={{ backgroundColor: 'var(--bg-soft)' }}
+                            className="w-full flex items-center gap-3 px-3.5 sm:px-4 py-3.5 rounded-2xl text-left transition-all active:scale-[0.98] touch-manipulation bg-white/[0.06] border border-white/10 backdrop-blur-xl hover:bg-white/[0.10]"
                           >
-                            <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: `${LEVELS[0].color}15` }}>
-                              <Dumbbell className="w-5 h-5" style={{ color: LEVELS[0].color, opacity: 0.6 }} />
+                            <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-white/[0.08] border border-white/10">
+                              <Dumbbell className="w-5 h-5 text-white/40" />
                             </div>
                             <div className="flex-1 min-w-0">
-                              <p className="text-[13px] font-bold truncate" style={{ color: 'var(--text-primary)' }}>{ex.name}</p>
-                              {det && <p className="text-[11px] truncate mt-0.5" style={{ color: 'var(--text-muted)' }}>{det.musclesWorked}</p>}
+                              <p className="text-[13px] font-bold truncate text-white">{ex.name}</p>
+                              {det && <p className="text-[11px] truncate mt-0.5 text-white/45">{det.musclesWorked}</p>}
                             </div>
-                            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold shrink-0" style={{ backgroundColor: 'var(--bg-page)', color: 'var(--text-muted)' }}>
+                            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold shrink-0 bg-white/10 text-white/50">
                               {sameDifficulty ? 'Similar' : 'Easier'}
                             </span>
                           </button>
@@ -919,7 +915,7 @@ export const PlanView: React.FC<PlanViewProps> = ({ onStartWorkout }) => {
                 {/* Alphabetical */}
                 {Object.keys(grouped).sort().map((letter) => (
                   <div key={letter}>
-                    <p className="text-[18px] font-black mt-5 mb-2" style={{ color: 'var(--accent)' }}>{letter}</p>
+                    <p className="text-[18px] font-black mt-5 mb-2 text-white/40">{letter}</p>
                     <div className="space-y-2">
                       {grouped[letter].map((ex) => {
                         const det = EXERCISE_DETAILS[ex.name];
@@ -927,15 +923,14 @@ export const PlanView: React.FC<PlanViewProps> = ({ onStartWorkout }) => {
                           <button
                             key={ex.name}
                             onClick={() => handleReplaceExercise(replaceExercise.dayKey, replaceExercise.exerciseIdx, { name: ex.name, duration: currentEx.duration })}
-                            className="w-full flex items-center gap-3 px-3.5 sm:px-4 py-3.5 rounded-2xl text-left transition-all active:scale-[0.98] touch-manipulation"
-                            style={{ backgroundColor: 'var(--bg-soft)' }}
+                            className="w-full flex items-center gap-3 px-3.5 sm:px-4 py-3.5 rounded-2xl text-left transition-all active:scale-[0.98] touch-manipulation bg-white/[0.06] border border-white/10 backdrop-blur-xl hover:bg-white/[0.10]"
                           >
-                            <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: `${LEVELS[0].color}15` }}>
-                              <Dumbbell className="w-5 h-5" style={{ color: LEVELS[0].color, opacity: 0.6 }} />
+                            <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-white/[0.08] border border-white/10">
+                              <Dumbbell className="w-5 h-5 text-white/40" />
                             </div>
                             <div className="flex-1 min-w-0">
-                              <p className="text-[13px] font-bold truncate" style={{ color: 'var(--text-primary)' }}>{ex.name}</p>
-                              {det && <p className="text-[11px] truncate mt-0.5" style={{ color: 'var(--text-muted)' }}>{det.musclesWorked}</p>}
+                              <p className="text-[13px] font-bold truncate text-white">{ex.name}</p>
+                              {det && <p className="text-[11px] truncate mt-0.5 text-white/45">{det.musclesWorked}</p>}
                             </div>
                           </button>
                         );
