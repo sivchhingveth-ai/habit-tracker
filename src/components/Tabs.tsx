@@ -36,6 +36,7 @@ export const Tabs: React.FC<TabsProps> = ({
 }) => {
   const activeTabRef = useRef<HTMLButtonElement>(null);
   const gymTabRef = useRef<HTMLButtonElement>(null);
+  const gymMobileRef = useRef<HTMLButtonElement>(null);
   const [gymTabRect, setGymTabRect] = useState<{ left: number; width: number } | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const nickname = useAppStore((s) => s.nickname);
@@ -49,14 +50,17 @@ export const Tabs: React.FC<TabsProps> = ({
   }, [activeTab]);
 
   useEffect(() => {
-    if (gymTabRef.current) {
-      const rect = gymTabRef.current.getBoundingClientRect();
-      const navRect = gymTabRef.current.closest('.top-nav')?.getBoundingClientRect();
+    const el = gymTabRef.current?.offsetWidth
+      ? gymTabRef.current
+      : gymMobileRef.current;
+    if (el) {
+      const rect = el.getBoundingClientRect();
+      const navRect = el.closest('.top-nav')?.getBoundingClientRect();
       if (navRect) {
         setGymTabRect({ left: rect.left - navRect.left, width: rect.width });
       }
     }
-  }, [gymDropdownOpen]);
+  }, [gymDropdownOpen, activeTab]);
 
   useEffect(() => {
     if (!gymDropdownOpen || !onGymToggle) return;
@@ -91,6 +95,18 @@ export const Tabs: React.FC<TabsProps> = ({
             <Menu className="w-5 h-5 text-white" />
           </button>
           <span className="text-[13px] font-black text-white flex-1">{activeTab}</span>
+          {activeTab === 'Gym' && onGymToggle && (
+            <button
+              ref={gymMobileRef}
+              onClick={() => onGymToggle()}
+              className="w-8 h-8 flex items-center justify-center rounded-lg active:bg-white/[0.08] transition-all"
+            >
+              {gymDropdownOpen
+                ? <ChevronUp className="w-4 h-4 text-white" />
+                : <ChevronDown className="w-4 h-4 text-white" />
+              }
+            </button>
+          )}
         </div>
 
         {/* Desktop: Tab group */}
@@ -185,13 +201,13 @@ export const Tabs: React.FC<TabsProps> = ({
         </div>
       </div>
 
-      {/* Desktop: Gym dropdown below tab */}
+      {/* Gym dropdown below tab */}
       {gymDropdownOpen && gymDropdownItems.length > 0 && gymTabRect && (
         <div
-          className="absolute animate-slide-up hidden sm:block"
-          style={{ left: gymTabRect.left, top: '100%' }}
+          className="absolute animate-slide-up"
+          style={{ left: gymTabRect.left, top: '100%', width: gymTabRect.width + 40 }}
         >
-          <div className="mt-0.5 rounded-xl bg-[#12161c]/95 backdrop-blur-2xl border border-white/10 shadow-2xl overflow-hidden" style={{ width: gymTabRect.width + 40 }}>
+          <div className="mt-0.5 rounded-xl bg-[#12161c]/95 backdrop-blur-2xl border border-white/10 shadow-2xl overflow-hidden">
             {gymDropdownItems.map((item, i) => (
               <button
                 key={item.key}
