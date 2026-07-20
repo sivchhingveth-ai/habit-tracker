@@ -67,7 +67,6 @@ export const Tabs: React.FC<TabsProps> = ({
     return () => document.removeEventListener('mousedown', handleClick);
   }, [gymDropdownOpen, onGymToggle]);
 
-  // Lock body scroll when drawer is open
   useEffect(() => {
     if (drawerOpen) {
       document.body.style.overflow = 'hidden';
@@ -81,15 +80,29 @@ export const Tabs: React.FC<TabsProps> = ({
 
   return (
     <div className="top-nav sticky top-0 z-40">
-      <div className="flex h-[40px] sm:h-[42px] md:h-[44px] items-center">
-        {/* Mobile: Hamburger menu */}
-        <div className="flex sm:hidden items-center px-2 h-full">
+      <div className="flex h-[44px] sm:h-[42px] md:h-[44px] items-center">
+        {/* Mobile: Hamburger + Active tab name */}
+        <div className="flex sm:hidden items-center px-3 h-full gap-3 w-full">
           <button
             onClick={() => setDrawerOpen(true)}
-            className="w-8 h-8 flex items-center justify-center rounded-lg active:bg-white/[0.06] transition-all"
+            className="w-8 h-8 flex items-center justify-center rounded-lg active:bg-white/[0.08] transition-all"
           >
-            <Menu className="w-4 h-4 text-white/70" />
+            <Menu className="w-5 h-5 text-white" />
           </button>
+          <span className="text-[13px] font-black text-white flex-1">{activeTab}</span>
+          {onLogout && (
+            <button
+              onClick={onLogout}
+              disabled={isLoggingOut}
+              className="w-8 h-8 flex items-center justify-center rounded-lg active:bg-white/[0.08] disabled:opacity-50"
+            >
+              {isLoggingOut ? (
+                <Loader2 className="w-4 h-4 text-white animate-spin" />
+              ) : (
+                <LogOut className="w-4 h-4 text-white" />
+              )}
+            </button>
+          )}
         </div>
 
         {/* Desktop: Tab group */}
@@ -115,7 +128,7 @@ export const Tabs: React.FC<TabsProps> = ({
                       onTabChange(tab);
                     }
                   }}
-                  className={`nav-tab relative h-full flex items-center justify-center gap-1 sm:gap-1.5 shrink-0 touch-manipulation group px-2 sm:px-3 md:px-4 ${
+                  className={`nav-tab relative h-full flex items-center justify-center gap-1.5 shrink-0 touch-manipulation group px-3 md:px-4 ${
                     isActive ? 'is-active' : ''
                   }`}
                   style={{ touchAction: 'manipulation' }}
@@ -123,18 +136,18 @@ export const Tabs: React.FC<TabsProps> = ({
                 >
                   {isAdd ? (
                     <div className="nav-add-icon-wrap flex items-center justify-center">
-                      <Icon className="nav-tab-icon w-3.5 h-3.5 sm:w-4 sm:h-4 transition-all" strokeWidth={isActive ? 2.5 : 2} />
+                      <Icon className="nav-tab-icon w-4 h-4 transition-all" strokeWidth={isActive ? 2.5 : 2} />
                     </div>
                   ) : (
-                    <Icon className="nav-tab-icon w-3.5 h-3.5 sm:w-4 sm:h-4 transition-all" strokeWidth={isActive ? 2.5 : 2} />
+                    <Icon className="nav-tab-icon w-4 h-4 transition-all" strokeWidth={isActive ? 2.5 : 2} />
                   )}
-                  <span className={`nav-tab-label text-[9px] sm:text-[10px] font-semibold tracking-wide transition-colors hidden sm:inline ${isActive ? 'font-bold' : ''}`}>
+                  <span className={`nav-tab-label text-[11px] font-semibold tracking-wide transition-colors ${isActive ? 'font-bold' : ''}`}>
                     {tab}
                   </span>
                   {isGym && (
                     gymDropdownOpen
-                      ? <ChevronUp className="w-3 h-3 text-white/40 hidden sm:block ml-0.5" />
-                      : <ChevronDown className="w-3 h-3 text-white/40 hidden sm:block ml-0.5" />
+                      ? <ChevronUp className="w-3 h-3 ml-0.5" />
+                      : <ChevronDown className="w-3 h-3 ml-0.5" />
                   )}
                   {isActive && <div className="nav-underline absolute bottom-0 left-1/2 -translate-x-1/2 h-[2px] w-6 sm:w-8 rounded-t-full" />}
                 </button>
@@ -143,24 +156,19 @@ export const Tabs: React.FC<TabsProps> = ({
           </div>
         </div>
 
-        {/* Mobile: Active tab name */}
-        <div className="flex-1 sm:hidden flex items-center justify-center">
-          <span className="text-[11px] font-bold text-white/80">{activeTab}</span>
-        </div>
-
-        {/* Action group */}
-        <div className="flex h-full shrink-0 items-center">
+        {/* Desktop: Action group */}
+        <div className="hidden sm:flex h-full shrink-0 items-center">
           <button
             onClick={openProfileModal}
-            className="nav-icon-btn px-1 sm:px-1.5 h-full flex items-center justify-center touch-manipulation"
+            className="nav-icon-btn px-2 h-full flex items-center justify-center touch-manipulation"
             title="Profile"
             style={{ touchAction: 'manipulation' }}
           >
-            <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-[var(--bg-soft)] border border-[var(--border-soft)] flex items-center justify-center shrink-0 overflow-hidden transition-all">
+            <div className="w-6 h-6 rounded-full bg-[var(--bg-soft)] border border-[var(--border-soft)] flex items-center justify-center shrink-0 overflow-hidden transition-all">
               {avatarSrc(avatar) ? (
                 <img src={avatarSrc(avatar)} alt="Avatar" className="w-full h-full object-contain" draggable={false} />
               ) : (
-                <span className="text-[9px] font-bold text-[var(--text-primary)]">
+                <span className="text-[10px] font-bold text-[var(--text-primary)]">
                   {initial || <UserIcon className="w-3 h-3 text-[var(--text-muted)]" />}
                 </span>
               )}
@@ -170,14 +178,14 @@ export const Tabs: React.FC<TabsProps> = ({
             <button
               onClick={onLogout}
               disabled={isLoggingOut}
-              className="nav-icon-btn nav-icon-btn--danger px-1.5 sm:px-2 md:px-3 h-full flex items-center justify-center disabled:opacity-50 touch-manipulation"
+              className="nav-icon-btn nav-icon-btn--danger px-3 h-full flex items-center justify-center disabled:opacity-50 touch-manipulation"
               title="Sign Out"
               style={{ touchAction: 'manipulation' }}
             >
               {isLoggingOut ? (
-                <Loader2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 animate-spin" />
+                <Loader2 className="w-4 h-4 animate-spin" />
               ) : (
-                <LogOut className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                <LogOut className="w-4 h-4" />
               )}
             </button>
           )}
@@ -197,8 +205,8 @@ export const Tabs: React.FC<TabsProps> = ({
                 onClick={item.onClick}
                 className={`w-full flex items-center gap-2 px-3 py-2 transition-all active:bg-white/[0.04] ${item.active ? 'bg-white/[0.06]' : ''} ${i > 0 ? 'border-t border-white/5' : ''}`}
               >
-                <span className="flex-1 text-left text-[11px] font-bold text-white/70">{item.label}</span>
-                {item.active && <Check className="w-3 h-3 text-white/50 shrink-0" />}
+                <span className="flex-1 text-left text-[12px] font-bold text-white/80">{item.label}</span>
+                {item.active && <Check className="w-3 h-3 text-white/60 shrink-0" />}
               </button>
             ))}
           </div>
@@ -208,27 +216,25 @@ export const Tabs: React.FC<TabsProps> = ({
       {/* Mobile: Drawer overlay */}
       {drawerOpen && (
         <div className="fixed inset-0 z-[500] sm:hidden">
-          {/* Backdrop */}
           <div
             className="absolute inset-0 bg-black/70 backdrop-blur-md animate-fade-in"
             onClick={() => setDrawerOpen(false)}
           />
 
-          {/* Drawer panel */}
           <div className="absolute left-0 top-0 bottom-0 w-[260px] bg-[#0b0c0f] border-r border-white/10 flex flex-col animate-slide-in-left shadow-2xl">
             {/* Header */}
-            <div className="flex items-center justify-between px-4 h-[48px] border-b border-white/8 shrink-0">
-              <span className="text-[13px] font-black text-white">Menu</span>
+            <div className="flex items-center justify-between px-4 h-[48px] border-b border-white/10 shrink-0">
+              <span className="text-[14px] font-black text-white">Menu</span>
               <button
                 onClick={() => setDrawerOpen(false)}
-                className="w-7 h-7 flex items-center justify-center rounded-lg active:bg-white/[0.06]"
+                className="w-8 h-8 flex items-center justify-center rounded-lg active:bg-white/[0.08]"
               >
-                <X className="w-4 h-4 text-white/60" />
+                <X className="w-5 h-5 text-white" />
               </button>
             </div>
 
             {/* Nav items */}
-            <div className="flex-1 overflow-y-auto py-1">
+            <div className="flex-1 overflow-y-auto py-2">
               {tabs.map((tab) => {
                 const Icon = TAB_ICONS[tab] ?? ListChecks;
                 const isActive = activeTab === tab;
@@ -242,20 +248,19 @@ export const Tabs: React.FC<TabsProps> = ({
                         if (isGym && onGymToggle) onGymToggle();
                         setDrawerOpen(false);
                       }}
-                      className={`w-full flex items-center gap-3 px-4 py-3 transition-all active:bg-white/[0.04] ${isActive ? 'bg-white/[0.06]' : ''}`}
+                      className={`w-full flex items-center gap-3 px-4 py-3.5 transition-all active:bg-white/[0.06] ${isActive ? 'bg-white/[0.08]' : ''}`}
                     >
-                      <Icon className="w-4 h-4 text-white/50" strokeWidth={isActive ? 2.5 : 2} />
-                      <span className={`text-[13px] font-bold ${isActive ? 'text-white' : 'text-white/60'}`}>{tab}</span>
+                      <Icon className="w-5 h-5 text-white/70" strokeWidth={isActive ? 2.5 : 2} />
+                      <span className={`text-[14px] font-bold ${isActive ? 'text-white' : 'text-white/80'}`}>{tab}</span>
                       {isGym && (
                         gymDropdownOpen
-                          ? <ChevronUp className="w-3.5 h-3.5 text-white/30 ml-auto" />
-                          : <ChevronDown className="w-3.5 h-3.5 text-white/30 ml-auto" />
+                          ? <ChevronUp className="w-4 h-4 text-white/50 ml-auto" />
+                          : <ChevronDown className="w-4 h-4 text-white/50 ml-auto" />
                       )}
                     </button>
 
-                    {/* Gym sub-items */}
                     {isGym && gymDropdownOpen && (
-                      <div className="border-t border-white/5">
+                      <div className="border-t border-white/8">
                         {gymDropdownItems.map((item) => (
                           <button
                             key={item.key}
@@ -263,10 +268,10 @@ export const Tabs: React.FC<TabsProps> = ({
                               item.onClick();
                               setDrawerOpen(false);
                             }}
-                            className={`w-full flex items-center gap-3 pl-10 pr-4 py-2.5 transition-all active:bg-white/[0.04] ${item.active ? 'bg-white/[0.04]' : ''}`}
+                            className={`w-full flex items-center gap-3 pl-12 pr-4 py-3 transition-all active:bg-white/[0.06] ${item.active ? 'bg-white/[0.06]' : ''}`}
                           >
-                            <span className={`text-[12px] font-bold ${item.active ? 'text-white' : 'text-white/50'}`}>{item.label}</span>
-                            {item.active && <Check className="w-3 h-3 text-white/40 ml-auto" />}
+                            <span className={`text-[13px] font-bold ${item.active ? 'text-white' : 'text-white/70'}`}>{item.label}</span>
+                            {item.active && <Check className="w-4 h-4 text-white/50 ml-auto" />}
                           </button>
                         ))}
                       </div>
@@ -276,31 +281,31 @@ export const Tabs: React.FC<TabsProps> = ({
               })}
             </div>
 
-            {/* Bottom: Profile + Logout */}
-            <div className="border-t border-white/8 py-1 shrink-0">
+            {/* Bottom */}
+            <div className="border-t border-white/10 py-2 shrink-0">
               <button
                 onClick={() => { openProfileModal(); setDrawerOpen(false); }}
-                className="w-full flex items-center gap-3 px-4 py-3 active:bg-white/[0.04]"
+                className="w-full flex items-center gap-3 px-4 py-3.5 active:bg-white/[0.06]"
               >
-                <div className="w-5 h-5 rounded-full bg-[var(--bg-soft)] border border-[var(--border-soft)] flex items-center justify-center overflow-hidden">
+                <div className="w-6 h-6 rounded-full bg-[var(--bg-soft)] border border-[var(--border-soft)] flex items-center justify-center overflow-hidden">
                   {avatarSrc(avatar) ? (
                     <img src={avatarSrc(avatar)} alt="Avatar" className="w-full h-full object-contain" draggable={false} />
                   ) : (
-                    <span className="text-[8px] font-bold text-[var(--text-primary)]">
-                      {initial || <UserIcon className="w-2.5 h-2.5 text-[var(--text-muted)]" />}
+                    <span className="text-[9px] font-bold text-[var(--text-primary)]">
+                      {initial || <UserIcon className="w-3 h-3 text-[var(--text-muted)]" />}
                     </span>
                   )}
                 </div>
-                <span className="text-[12px] font-bold text-white/60">Profile</span>
+                <span className="text-[13px] font-bold text-white/80">Profile</span>
               </button>
               {onLogout && (
                 <button
                   onClick={() => { onLogout(); setDrawerOpen(false); }}
                   disabled={isLoggingOut}
-                  className="w-full flex items-center gap-3 px-4 py-3 active:bg-white/[0.04] disabled:opacity-50"
+                  className="w-full flex items-center gap-3 px-4 py-3.5 active:bg-white/[0.06] disabled:opacity-50"
                 >
-                  <LogOut className="w-4 h-4 text-white/40" />
-                  <span className="text-[12px] font-bold text-white/50">Sign Out</span>
+                  <LogOut className="w-5 h-5 text-white/60" />
+                  <span className="text-[13px] font-bold text-white/70">Sign Out</span>
                 </button>
               )}
             </div>
