@@ -416,22 +416,22 @@ export const PlanView: React.FC<PlanViewProps> = ({ onStartWorkout }) => {
   return (
     <div className="space-y-4 animate-slide-up">
       {/* Plan Badge */}
-      <div className="flex items-center gap-2.5 px-4 py-3 rounded-2xl bg-white/[0.08] backdrop-blur-xl border border-white/10">
+      <div className="flex items-center gap-2.5 px-3.5 sm:px-4 py-3 rounded-2xl bg-white/[0.08] backdrop-blur-xl border border-white/10">
         <div className="w-10 h-10 rounded-xl flex items-center justify-center text-white shrink-0" style={{ backgroundColor: currentLevel?.color || LEVELS[0].color }}>
           {goal?.icon || <Dumbbell className="w-5 h-5" />}
         </div>
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2">
-            <p className="text-[14px] font-black text-white truncate">{goal?.label || 'My Plan'}</p>
-            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider text-white/80" style={{ backgroundColor: `${currentLevel?.color || LEVELS[0].color}40` }}>
+          <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+            <p className="text-[13px] sm:text-[14px] font-black text-white truncate">{goal?.label || 'My Plan'}</p>
+            <span className="px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-white/80 shrink-0" style={{ backgroundColor: `${currentLevel?.color || LEVELS[0].color}40` }}>
               {currentLevel?.label || 'Beginner'}
             </span>
           </div>
-          <p className="text-[11px] text-white/45 mt-0.5">Month {currentMonthIdx + 1} of 3 — {currentMonth?.title}</p>
+          <p className="text-[10px] sm:text-[11px] text-white/45 mt-0.5">Month {currentMonthIdx + 1} of 3 — {currentMonth?.title}</p>
         </div>
         <div className="text-right shrink-0">
-          <p className="text-[18px] font-black text-white leading-none">{Math.round((completedCount / totalDays) * 100)}%</p>
-          <p className="text-[10px] text-white/40 mt-0.5">done</p>
+          <p className="text-[16px] sm:text-[18px] font-black text-white leading-none">{Math.round((completedCount / totalDays) * 100)}%</p>
+          <p className="text-[9px] sm:text-[10px] text-white/40 mt-0.5">done</p>
         </div>
       </div>
 
@@ -576,10 +576,10 @@ export const PlanView: React.FC<PlanViewProps> = ({ onStartWorkout }) => {
         const exRow = (ex: Exercise, combinedIdx: number, displayNum: number, originalIdx: number) => {
           const det = EXERCISE_DETAILS[ex.name];
           return (
-            <div key={combinedIdx} className="flex items-center gap-2">
+            <div key={combinedIdx} className="flex items-center gap-1.5 sm:gap-2">
               <button
                 onClick={() => setDetailExIdx(combinedIdx)}
-                className="flex-1 flex items-center gap-3.5 px-4 py-3.5 rounded-2xl bg-white/[0.06] backdrop-blur-xl border border-white/10 text-left transition-all hover:bg-white/[0.1] active:scale-[0.99]"
+                className="flex-1 flex items-center gap-3 px-3.5 sm:px-4 py-3.5 rounded-2xl bg-white/[0.06] backdrop-blur-xl border border-white/10 text-left transition-all hover:bg-white/[0.1] active:scale-[0.99]"
               >
                 <div className="w-8 h-8 rounded-full bg-white/10 border border-white/10 flex items-center justify-center text-[12px] font-black text-white shrink-0">{displayNum}</div>
                 <div className="flex-1 min-w-0">
@@ -591,10 +591,10 @@ export const PlanView: React.FC<PlanViewProps> = ({ onStartWorkout }) => {
               </button>
               <button
                 onClick={() => setReplaceExercise({ dayKey: detailDay!, exerciseIdx: originalIdx, exercise: ex })}
-                className="w-9 h-9 rounded-xl bg-white/10 border border-white/10 flex items-center justify-center shrink-0 transition-all hover:bg-white/20 active:scale-90"
+                className="w-11 h-11 rounded-xl bg-white/10 border border-white/10 flex items-center justify-center shrink-0 transition-all hover:bg-white/20 active:scale-90 touch-manipulation"
                 title="Replace exercise"
               >
-                <RefreshCw className="w-3.5 h-3.5 text-white/60" />
+                <RefreshCw className="w-4 h-4 text-white/60" />
               </button>
             </div>
           );
@@ -817,28 +817,28 @@ export const PlanView: React.FC<PlanViewProps> = ({ onStartWorkout }) => {
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3 min-w-0">
                   {currentDet && (
-                    <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: `${LEVELS[0].color}15` }}>
+                    <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: `${LEVELS[0].color}15` }}>
                       <Dumbbell className="w-5 h-5" style={{ color: LEVELS[0].color }} />
                     </div>
                   )}
                   <div className="min-w-0">
-                    <p className="text-[11px] font-bold uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>Current: {currentEx.name}</p>
-                    <p className="text-[16px] font-black" style={{ color: 'var(--text-primary)' }}>Replace it with...</p>
+                    <p className="text-[10px] sm:text-[11px] font-bold uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>Current: {currentEx.name}</p>
+                    <p className="text-[15px] sm:text-[16px] font-black" style={{ color: 'var(--text-primary)' }}>Replace it with...</p>
                   </div>
                 </div>
-                <button onClick={() => { setReplaceExercise(null); setReplaceSearch(''); }} className="w-9 h-9 rounded-full flex items-center justify-center shrink-0" style={{ backgroundColor: 'var(--bg-soft)' }}>
-                  <X className="w-4 h-4" style={{ color: 'var(--text-primary)' }} />
+                <button onClick={() => { setReplaceExercise(null); setReplaceSearch(''); }} className="w-11 h-11 rounded-full flex items-center justify-center shrink-0 touch-manipulation" style={{ backgroundColor: 'var(--bg-soft)' }}>
+                  <X className="w-5 h-5" style={{ color: 'var(--text-primary)' }} />
                 </button>
               </div>
               {/* Search */}
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: 'var(--text-muted)' }} />
+                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: 'var(--text-muted)' }} />
                 <input
                   type="text"
                   placeholder="Search exercises"
                   value={replaceSearch}
                   onChange={(e) => setReplaceSearch(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 rounded-xl text-[14px] font-medium outline-none"
+                  className="w-full pl-10 pr-4 py-3.5 rounded-xl text-[14px] font-medium outline-none"
                   style={{ backgroundColor: 'var(--bg-soft)', color: 'var(--text-primary)' }}
                   autoFocus
                 />
@@ -860,7 +860,7 @@ export const PlanView: React.FC<PlanViewProps> = ({ onStartWorkout }) => {
                           <button
                             key={ex.name}
                             onClick={() => handleReplaceExercise(replaceExercise.dayKey, replaceExercise.exerciseIdx, { name: ex.name, duration: currentEx.duration })}
-                            className="w-full flex items-center gap-3.5 px-4 py-3.5 rounded-2xl text-left transition-all active:scale-[0.98]"
+                            className="w-full flex items-center gap-3 px-3.5 sm:px-4 py-3.5 rounded-2xl text-left transition-all active:scale-[0.98] touch-manipulation"
                             style={{ backgroundColor: 'var(--bg-soft)' }}
                           >
                             <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: `${LEVELS[0].color}15` }}>
@@ -891,7 +891,7 @@ export const PlanView: React.FC<PlanViewProps> = ({ onStartWorkout }) => {
                           <button
                             key={ex.name}
                             onClick={() => handleReplaceExercise(replaceExercise.dayKey, replaceExercise.exerciseIdx, { name: ex.name, duration: currentEx.duration })}
-                            className="w-full flex items-center gap-3.5 px-4 py-3.5 rounded-2xl text-left transition-all active:scale-[0.98]"
+                            className="w-full flex items-center gap-3 px-3.5 sm:px-4 py-3.5 rounded-2xl text-left transition-all active:scale-[0.98] touch-manipulation"
                             style={{ backgroundColor: 'var(--bg-soft)' }}
                           >
                             <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: `${LEVELS[0].color}15` }}>
