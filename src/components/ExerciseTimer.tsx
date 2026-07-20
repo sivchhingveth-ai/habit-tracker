@@ -317,203 +317,194 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
 
   return (
     <div className="fixed inset-0 z-[200] flex flex-col animate-fade-in" style={{ backgroundColor: 'var(--bg-page)' }}>
-      {/* Top bar */}
+      {/* Top bar — glass */}
       <div className="flex items-center justify-between px-5 pt-5 pb-3 safe-area-top">
-          <button
-            onClick={handleClose}
-            className="w-11 h-11 rounded-full flex items-center justify-center transition-all active:scale-90 touch-manipulation"
-            style={{ touchAction: 'manipulation', backgroundColor: 'var(--bg-soft)' }}
-          >
-          <X className="w-5 h-5" style={{ color: 'var(--text-primary)' }} />
+        <button
+          onClick={handleClose}
+          className="w-11 h-11 rounded-full flex items-center justify-center transition-all active:scale-90 touch-manipulation bg-white/[0.08] backdrop-blur-xl border border-white/10"
+          style={{ touchAction: 'manipulation' }}
+        >
+          <X className="w-5 h-5 text-white/80" />
         </button>
         {exerciseNumber && totalExercises && (
-          <div
-            className="px-3 py-1.5 rounded-full text-[11px] font-bold tracking-wider"
-            style={{
-              backgroundColor: `${color}15`,
-              color: color,
-            }}
-          >
+          <div className="px-3.5 py-1.5 rounded-full text-[11px] font-bold tracking-wider bg-white/[0.08] backdrop-blur-xl border border-white/15 text-white/70">
             {exerciseNumber}/{totalExercises}
           </div>
         )}
         <button
           onClick={() => setMuted((m) => !m)}
-          className="w-11 h-11 rounded-full flex items-center justify-center transition-all active:scale-90 touch-manipulation"
-          style={{ touchAction: 'manipulation', backgroundColor: 'var(--bg-soft)' }}
+          className="w-11 h-11 rounded-full flex items-center justify-center transition-all active:scale-90 touch-manipulation bg-white/[0.08] backdrop-blur-xl border border-white/10"
+          style={{ touchAction: 'manipulation' }}
         >
-          {muted ? <VolumeX className="w-5 h-5" style={{ color: 'var(--text-primary)' }} /> : <Volume2 className="w-5 h-5" style={{ color: 'var(--text-primary)' }} />}
+          {muted ? <VolumeX className="w-5 h-5 text-white/80" /> : <Volume2 className="w-5 h-5 text-white/80" />}
         </button>
       </div>
 
       {/* Main content */}
       <div className="flex-1 flex flex-col items-center justify-center px-6">
         {phase === 'countdown' ? (
-          /* 3-2-1 Countdown */
-          <div className="flex flex-col items-center gap-4">
-            <h2
-              className="text-[22px] sm:text-[26px] font-black text-center leading-tight tracking-tight"
-              style={{ color: 'var(--text-primary)' }}
-            >
+          /* 3-2-1 Countdown — dramatic glass */
+          <div className="flex flex-col items-center gap-6">
+            <h2 className="text-[20px] sm:text-[24px] font-black text-center leading-tight tracking-tight text-white/90">
               {exerciseName}
             </h2>
-            <span
-              className="text-[80px] sm:text-[96px] font-black leading-none tabular-nums animate-pop-in"
-              key={countdownNum}
-              style={{ color: accentColor }}
-            >
-              {countdownNum === 0 ? 'Go!' : countdownNum}
-            </span>
+            <div className="relative">
+              <div className="absolute inset-0 rounded-full bg-white/[0.04] backdrop-blur-xl border border-white/10 scale-150" />
+              <span
+                className="relative text-[100px] sm:text-[120px] font-black leading-none tabular-nums animate-pop-in block"
+                key={countdownNum}
+                style={{ color: '#fff', textShadow: `0 0 60px ${accentColor}60, 0 0 120px ${accentColor}30` }}
+              >
+                {countdownNum === 0 ? 'Go!' : countdownNum}
+              </span>
+            </div>
           </div>
         ) : phase === 'ready' && isRest ? (
           /* Rest ready — auto-starts */
-          <div className="flex flex-col items-center gap-5 animate-slide-up">
-            <p className="text-[13px] font-bold tracking-widest uppercase" style={{ color: 'var(--text-muted)' }}>
+          <div className="flex flex-col items-center gap-6 animate-slide-up">
+            <p className="text-[11px] font-bold tracking-[0.2em] uppercase text-white/50">
               Rest Session
             </p>
-            {/* Timer ring — same style as exercise */}
-            <div className="relative w-[200px] h-[200px] sm:w-[240px] sm:h-[240px]">
-              <svg className="w-full h-full -rotate-90" viewBox="0 0 180 180">
-                <circle cx="90" cy="90" r={RADIUS} fill="transparent" stroke="var(--border-soft)" strokeWidth="8" />
+            {/* Timer ring — glass container */}
+            <div className="relative w-[220px] h-[220px] sm:w-[260px] sm:h-[260px]">
+              <div className="absolute inset-0 rounded-full bg-white/[0.04] backdrop-blur-xl border border-white/10 shadow-[0_0_60px_rgba(255,255,255,0.03)]" />
+              <svg className="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 180 180">
+                <circle cx="90" cy="90" r={RADIUS} fill="transparent" stroke="rgba(255,255,255,0.08)" strokeWidth="6" />
                 <circle
-                  cx="90" cy="90" r={RADIUS} fill="transparent" stroke="#fff" strokeWidth="8"
+                  cx="90" cy="90" r={RADIUS} fill="transparent" stroke="#fff" strokeWidth="6"
                   strokeDasharray={CIRCUMFERENCE} strokeDashoffset={CIRCUMFERENCE * (1 - remaining / maxSeconds)}
                   strokeLinecap="round" className="transition-[stroke-dashoffset] duration-200 ease-linear"
+                  style={{ filter: `drop-shadow(0 0 12px rgba(255,255,255,0.4))` }}
                 />
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-[48px] sm:text-[56px] font-black leading-none tabular-nums" style={{ color: 'var(--text-primary)' }}>
+                <span className="text-[52px] sm:text-[60px] font-black leading-none tabular-nums text-white">
                   {formatTime(remaining)}
                 </span>
               </div>
             </div>
           </div>
         ) : phase === 'ready' ? (
-          /* Exercise ready state */
-          <div className="flex flex-col items-center gap-6 animate-slide-up">
-            <p className="text-[14px] font-bold tracking-wide" style={{ color: 'var(--text-muted)' }}>
-              Ready to go!
-            </p>
-            <h2
-              className="text-[22px] sm:text-[26px] font-black text-center leading-tight tracking-tight"
-              style={{ color: 'var(--text-primary)' }}
-            >
-              {exerciseName}
-            </h2>
-            <p className="text-[13px] font-medium" style={{ color: 'var(--text-muted)' }}>
-              {duration}
-            </p>
+          /* Exercise ready state — premium glass card */
+          <div className="flex flex-col items-center gap-6 animate-slide-up w-full max-w-[340px]">
+            <div className="w-full bg-white/[0.06] backdrop-blur-2xl border border-white/10 rounded-[28px] px-8 py-10 flex flex-col items-center gap-6">
+              <p className="text-[11px] font-bold tracking-[0.2em] uppercase text-white/50">
+                Ready to go
+              </p>
+              <h2 className="text-[24px] sm:text-[28px] font-black text-center leading-tight tracking-tight text-white">
+                {exerciseName}
+              </h2>
+              <div className="px-4 py-2 rounded-full bg-white/[0.08] border border-white/10">
+                <p className="text-[13px] font-bold text-white/60">
+                  {duration}
+                </p>
+              </div>
+            </div>
             <button
               onClick={handleStart}
-              className="mt-4 w-full max-w-[280px] h-14 rounded-2xl flex items-center justify-center gap-3 text-[15px] font-bold transition-all active:scale-[0.97] shadow-lg"
-              style={{ backgroundColor: accentColor, color: '#fff' }}
+              className="w-full h-14 rounded-2xl flex items-center justify-center gap-3 text-[15px] font-bold transition-all active:scale-[0.97] bg-white/[0.12] backdrop-blur-xl border border-white/20 text-white shadow-[0_0_30px_rgba(255,255,255,0.06)]"
             >
               <Play className="w-5 h-5" fill="currentColor" />
               Start
             </button>
           </div>
         ) : isRest && !isDone ? (
-          /* Active rest state — the main rest screen */
-          <div className="flex flex-col items-center gap-5 w-full animate-slide-up">
-            <p className="text-[13px] font-bold tracking-widest uppercase" style={{ color: 'var(--text-muted)' }}>
+          /* Active rest state — premium glass */
+          <div className="flex flex-col items-center gap-6 w-full animate-slide-up">
+            <p className="text-[11px] font-bold tracking-[0.2em] uppercase text-white/50">
               Rest Session
             </p>
 
-            {/* Timer ring — same size/style as exercise */}
-            <div className="relative w-[200px] h-[200px] sm:w-[240px] sm:h-[240px]">
-              <svg className="w-full h-full -rotate-90" viewBox="0 0 180 180">
-                <circle cx="90" cy="90" r={RADIUS} fill="transparent" stroke="var(--border-soft)" strokeWidth="8" />
+            {/* Timer ring — glass container */}
+            <div className="relative w-[220px] h-[220px] sm:w-[260px] sm:h-[260px]">
+              <div className="absolute inset-0 rounded-full bg-white/[0.04] backdrop-blur-xl border border-white/10 shadow-[0_0_60px_rgba(255,255,255,0.03)]" />
+              <svg className="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 180 180">
+                <circle cx="90" cy="90" r={RADIUS} fill="transparent" stroke="rgba(255,255,255,0.08)" strokeWidth="6" />
                 <circle
-                  cx="90" cy="90" r={RADIUS} fill="transparent" stroke="#fff" strokeWidth="8"
+                  cx="90" cy="90" r={RADIUS} fill="transparent" stroke="#fff" strokeWidth="6"
                   strokeDasharray={CIRCUMFERENCE} strokeDashoffset={strokeDashoffset}
                   strokeLinecap="round" className="transition-[stroke-dashoffset] duration-200 ease-linear"
-                  style={{ filter: `drop-shadow(0 0 8px ${color}40)` }}
+                  style={{ filter: `drop-shadow(0 0 12px rgba(255,255,255,0.4))` }}
                 />
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-[48px] sm:text-[56px] font-black leading-none tabular-nums" style={{ color: 'var(--text-primary)' }}>
+                <span className="text-[52px] sm:text-[60px] font-black leading-none tabular-nums text-white">
                   {formatTime(remaining)}
                 </span>
               </div>
             </div>
             {!isDone && (
-              <p className="text-[12px] font-bold tracking-wider" style={{ color: 'var(--text-muted)' }}>
+              <p className="text-[11px] font-bold tracking-[0.15em] text-white/40">
                 {Math.round(progress * 100)}% COMPLETE
               </p>
             )}
 
-            {/* +20s and Skip */}
+            {/* +20s and Skip — glass buttons */}
             <div className="flex items-center gap-3 mt-2">
               <div className="relative">
                 <button
                   onClick={handleAddTime}
-                  className="h-12 px-6 rounded-full flex items-center justify-center gap-2 text-[14px] font-bold transition-all active:scale-95"
-                  style={{ backgroundColor: 'var(--bg-soft)', color: 'var(--text-primary)' }}
+                  className="h-12 px-6 rounded-full flex items-center justify-center gap-2 text-[14px] font-bold transition-all active:scale-95 bg-white/[0.08] backdrop-blur-xl border border-white/10 text-white/70"
                 >
                   <Plus className="w-4 h-4" />
                   +20s
                 </button>
                 {addedFlash && (
-                  <span className="absolute -top-7 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-full text-[11px] font-black whitespace-nowrap animate-slide-down" style={{ backgroundColor: `${color}20`, color }}>
+                  <span className="absolute -top-7 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-full text-[11px] font-black whitespace-nowrap animate-slide-down bg-white/[0.12] border border-white/15 text-white">
                     +20s
                   </span>
                 )}
               </div>
               <button
                 onClick={handleSkip}
-                className="h-12 px-6 rounded-full flex items-center justify-center gap-2 text-[14px] font-bold transition-all active:scale-95"
-                style={{ backgroundColor: color, color: '#fff' }}
+                className="h-12 px-6 rounded-full flex items-center justify-center gap-2 text-[14px] font-bold transition-all active:scale-95 bg-white/[0.12] backdrop-blur-xl border border-white/20 text-white shadow-[0_0_20px_rgba(255,255,255,0.06)]"
               >
                 Skip
               </button>
             </div>
           </div>
         ) : isRepsBased && !isDone ? (
-          /* Rep-based exercise — no timer, just finish button */
-          <div className="flex flex-col items-center gap-6 animate-slide-up w-full">
-            <h2
-              className="text-[22px] sm:text-[26px] font-black text-center leading-tight tracking-tight"
-              style={{ color: 'var(--text-primary)' }}
-            >
-              {exerciseName}
-            </h2>
-            {repsLabel && (
-              <p className="text-[14px] font-bold tracking-wide" style={{ color: 'var(--text-muted)' }}>
-                {repsLabel}
+          /* Rep-based exercise — glass card */
+          <div className="flex flex-col items-center gap-6 animate-slide-up w-full max-w-[340px]">
+            <div className="w-full bg-white/[0.06] backdrop-blur-2xl border border-white/10 rounded-[28px] px-8 py-10 flex flex-col items-center gap-5">
+              <h2 className="text-[22px] sm:text-[26px] font-black text-center leading-tight tracking-tight text-white">
+                {exerciseName}
+              </h2>
+              {repsLabel && (
+                <p className="text-[14px] font-bold tracking-wide text-white/60">
+                  {repsLabel}
+                </p>
+              )}
+              <div className="w-[120px] h-[120px] rounded-full flex items-center justify-center bg-white/[0.06] border border-white/10">
+                <Dumbbell className="w-14 h-14 text-white/40" />
+              </div>
+              <p className="text-[13px] font-medium text-center text-white/50 leading-relaxed">
+                Do the exercise at your own pace.<br/>Press Done when finished.
               </p>
-            )}
-            <div className="w-[160px] h-[160px] rounded-full flex items-center justify-center" style={{ backgroundColor: `${accentColor}15` }}>
-              <Dumbbell className="w-16 h-16" style={{ color: accentColor, opacity: 0.6 }} />
             </div>
-            <p className="text-[13px] font-medium text-center" style={{ color: 'var(--text-muted)' }}>
-              Do the exercise at your own pace.<br/>Press Done when finished.
-            </p>
-            <div className="flex items-center gap-3 w-full max-w-[280px] mt-2">
+            <div className="flex items-center gap-3 w-full">
               {onPrevious && (
                 <button
                   onClick={handlePrevious}
-                  className="w-12 h-12 rounded-xl flex items-center justify-center transition-all active:scale-90"
-                  style={{ backgroundColor: 'var(--bg-soft)' }}
+                  className="w-14 h-14 rounded-2xl flex items-center justify-center transition-all active:scale-90 bg-white/[0.08] backdrop-blur-xl border border-white/10"
                 >
-                  <SkipBack className="w-4 h-4" style={{ color: 'var(--text-primary)' }} />
+                  <SkipBack className="w-5 h-5 text-white/70" />
                 </button>
               )}
               <button
                 onClick={() => { setIsDone(true); onComplete(); }}
-                className="flex-1 h-14 rounded-2xl flex items-center justify-center gap-3 text-[16px] font-bold transition-all active:scale-[0.97] shadow-lg"
-                style={{ backgroundColor: accentColor, color: '#fff' }}
+                className="flex-1 h-14 rounded-2xl flex items-center justify-center gap-3 text-[15px] font-bold transition-all active:scale-[0.97] bg-white/[0.12] backdrop-blur-xl border border-white/20 text-white shadow-[0_0_30px_rgba(255,255,255,0.06)]"
               >
-                <Check className="w-6 h-6" strokeWidth={3} />
+                <Check className="w-5 h-5" strokeWidth={3} />
                 Done
               </button>
               {nextExercise && (
                 <button
                   onClick={handleSkip}
-                  className="w-12 h-12 rounded-xl flex items-center justify-center transition-all active:scale-90"
-                  style={{ backgroundColor: 'var(--bg-soft)' }}
+                  className="w-14 h-14 rounded-2xl flex items-center justify-center transition-all active:scale-90 bg-white/[0.08] backdrop-blur-xl border border-white/10"
                   title="Skip"
                 >
-                  <SkipForward className="w-4 h-4" style={{ color: 'var(--text-primary)' }} />
+                  <SkipForward className="w-5 h-5 text-white/70" />
                 </button>
               )}
             </div>
@@ -521,15 +512,12 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
         ) : (
           /* Active / Done state (exercise) */
           <div className="flex flex-col items-center gap-5 w-full">
-            <h2
-              className="text-[18px] sm:text-[20px] font-black text-center leading-tight tracking-tight"
-              style={{ color: 'var(--text-primary)' }}
-            >
+            <h2 className="text-[20px] sm:text-[24px] font-black text-center leading-tight tracking-tight text-white">
               {isDone ? 'Well Done!' : exerciseName}
             </h2>
 
             {isDone && allExercises.length > 0 ? (
-              /* Exercise list view */
+              /* Exercise list view — glass card */
               <div className="w-full max-w-[360px] flex-1 overflow-y-auto -mx-2 px-2 pb-4">
                 <div className="flex flex-col gap-1.5">
                   {allExercises.map((ex, i) => {
@@ -539,53 +527,23 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
                       <button
                         key={i}
                         onClick={() => onExerciseDetail?.(ex.name, ex.duration)}
-                        className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all text-left active:scale-[0.98]"
+                        className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl transition-all text-left active:scale-[0.98] bg-white/[0.04] border border-white/5 hover:bg-white/[0.08] hover:border-white/10"
                         style={{
-                          backgroundColor: current
-                            ? 'var(--text-primary)'
-                            : 'transparent',
+                          backgroundColor: current ? 'rgba(255,255,255,0.12)' : undefined,
+                          borderColor: current ? 'rgba(255,255,255,0.2)' : undefined,
                         }}
                       >
                         {/* Status indicator */}
-                        <div
-                          className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-[11px] font-bold"
-                          style={{
-                            backgroundColor: completed
-                              ? `${accentColor}20`
-                              : current
-                                ? accentColor
-                                : 'var(--bg-soft)',
-                            color: completed
-                              ? accentColor
-                              : current
-                                ? '#fff'
-                                : 'var(--text-muted)',
-                          }}
-                        >
-                          {completed ? '✓' : i + 1}
+                        <div className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 text-[11px] font-bold bg-white/[0.08] border border-white/10 text-white/50">
+                          {completed ? <Check className="w-3.5 h-3.5" /> : i + 1}
                         </div>
 
                         {/* Name + duration */}
                         <div className="flex-1 min-w-0">
-                          <p
-                            className="text-[13px] font-bold truncate leading-tight"
-                            style={{
-                              color: completed
-                                ? 'var(--text-muted)'
-                                : 'var(--text-primary)',
-                              textDecoration: completed ? 'line-through' : 'none',
-                            }}
-                          >
+                          <p className={`text-[13px] font-bold truncate leading-tight ${completed ? 'text-white/40 line-through' : 'text-white/90'}`}>
                             {ex.name}
                           </p>
-                          <p
-                            className="text-[11px] font-medium tabular-nums"
-                            style={{
-                              color: completed
-                                ? 'var(--text-muted)'
-                                : accentColor,
-                            }}
-                          >
+                          <p className="text-[11px] font-medium tabular-nums text-white/40">
                             {ex.duration}
                           </p>
                         </div>
@@ -595,59 +553,56 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
                 </div>
               </div>
             ) : (
-              /* Timer ring */
+              /* Timer ring — glass container */
               <>
-                <div className="relative w-[200px] h-[200px] sm:w-[240px] sm:h-[240px]">
-                  <svg className="w-full h-full -rotate-90" viewBox="0 0 180 180">
+                <div className="relative w-[220px] h-[220px] sm:w-[260px] sm:h-[260px]">
+                  <div className="absolute inset-0 rounded-full bg-white/[0.04] backdrop-blur-xl border border-white/10 shadow-[0_0_60px_rgba(255,255,255,0.03)]" />
+                  <svg className="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 180 180">
                     <circle
                       cx="90" cy="90" r={RADIUS}
                       fill="transparent"
-                      stroke={'var(--border-soft)'}
-                      strokeWidth="8"
+                      stroke="rgba(255,255,255,0.08)"
+                      strokeWidth="6"
                     />
                     <circle
                       cx="90" cy="90" r={RADIUS}
                       fill="transparent"
-                      stroke={isDone ? ('var(--success-deep)') : '#fff'}
-                      strokeWidth="8"
+                      stroke={isDone ? '#fff' : '#fff'}
+                      strokeWidth="6"
                       strokeDasharray={CIRCUMFERENCE}
                       strokeDashoffset={strokeDashoffset}
                       strokeLinecap="round"
                       className="transition-[stroke-dashoffset] duration-200 ease-linear"
-                      style={{ filter: isRest ? 'none' : `drop-shadow(0 0 8px ${accentColor}40)` }}
+                      style={{ filter: isDone ? 'drop-shadow(0 0 16px rgba(255,255,255,0.5))' : 'drop-shadow(0 0 12px rgba(255,255,255,0.4))' }}
                     />
                   </svg>
                   <div className="absolute inset-0 flex flex-col items-center justify-center">
                     {isDone ? (
-                      <span className="text-[32px] sm:text-[40px] font-black" style={{ color: 'var(--success-deep)' }}>
+                      <span className="text-[40px] sm:text-[48px] font-black text-white" style={{ textShadow: '0 0 30px rgba(255,255,255,0.3)' }}>
                         {isRest ? '✓' : 'Done!'}
                       </span>
                     ) : (
-                      <span className="text-[48px] sm:text-[56px] font-black leading-none tabular-nums" style={{ color: 'var(--text-primary)' }}>
+                      <span className="text-[52px] sm:text-[60px] font-black leading-none tabular-nums text-white">
                         {formatTime(remaining)}
                       </span>
                     )}
                   </div>
                 </div>
                 {!isDone && (
-                  <p className="text-[12px] font-bold tracking-wider" style={{ color: 'var(--text-muted)' }}>
+                  <p className="text-[11px] font-bold tracking-[0.15em] text-white/40">
                     {Math.round(progress * 100)}% COMPLETE
                   </p>
                 )}
               </>
             )}
 
-            {/* Controls */}
+            {/* Controls — glass buttons */}
             {isDone ? (
               <div className="flex flex-col items-center gap-3 w-full max-w-[320px] mt-2">
                 {nextExercise && (
                   <button
                     onClick={onNext}
-                    className="w-full h-14 rounded-2xl flex items-center justify-center gap-3 text-[15px] font-bold transition-all active:scale-[0.97] shadow-lg"
-                    style={{
-                      backgroundColor: accentColor,
-                      color: isRest ? accentColor : '#fff',
-                    }}
+                    className="w-full h-14 rounded-2xl flex items-center justify-center gap-3 text-[15px] font-bold transition-all active:scale-[0.97] bg-white/[0.12] backdrop-blur-xl border border-white/20 text-white shadow-[0_0_30px_rgba(255,255,255,0.06)]"
                   >
                     <SkipForward className="w-5 h-5" />
                     Continue
@@ -655,11 +610,7 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
                 )}
                 <button
                   onClick={handleReset}
-                  className="w-full h-12 rounded-2xl flex items-center justify-center gap-2 text-[14px] font-bold transition-all active:scale-[0.97]"
-                  style={{
-                    backgroundColor: 'var(--bg-soft)',
-                    color: 'var(--text-primary)',
-                  }}
+                  className="w-full h-12 rounded-2xl flex items-center justify-center gap-2 text-[14px] font-bold transition-all active:scale-[0.97] bg-white/[0.08] backdrop-blur-xl border border-white/10 text-white/70"
                 >
                   <RotateCcw className="w-4 h-4" />
                   Restart
@@ -670,20 +621,16 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
                 {/* Previous */}
                 <button
                   onClick={handlePrevious}
-                  className="w-12 h-12 rounded-xl flex items-center justify-center transition-all active:scale-90"
-                  style={{
-                    backgroundColor: 'var(--bg-soft)',
-                  }}
+                  className="w-14 h-14 rounded-2xl flex items-center justify-center transition-all active:scale-90 bg-white/[0.08] backdrop-blur-xl border border-white/10"
                   title="Previous"
                 >
-                  <SkipBack className="w-4 h-4" style={{ color: 'var(--text-primary)' }} />
+                  <SkipBack className="w-5 h-5 text-white/70" />
                 </button>
 
-                {/* Restart (Pause icon) */}
+                {/* Pause */}
                 <button
                   onClick={handleReset}
-                  className="flex-1 h-14 rounded-2xl flex items-center justify-center gap-2 text-[15px] font-bold transition-all active:scale-[0.97] shadow-lg"
-                  style={{ backgroundColor: '#fff', color: accentColor }}
+                  className="flex-1 h-14 rounded-2xl flex items-center justify-center gap-2 text-[15px] font-bold transition-all active:scale-[0.97] bg-white/[0.12] backdrop-blur-xl border border-white/20 text-white shadow-[0_0_30px_rgba(255,255,255,0.06)]"
                 >
                   <Pause className="w-5 h-5" fill="currentColor" />
                   Pause
@@ -693,13 +640,10 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
                 {nextExercise && (
                   <button
                     onClick={handleSkip}
-                    className="w-12 h-12 rounded-xl flex items-center justify-center transition-all active:scale-90"
-                    style={{
-                      backgroundColor: 'var(--bg-soft)',
-                    }}
+                    className="w-14 h-14 rounded-2xl flex items-center justify-center transition-all active:scale-90 bg-white/[0.08] backdrop-blur-xl border border-white/10"
                     title="Skip to next"
                   >
-                    <SkipForward className="w-4 h-4" style={{ color: 'var(--text-primary)' }} />
+                    <SkipForward className="w-5 h-5 text-white/70" />
                   </button>
                 )}
               </div>
@@ -708,54 +652,51 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
         )}
       </div>
 
-      {/* Bottom: next exercise preview */}
+      {/* Bottom: next exercise preview — glass card */}
       {nextExercise && !isDone && (
-        <div
-          className="px-6 pb-8 pt-4 safe-area-bottom"
-          style={{ borderTop: 'var(--border-soft)' }}
-        >
+        <div className="px-5 pb-8 pt-4 safe-area-bottom">
           {isRest ? (
-            /* Rest: show next exercise with illustration */
-            <div className="flex flex-col gap-3">
-              <div className="flex items-center justify-between">
+            /* Rest: show next exercise with glass card */
+            <div className="bg-white/[0.06] backdrop-blur-xl border border-white/10 rounded-2xl p-4">
+              <div className="flex items-center justify-between mb-3">
                 <div>
-                  <p className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: 'var(--text-muted)' }}>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.2em] mb-1 text-white/40">
                     Next {exerciseNumber && totalExercises ? `${exerciseNumber + 1}/${totalExercises}` : ''}
                   </p>
-                  <p className="text-[15px] font-black" style={{ color: 'var(--text-primary)' }}>
+                  <p className="text-[15px] font-black text-white">
                     {nextExercise.name}
                   </p>
                 </div>
-                <div className="px-3 py-1.5 rounded-full text-[12px] font-bold" style={{ backgroundColor: `${color}15`, color }}>
+                <div className="px-3 py-1.5 rounded-full text-[12px] font-bold bg-white/[0.08] border border-white/10 text-white/60">
                   {nextExercise.duration}
                 </div>
               </div>
-              {/* Silhouette preview */}
-              <div className="w-full h-[140px] rounded-2xl flex items-center justify-center" style={{ backgroundColor: 'var(--bg-soft)' }}>
-                <svg width="80" height="120" viewBox="0 0 120 160" fill="none">
-                  <circle cx="60" cy="22" r="14" fill={color} opacity="0.5" />
-                  <rect x="48" y="36" width="24" height="50" rx="8" fill={color} opacity="0.4" />
-                  <rect x="28" y="40" width="18" height="8" rx="4" fill={color} opacity="0.35" transform="rotate(-15 28 44)" />
-                  <rect x="74" y="40" width="18" height="8" rx="4" fill={color} opacity="0.35" transform="rotate(15 74 44)" />
-                  <rect x="44" y="86" width="10" height="44" rx="5" fill={color} opacity="0.35" transform="rotate(-5 44 86)" />
-                  <rect x="66" y="86" width="10" height="44" rx="5" fill={color} opacity="0.35" transform="rotate(5 66 86)" />
-                  <rect x="38" y="128" width="16" height="6" rx="3" fill={color} opacity="0.3" />
-                  <rect x="66" y="128" width="16" height="6" rx="3" fill={color} opacity="0.3" />
+              {/* Silhouette preview — glass */}
+              <div className="w-full h-[120px] rounded-xl flex items-center justify-center bg-white/[0.04] border border-white/5">
+                <svg width="60" height="90" viewBox="0 0 120 160" fill="none">
+                  <circle cx="60" cy="22" r="14" fill="white" opacity="0.25" />
+                  <rect x="48" y="36" width="24" height="50" rx="8" fill="white" opacity="0.2" />
+                  <rect x="28" y="40" width="18" height="8" rx="4" fill="white" opacity="0.15" transform="rotate(-15 28 44)" />
+                  <rect x="74" y="40" width="18" height="8" rx="4" fill="white" opacity="0.15" transform="rotate(15 74 44)" />
+                  <rect x="44" y="86" width="10" height="44" rx="5" fill="white" opacity="0.15" transform="rotate(-5 44 86)" />
+                  <rect x="66" y="86" width="10" height="44" rx="5" fill="white" opacity="0.15" transform="rotate(5 66 86)" />
+                  <rect x="38" y="128" width="16" height="6" rx="3" fill="white" opacity="0.12" />
+                  <rect x="66" y="128" width="16" height="6" rx="3" fill="white" opacity="0.12" />
                 </svg>
               </div>
             </div>
           ) : (
-            /* Exercise: simple next preview */
-            <div className="flex items-center justify-between">
+            /* Exercise: simple next preview — glass */
+            <div className="flex items-center justify-between bg-white/[0.06] backdrop-blur-xl border border-white/10 rounded-2xl px-4 py-3">
               <div>
-                <p className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: 'var(--text-muted)' }}>
+                <p className="text-[10px] font-bold uppercase tracking-[0.2em] mb-0.5 text-white/40">
                   Next
                 </p>
-                <p className="text-[14px] font-bold" style={{ color: 'var(--text-primary)' }}>
+                <p className="text-[14px] font-bold text-white">
                   {nextExercise.name}
                 </p>
               </div>
-              <div className="px-3 py-1.5 rounded-full text-[12px] font-bold" style={{ backgroundColor: `${color}15`, color }}>
+              <div className="px-3 py-1.5 rounded-full text-[12px] font-bold bg-white/[0.08] border border-white/10 text-white/60">
                 {nextExercise.duration}
               </div>
             </div>
