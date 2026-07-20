@@ -473,8 +473,16 @@ export const PlanView: React.FC<PlanViewProps> = ({ onStartWorkout }) => {
         const monthTotal = month.weeks.length * 5;
         const isExpanded = expandedMonth === mIdx;
 
+        // A month is locked if the previous month is not fully completed
+        const isLocked = mIdx > 0 && (() => {
+          const prevMonth = plan.months[mIdx - 1];
+          const prevTotal = prevMonth.weeks.length * 5;
+          const prevDone = prevMonth.weeks.reduce((ws, w, wIdx) => ws + w.days.filter((_, dIdx) => (plan.completedDays || []).includes(`${mIdx - 1}-${wIdx}-${dIdx}`)).length, 0);
+          return prevDone < prevTotal;
+        })();
+
         return (
-          <div key={mIdx} className="rounded-3xl bg-white/[0.05] backdrop-blur-xl border border-white/10 overflow-hidden">
+          <div key={mIdx} className={`rounded-3xl bg-white/[0.05] backdrop-blur-xl border border-white/10 overflow-hidden ${isLocked ? 'opacity-60' : ''}`}>
             {/* Month header */}
             <button
               onClick={() => setExpandedMonth(isExpanded ? null : mIdx)}
@@ -484,7 +492,12 @@ export const PlanView: React.FC<PlanViewProps> = ({ onStartWorkout }) => {
                 M{mIdx + 1}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-[14px] font-bold text-white">{month.title}</p>
+                <div className="flex items-center gap-2">
+                  <p className="text-[14px] font-bold text-white">{month.title}</p>
+                  {isLocked && (
+                    <span className="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider bg-white/10 text-white/50">Locked</span>
+                  )}
+                </div>
                 <p className="text-[11px] text-white/45">{LEVELS.find((l) => l.key === month.level)?.label || LEVELS[mIdx].label} · {monthCompleted}/{monthTotal} done</p>
               </div>
               <ChevronDown className={`w-5 h-5 text-white/40 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
@@ -514,7 +527,7 @@ export const PlanView: React.FC<PlanViewProps> = ({ onStartWorkout }) => {
                       {week.days.map((day, dIdx) => {
                         const dayKey = `${mIdx}-${wIdx}-${dIdx}`;
                         const percent = dayPercent(dayKey);
-                        const isCurrent = dayKey === currentKey;
+                        const isCurrent = dayKey === currentKey && !isLocked;
                         const dayNum = getGlobalDayIndex(plan, mIdx, wIdx, dIdx) + 1;
                         const stats = getDayStats(day, dayNum);
 
@@ -544,12 +557,20 @@ export const PlanView: React.FC<PlanViewProps> = ({ onStartWorkout }) => {
                             className="w-full flex items-center gap-3 px-5 py-3.5 rounded-[22px] bg-white/[0.06] backdrop-blur-xl border border-white/10 text-left transition-all hover:bg-white/[0.09] active:scale-[0.99]"
                           >
                             <div className="flex-1 min-w-0">
-                              <p className={`text-[18px] font-black tracking-tight ${percent >= 100 ? 'text-white/40' : 'text-white'}`}>
+                              <p className={`text-[18px] font-black tracking-tight ${percent >= 100 ? 'text-white/40' : isLocked ? 'text-white/30' : 'text-white'}`}>
                                 Day {dayNum}
                               </p>
                               <p className="text-[10px] text-white/40">{stats.count} exercises · {stats.mins} mins · {stats.kcal} kcal</p>
                             </div>
-                            <ProgressRing percent={percent} color="#ffffff" checkColor="#0b0d10" />
+                            {isLocked ? (
+                              <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
+                                <svg className="w-3.5 h-3.5 text-white/20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                </svg>
+                              </div>
+                            ) : (
+                              <ProgressRing percent={percent} color="#ffffff" checkColor="#0b0d10" />
+                            )}
                           </button>
                         );
                       })}
@@ -572,6 +593,14 @@ export const PlanView: React.FC<PlanViewProps> = ({ onStartWorkout }) => {
         const dayNum = getGlobalDayIndex(plan, m, w, d) + 1;
         const stats = getDayStats(day, dayNum);
         const { warmup, main } = getDayExercises(day, dayNum);
+
+        // Check if this month is locked
+        const dayMonthLocked = m > 0 && (() => {
+          const prevMonth = plan.months[m - 1];
+          const prevTotal = prevMonth.weeks.length * 5;
+          const prevDone = prevMonth.weeks.reduce((ws, w, wIdx) => ws + w.days.filter((_, dIdx) => (plan.completedDays || []).includes(`${m - 1}-${wIdx}-${dIdx}`)).length, 0);
+          return prevDone < prevTotal;
+        })();
 
         const exRow = (ex: Exercise, combinedIdx: number, displayNum: number, originalIdx: number) => {
           const det = EXERCISE_DETAILS[ex.name];
@@ -663,13 +692,19 @@ export const PlanView: React.FC<PlanViewProps> = ({ onStartWorkout }) => {
 
             {/* START */}
             <div className="absolute bottom-0 inset-x-0 px-5 pb-6 pt-12 bg-gradient-to-t from-[#0b0d10] via-[#0b0d10]/85 to-transparent">
-              <button
-                onClick={() => { setDetailDay(null); setDetailExIdx(null); handleStartDay(m, w, d, day); }}
-                className="w-full max-w-2xl mx-auto block py-4 rounded-full text-[15px] font-black tracking-[0.25em] shadow-2xl transition-all active:scale-[0.98]"
-                style={{ backgroundColor: '#ffffff', color: '#0b0d10' }}
-              >
-                START
-              </button>
+              {dayMonthLocked ? (
+                <div className="w-full max-w-2xl mx-auto block py-4 rounded-full text-[13px] font-bold text-center tracking-wider bg-white/10 text-white/40 border border-white/10">
+                  Complete Month {m} first to unlock
+                </div>
+              ) : (
+                <button
+                  onClick={() => { setDetailDay(null); setDetailExIdx(null); handleStartDay(m, w, d, day); }}
+                  className="w-full max-w-2xl mx-auto block py-4 rounded-full text-[15px] font-black tracking-[0.25em] shadow-2xl transition-all active:scale-[0.98]"
+                  style={{ backgroundColor: '#ffffff', color: '#0b0d10' }}
+                >
+                  START
+                </button>
+              )}
             </div>
           </div>
         );
