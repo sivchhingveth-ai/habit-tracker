@@ -288,15 +288,21 @@ export const PlanView: React.FC<PlanViewProps> = ({ onStartWorkout }) => {
           <>
             <div className="text-center">
               <h2 className="text-[22px] font-black text-[var(--text-primary)] tracking-tight">What's your goal?</h2>
-              <p className="text-[var(--text-muted)] text-[13px] font-medium mt-1">Pick your fitness goal</p>
+              <p className="text-[var(--text-muted)] text-[13px] font-semibold mt-1">Pick your fitness goal</p>
             </div>
-            <div className="space-y-2">
+            <div className="flex items-center justify-center gap-2 py-1">
+              <div className="h-1.5 w-8 rounded-full bg-[var(--brand)]" />
+              <div className="h-1.5 w-4 rounded-full bg-[var(--border-medium)]" />
+              <div className="h-1.5 w-4 rounded-full bg-[var(--border-soft)]" />
+              <div className="h-1.5 w-4 rounded-full bg-[var(--border-soft)]" />
+            </div>
+            <div className="space-y-2.5">
               {GOALS.map((goal) => (
                 <button key={goal.key} onClick={() => handleGoalSelect(goal.key)}
-                  className="w-full flex items-center gap-4 px-4 py-4 rounded-2xl border border-[var(--border-soft)] bg-[var(--bg-card)] hover:border-white/30 hover:bg-white/5 transition-all active:scale-[0.98] text-left">
+                  className="w-full flex items-center gap-4 px-4 py-4 rounded-2xl border border-[var(--border-soft)] bg-[var(--bg-card)] hover:border-[var(--border-medium)] hover:shadow-sm transition-all active:scale-[0.98] text-left">
                   <div className="flex-1 min-w-0">
-                    <p className="text-[14px] font-bold text-[var(--text-primary)]">{goal.label}</p>
-                    <p className="text-[11px] text-[var(--text-muted)] mt-0.5">{goal.desc}</p>
+                    <p className="text-[14px] font-extrabold text-[var(--text-primary)]">{goal.label}</p>
+                    <p className="text-[11px] text-[var(--text-muted)] mt-0.5 font-medium">{goal.desc}</p>
                   </div>
                   <ChevronRight className="w-4 h-4 text-[var(--text-muted)] shrink-0" />
                 </button>
@@ -308,32 +314,32 @@ export const PlanView: React.FC<PlanViewProps> = ({ onStartWorkout }) => {
         {step === 2 && (
           <>
             <div className="text-center">
-              <h2 className="text-[20px] font-black text-[var(--text-primary)] tracking-tight">How long?</h2>
-              <p className="text-[var(--text-muted)] text-[13px] font-medium mt-1">Choose your plan duration</p>
+              <h2 className="text-[22px] font-black text-[var(--text-primary)] tracking-tight">How long?</h2>
+              <p className="text-[var(--text-muted)] text-[13px] font-semibold mt-1">Choose your plan duration</p>
             </div>
             <div className="flex items-center justify-center gap-2 py-1">
               <div className="h-1.5 w-8 rounded-full bg-[var(--brand)]" />
-              <div className="h-1.5 w-4 rounded-full bg-white/20" />
-              <div className="h-1.5 w-4 rounded-full bg-white/20" />
-              <div className="h-1.5 w-4 rounded-full bg-white/20" />
+              <div className="h-1.5 w-8 rounded-full bg-[var(--brand)]" />
+              <div className="h-1.5 w-4 rounded-full bg-[var(--border-medium)]" />
+              <div className="h-1.5 w-4 rounded-full bg-[var(--border-soft)]" />
             </div>
             <div className="space-y-2.5">
               {DURATIONS.map((dur) => (
                 <button key={dur.key} onClick={() => handleDurationSelect(dur.key)}
-                  className="w-full rounded-2xl border border-[var(--border-soft)] bg-[var(--bg-card)] overflow-hidden transition-all active:scale-[0.98] text-left">
+                  className="w-full rounded-2xl border border-[var(--border-soft)] bg-[var(--bg-card)] overflow-hidden transition-all active:scale-[0.98] text-left hover:border-[var(--border-medium)] hover:shadow-sm">
                   <div className="flex items-center gap-4 px-4 py-4">
-                    <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-[var(--brand)]/10 border border-[var(--brand)]/20 shrink-0">
-                      <span className="text-[16px] font-black text-[var(--brand)]">{dur.key}</span>
+                    <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: `${dur.key === 1 ? '#6fa83b' : dur.key === 2 ? '#4e55e0' : '#d05a96'}12`, border: `1px solid ${dur.key === 1 ? '#6fa83b' : dur.key === 2 ? '#4e55e0' : '#d05a96'}25` }}>
+                      <span className="text-[16px] font-black" style={{ color: dur.key === 1 ? '#6fa83b' : dur.key === 2 ? '#4e55e0' : '#d05a96' }}>{dur.key}</span>
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-[14px] font-bold text-[var(--text-primary)]">{dur.label}</p>
-                      <p className="text-[11px] text-[var(--text-muted)] mt-0.5">{dur.desc}</p>
+                      <p className="text-[14px] font-extrabold text-[var(--text-primary)]">{dur.label}</p>
+                      <p className="text-[11px] text-[var(--text-muted)] mt-0.5 font-medium">{dur.desc}</p>
                     </div>
                     <ChevronRight className="w-4 h-4 text-[var(--text-muted)] shrink-0" />
                   </div>
                   <div className="px-4 pb-3 flex gap-1.5 flex-wrap">
                     {dur.goalTips.map((tip, i) => (
-                      <span key={i} className="text-[9px] font-bold tracking-wider uppercase px-2 py-0.5 rounded-full bg-[var(--bg-soft)] text-[var(--text-muted)]">{tip}</span>
+                      <span key={i} className="text-[9px] font-extrabold tracking-wider uppercase px-2 py-0.5 rounded-full bg-[var(--bg-soft)] text-[var(--text-muted)]">{tip}</span>
                     ))}
                   </div>
                 </button>
@@ -348,14 +354,14 @@ export const PlanView: React.FC<PlanViewProps> = ({ onStartWorkout }) => {
         {step === 3 && (
           <>
             <div>
-              <h2 className="text-[20px] font-black text-[var(--text-primary)] tracking-tight">Fine-tune your focus</h2>
-              <p className="text-[var(--text-muted)] text-[13px] font-medium mt-1">Adjust muscle groups if needed</p>
+              <h2 className="text-[22px] font-black text-[var(--text-primary)] tracking-tight">Fine-tune your focus</h2>
+              <p className="text-[var(--text-muted)] text-[13px] font-semibold mt-1">Adjust muscle groups if needed</p>
             </div>
             <div className="flex items-center justify-center gap-2 py-1">
               <div className="h-1.5 w-8 rounded-full bg-[var(--brand)]" />
               <div className="h-1.5 w-8 rounded-full bg-[var(--brand)]" />
-              <div className="h-1.5 w-4 rounded-full bg-white/20" />
-              <div className="h-1.5 w-4 rounded-full bg-white/20" />
+              <div className="h-1.5 w-8 rounded-full bg-[var(--brand)]" />
+              <div className="h-1.5 w-4 rounded-full bg-[var(--border-soft)]" />
             </div>
             <div className="rounded-2xl border border-[var(--border-soft)] bg-[var(--bg-card)] p-4">
               <div className="grid grid-cols-3 gap-2">
@@ -365,10 +371,10 @@ export const PlanView: React.FC<PlanViewProps> = ({ onStartWorkout }) => {
                   return (
                     <button key={cat} onClick={() => toggleCategory(cat)}
                       className={`relative flex flex-col items-center justify-center gap-1.5 py-4 px-2 rounded-xl transition-all active:scale-95 border ${
-                        active ? 'bg-[var(--brand)]/10 border-[var(--brand)]/40 shadow-lg' : 'bg-[var(--bg-card)] border-[var(--border-soft)] hover:bg-[var(--bg-soft)]'
+                        active ? 'bg-[var(--brand)]/10 border-[var(--brand)]/40 shadow-md' : 'bg-[var(--bg-card)] border-[var(--border-soft)] hover:border-[var(--border-medium)]'
                       }`}>
                       {active && <div className="absolute top-1.5 right-1.5 w-4 h-4 rounded-full bg-[var(--brand)] flex items-center justify-center"><Check className="w-2.5 h-2.5 text-white" strokeWidth={3} /></div>}
-                      <span className={`text-[12px] font-bold ${active ? 'text-[var(--brand)]' : 'text-[var(--text-secondary)]'}`}>{labels[cat]}</span>
+                      <span className={`text-[12px] font-extrabold ${active ? 'text-[var(--brand)]' : 'text-[var(--text-secondary)]'}`}>{labels[cat]}</span>
                     </button>
                   );
                 })}
@@ -379,7 +385,7 @@ export const PlanView: React.FC<PlanViewProps> = ({ onStartWorkout }) => {
                 <ChevronLeft className="w-4 h-4" /> Back
               </button>
               <button onClick={() => setStep(4)} disabled={selectedCategories.length === 0}
-                className="flex-[2] py-3.5 rounded-2xl flex items-center justify-center gap-2 text-[14px] font-bold active:scale-[0.98] shadow-lg border transition-all disabled:cursor-not-allowed"
+                className="flex-[2] py-3.5 rounded-2xl flex items-center justify-center gap-2 text-[14px] font-extrabold active:scale-[0.98] shadow-lg border transition-all disabled:cursor-not-allowed"
                 style={selectedCategories.length > 0
                   ? { backgroundColor: 'var(--text-primary)', color: 'var(--bg-card)', borderColor: 'transparent' }
                   : { backgroundColor: 'var(--bg-soft)', color: 'var(--text-muted)', borderColor: 'var(--border-soft)' }
@@ -393,14 +399,14 @@ export const PlanView: React.FC<PlanViewProps> = ({ onStartWorkout }) => {
         {step === 4 && (
           <>
             <div>
-              <h2 className="text-[20px] font-black text-[var(--text-primary)] tracking-tight">Your {selectedDuration}-Month Plan</h2>
-              <p className="text-[var(--text-muted)] text-[13px] font-medium mt-1">Progressive difficulty over {selectedDuration * 4} weeks</p>
+              <h2 className="text-[22px] font-black text-[var(--text-primary)] tracking-tight">Your {selectedDuration}-Month Plan</h2>
+              <p className="text-[var(--text-muted)] text-[13px] font-semibold mt-1">Progressive difficulty over {selectedDuration * 4} weeks</p>
             </div>
             <div className="flex items-center justify-center gap-2 py-1">
               <div className="h-1.5 w-8 rounded-full bg-[var(--brand)]" />
               <div className="h-1.5 w-8 rounded-full bg-[var(--brand)]" />
               <div className="h-1.5 w-8 rounded-full bg-[var(--brand)]" />
-              <div className="h-1.5 w-4 rounded-full bg-[var(--brand)]" />
+              <div className="h-1.5 w-8 rounded-full bg-[var(--brand)]" />
             </div>
             <div className="rounded-2xl border border-[var(--border-soft)] bg-[var(--bg-card)] p-4 space-y-3">
               {(() => {
@@ -411,10 +417,10 @@ export const PlanView: React.FC<PlanViewProps> = ({ onStartWorkout }) => {
                   const focus = goal?.monthFocus[i] || goal?.monthFocus[goal.monthFocus.length - 1] || 'Build Strength';
                   return (
                     <div key={i} className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl flex items-center justify-center text-[12px] font-black text-white shrink-0" style={{ backgroundColor: lvl.color }}>M{i + 1}</div>
+                      <div className="w-11 h-11 rounded-xl flex items-center justify-center text-[12px] font-black text-white shrink-0 shadow-sm" style={{ backgroundColor: lvl.color }}>M{i + 1}</div>
                       <div>
-                        <p className="text-[13px] font-bold text-[var(--text-primary)]">{focus}</p>
-                        <p className="text-[11px] text-[var(--text-muted)]">{lvl.label} · 4 weeks · 5 days/week</p>
+                        <p className="text-[13px] font-extrabold text-[var(--text-primary)]">{focus}</p>
+                        <p className="text-[11px] text-[var(--text-muted)] font-medium">{lvl.label} · 4 weeks · 5 days/week</p>
                       </div>
                     </div>
                   );
@@ -422,7 +428,7 @@ export const PlanView: React.FC<PlanViewProps> = ({ onStartWorkout }) => {
               })()}
             </div>
             <div className="rounded-2xl border border-[var(--border-soft)] bg-[var(--bg-card)] p-4">
-              <p className="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider mb-2">Target Areas</p>
+              <p className="text-[10px] font-extrabold text-[var(--text-muted)] uppercase tracking-[0.15em] mb-2.5">Target Areas</p>
               <div className="flex flex-wrap gap-1.5">
                 {selectedCategories.map((c) => (
                   <span key={c} className="px-2.5 py-1 rounded-lg bg-[var(--bg-soft)] text-[var(--text-secondary)] text-[11px] font-bold">{CATEGORY_LABELS[c]}</span>
@@ -430,14 +436,14 @@ export const PlanView: React.FC<PlanViewProps> = ({ onStartWorkout }) => {
               </div>
             </div>
             <div className="rounded-2xl border border-[var(--border-soft)] bg-[var(--bg-card)] p-4">
-              <p className="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider mb-2">What to Expect</p>
-              <div className="space-y-2">
+              <p className="text-[10px] font-extrabold text-[var(--text-muted)] uppercase tracking-[0.15em] mb-2.5">What to Expect</p>
+              <div className="space-y-2.5">
                 {DURATIONS.find((d) => d.key === selectedDuration)?.goalTips.map((tip, i) => (
-                  <div key={i} className="flex items-center gap-2">
+                  <div key={i} className="flex items-center gap-2.5">
                     <div className="w-5 h-5 rounded-full bg-[var(--brand)]/10 flex items-center justify-center shrink-0">
-                      <Check className="w-3 h-3 text-[var(--brand)]" />
+                      <Check className="w-3 h-3 text-[var(--brand)]" strokeWidth={3} />
                     </div>
-                    <span className="text-[12px] text-[var(--text-secondary)]">{tip}</span>
+                    <span className="text-[12px] font-semibold text-[var(--text-secondary)]">{tip}</span>
                   </div>
                 ))}
               </div>
@@ -446,7 +452,7 @@ export const PlanView: React.FC<PlanViewProps> = ({ onStartWorkout }) => {
               <button onClick={() => setStep(3)} className="flex-1 py-3.5 rounded-2xl flex items-center justify-center gap-2 text-[14px] font-bold bg-[var(--bg-soft)] border border-[var(--border-soft)] text-[var(--text-muted)] active:scale-[0.98]">
                 <ChevronLeft className="w-4 h-4" /> Back
               </button>
-              <button onClick={handleStartPlan} className="flex-[2] py-3.5 rounded-2xl flex items-center justify-center gap-2 text-[14px] font-black active:scale-[0.98] shadow-lg border transition-all hover:brightness-110"
+              <button onClick={handleStartPlan} className="flex-[2] py-3.5 rounded-2xl flex items-center justify-center gap-2 text-[14px] font-extrabold active:scale-[0.98] shadow-lg border transition-all hover:brightness-110"
                 style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-card)', borderColor: 'transparent' }}>
                 <Play className="w-5 h-5" fill="currentColor" /> Start Plan
               </button>
@@ -496,59 +502,59 @@ export const PlanView: React.FC<PlanViewProps> = ({ onStartWorkout }) => {
   const currentLevel = LEVELS.find((l) => l.key === currentMonth?.level);
 
   return (
-    <div className="space-y-4 animate-slide-up">
+    <div className="space-y-5 animate-slide-up">
       {/* Plan Badge */}
-      <div className="flex items-center gap-2.5 px-3.5 sm:px-4 py-3 rounded-2xl bg-white/[0.08] backdrop-blur-xl border border-white/10">
-        <div className="w-10 h-10 rounded-xl flex items-center justify-center text-[13px] font-black text-white shrink-0" style={{ backgroundColor: currentLevel?.color || LEVELS[0].color }}>
-          <span className="text-white/80">{currentMonthIdx + 1}</span>
+      <div className="flex items-center gap-3 px-4 py-3.5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-soft)] shadow-sm">
+        <div className="w-11 h-11 rounded-xl flex items-center justify-center text-[14px] font-black text-white shrink-0 shadow-md" style={{ backgroundColor: currentLevel?.color || LEVELS[0].color }}>
+          {currentMonthIdx + 1}
         </div>
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
-            <p className="text-[13px] sm:text-[14px] font-black text-white truncate">{goal?.label || 'My Plan'}</p>
-            <span className="px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-white/80 shrink-0" style={{ backgroundColor: `${currentLevel?.color || LEVELS[0].color}40` }}>
+          <div className="flex items-center gap-2 flex-wrap">
+            <p className="text-[14px] sm:text-[15px] font-extrabold text-[var(--text-primary)] truncate">{goal?.label || 'My Plan'}</p>
+            <span className="px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase tracking-widest shrink-0" style={{ backgroundColor: `${currentLevel?.color || LEVELS[0].color}18`, color: currentLevel?.color || LEVELS[0].color }}>
               {currentLevel?.label || 'Beginner'}
             </span>
           </div>
-          <p className="text-[10px] sm:text-[11px] text-white/45 mt-0.5">Month {currentMonthIdx + 1} of {plan.months.length} — {currentMonth?.title}</p>
+          <p className="text-[11px] text-[var(--text-muted)] mt-0.5 font-medium">Month {currentMonthIdx + 1} of {plan.months.length} — {currentMonth?.title}</p>
         </div>
         <div className="text-right shrink-0">
-          <p className="text-[16px] sm:text-[18px] font-black text-white leading-none">{Math.round((completedCount / totalDays) * 100)}%</p>
-          <p className="text-[9px] sm:text-[10px] text-white/40 mt-0.5">done</p>
+          <p className="text-[18px] sm:text-[20px] font-black text-[var(--text-primary)] leading-none">{Math.round((completedCount / totalDays) * 100)}%</p>
+          <p className="text-[9px] text-[var(--text-muted)] mt-0.5 font-semibold tracking-wider uppercase">done</p>
         </div>
       </div>
 
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>
-          <h2 className="text-[20px] sm:text-[22px] md:text-[26px] font-black text-white leading-tight tracking-tight">
+          <h2 className="text-[22px] sm:text-[24px] md:text-[28px] font-black text-[var(--text-primary)] leading-tight tracking-tight">
             {goal?.label || 'My Plan'}
           </h2>
-          <p className="text-white/50 text-[13px] font-medium mt-1">
+          <p className="text-[var(--text-muted)] text-[13px] font-semibold mt-1">
             {completedCount}/{totalDays} days completed
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <button
             onClick={openCustomize}
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-white/10 backdrop-blur-xl border border-white/10 text-[11px] font-bold text-white/85 hover:bg-white/[0.16] transition-all active:scale-95"
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-[var(--bg-card)] border border-[var(--border-soft)] text-[11px] font-bold text-[var(--text-secondary)] hover:bg-[var(--bg-soft)] transition-all active:scale-95"
           >
             <SlidersHorizontal className="w-3.5 h-3.5" /> Customize
           </button>
-          <button onClick={handleResetPlan} className="text-[11px] font-bold text-white/40 hover:text-red-400 transition-all">
+          <button onClick={handleResetPlan} className="text-[11px] font-bold text-[var(--text-muted)] hover:text-[var(--accent-deep)] transition-all">
             Reset
           </button>
         </div>
       </div>
 
       {/* Overall progress */}
-      <div className="rounded-3xl bg-white/[0.06] backdrop-blur-xl border border-white/10 p-4">
-        <div className="w-full h-2 rounded-full bg-white/10 overflow-hidden">
-          <div className="h-full rounded-full transition-all duration-500" style={{ width: `${(completedCount / totalDays) * 100}%`, backgroundColor: '#ffffff' }} />
+      <div className="rounded-2xl bg-[var(--bg-card)] border border-[var(--border-soft)] p-4 shadow-sm">
+        <div className="w-full h-2.5 rounded-full bg-[var(--bg-soft)] overflow-hidden">
+          <div className="h-full rounded-full transition-all duration-500" style={{ width: `${(completedCount / totalDays) * 100}%`, backgroundColor: currentLevel?.color || 'var(--brand)' }} />
         </div>
-        <p className="text-[11px] text-white/45 mt-1.5 text-center">{Math.round((completedCount / totalDays) * 100)}% complete</p>
+        <p className="text-[11px] text-[var(--text-muted)] mt-2 text-center font-semibold">{Math.round((completedCount / totalDays) * 100)}% complete</p>
       </div>
 
-      {/* All 3 months */}
+      {/* All months */}
       {plan.months.map((month, mIdx) => {
         const mColor = LEVELS[mIdx].color;
         const monthCompleted = month.weeks.reduce((ws, w, wIdx) => ws + w.days.filter((_, dIdx) => (plan.completedDays || []).includes(`${mIdx}-${wIdx}-${dIdx}`)).length, 0);
@@ -564,44 +570,49 @@ export const PlanView: React.FC<PlanViewProps> = ({ onStartWorkout }) => {
         })();
 
         return (
-          <div key={mIdx} className={`rounded-3xl bg-white/[0.05] backdrop-blur-xl border border-white/10 overflow-hidden ${isLocked ? 'opacity-60' : ''}`}>
+          <div key={mIdx} className={`rounded-2xl bg-[var(--bg-card)] border border-[var(--border-soft)] overflow-hidden shadow-sm ${isLocked ? 'opacity-50' : ''}`}>
             {/* Month header */}
             <button
               onClick={() => setExpandedMonth(isExpanded ? null : mIdx)}
-              className="w-full flex items-center gap-3 p-4 text-left transition-all hover:bg-white/[0.04]"
+              className="w-full flex items-center gap-3 p-4 text-left transition-all hover:bg-[var(--bg-tint)]"
             >
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center text-[13px] font-black text-white shrink-0" style={{ backgroundColor: mColor }}>
+              <div className="w-11 h-11 rounded-xl flex items-center justify-center text-[13px] font-black text-white shrink-0 shadow-sm" style={{ backgroundColor: mColor }}>
                 M{mIdx + 1}
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
-                  <p className="text-[14px] font-bold text-white">{month.title}</p>
+                  <p className="text-[14px] font-extrabold text-[var(--text-primary)]">{month.title}</p>
                   {isLocked && (
-                    <span className="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider bg-white/10 text-white/50">Locked</span>
+                    <span className="px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase tracking-widest bg-[var(--bg-soft)] text-[var(--text-muted)]">Locked</span>
                   )}
                 </div>
-                <p className="text-[11px] text-white/45">{LEVELS.find((l) => l.key === month.level)?.label || LEVELS[mIdx].label} · {monthCompleted}/{monthTotal} done</p>
+                <p className="text-[11px] text-[var(--text-muted)] font-medium mt-0.5">{LEVELS.find((l) => l.key === month.level)?.label || LEVELS[mIdx].label} · {monthCompleted}/{monthTotal} done</p>
               </div>
-              <ChevronDown className={`w-5 h-5 text-white/40 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ backgroundColor: `${mColor}15` }}>
+                  <span className="text-[11px] font-black" style={{ color: mColor }}>{Math.round((monthCompleted / monthTotal) * 100)}%</span>
+                </div>
+                <ChevronDown className={`w-5 h-5 text-[var(--text-muted)] transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`} />
+              </div>
             </button>
 
             {/* Weeks */}
             {isExpanded && (
-              <div className="border-t border-white/10 px-3 pb-3">
+              <div className="border-t border-[var(--border-soft)] px-3 pb-3">
                 {month.weeks.map((week, wIdx) => {
                   const weekDone = week.days.filter((_, dIdx) => dayPercent(`${mIdx}-${wIdx}-${dIdx}`) >= 100).length;
 
                   return (
-                    <div key={wIdx} className="space-y-2.5">
+                    <div key={wIdx} className="space-y-2">
                       {/* Week header */}
-                      <div className="flex items-center gap-2.5 px-1 pt-4 pb-0.5">
-                        <div className="w-7 h-7 rounded-lg bg-white/10 border border-white/10 flex items-center justify-center shrink-0">
-                          <Flag className="w-3.5 h-3.5 text-white/80" fill={weekDone === week.days.length ? '#ffffff' : 'none'} />
+                      <div className="flex items-center gap-2.5 px-1 pt-4 pb-1">
+                        <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0" style={{ backgroundColor: weekDone === week.days.length ? `${mColor}20` : 'var(--bg-soft)' }}>
+                          <Flag className="w-3.5 h-3.5" style={{ color: weekDone === week.days.length ? mColor : 'var(--text-muted)' }} fill={weekDone === week.days.length ? mColor : 'none'} />
                         </div>
-                        <span className="text-[11px] font-bold tracking-[0.15em] uppercase text-white/45 flex-1">Week {week.week}</span>
-                        <span className="text-[14px] font-bold">
-                          <span className="text-white">{weekDone}</span>
-                          <span className="text-white/40">/{week.days.length}</span>
+                        <span className="text-[10px] font-extrabold tracking-[0.15em] uppercase text-[var(--text-muted)] flex-1">Week {week.week}</span>
+                        <span className="text-[13px] font-black">
+                          <span className="text-[var(--text-primary)]">{weekDone}</span>
+                          <span className="text-[var(--text-muted)]">/{week.days.length}</span>
                         </span>
                       </div>
 
@@ -615,15 +626,16 @@ export const PlanView: React.FC<PlanViewProps> = ({ onStartWorkout }) => {
 
                         if (isCurrent) {
                           return (
-                            <div key={dIdx} className="rounded-[24px] overflow-hidden backdrop-blur-xl shadow-xl" style={{ backgroundColor: 'rgba(255,255,255,0.96)' }}>
-                              <div className="flex items-center gap-3 px-5 py-5">
+                            <div key={dIdx} className="rounded-2xl overflow-hidden shadow-lg border border-[var(--border-soft)]" style={{ backgroundColor: 'var(--bg-card)' }}>
+                              <div className="flex items-center gap-3 px-5 py-4">
                                 <button onClick={() => setDetailDay(dayKey)} className="flex-1 min-w-0 text-left">
-                                  <p className="text-[24px] font-black text-[#0b0d10] leading-tight tracking-tight">Day {dayNum}</p>
-                                  <p className="text-[12px] font-semibold text-[#0b0d10]/55 mt-0.5">{stats.mins} mins · {stats.kcal} kcal{percent > 0 ? ` · ${percent}%` : ''}</p>
+                                  <p className="text-[22px] font-black text-[var(--text-primary)] leading-tight tracking-tight">Day {dayNum}</p>
+                                  <p className="text-[12px] font-semibold text-[var(--text-muted)] mt-1">{stats.mins} mins · {stats.kcal} kcal{percent > 0 ? ` · ${percent}%` : ''}</p>
                                 </button>
                                 <button
                                   onClick={() => setDetailDay(dayKey)}
-                                  className="px-6 py-2.5 rounded-full bg-[#0b0d10] text-white text-[14px] font-black shadow-md active:scale-95 transition-all shrink-0"
+                                  className="px-6 py-2.5 rounded-full text-[13px] font-extrabold shadow-md active:scale-95 transition-all shrink-0"
+                                  style={{ backgroundColor: mColor, color: '#ffffff' }}
                                 >
                                   Start
                                 </button>
@@ -636,22 +648,22 @@ export const PlanView: React.FC<PlanViewProps> = ({ onStartWorkout }) => {
                           <button
                             key={dIdx}
                             onClick={() => setDetailDay(dayKey)}
-                            className="w-full flex items-center gap-3 px-5 py-3.5 rounded-[22px] bg-white/[0.06] backdrop-blur-xl border border-white/10 text-left transition-all hover:bg-white/[0.09] active:scale-[0.99]"
+                            className="w-full flex items-center gap-3 px-5 py-3.5 rounded-2xl bg-[var(--bg-soft)] border border-[var(--border-soft)] text-left transition-all hover:bg-[var(--bg-card)] hover:border-[var(--border-medium)] active:scale-[0.99]"
                           >
                             <div className="flex-1 min-w-0">
-                              <p className={`text-[18px] font-black tracking-tight ${percent >= 100 ? 'text-white/40' : isLocked ? 'text-white/30' : 'text-white'}`}>
+                              <p className={`text-[16px] font-extrabold tracking-tight ${percent >= 100 ? 'text-[var(--text-muted)]' : isLocked ? 'text-[var(--text-muted)] opacity-60' : 'text-[var(--text-primary)]'}`}>
                                 Day {dayNum}
                               </p>
-                              <p className="text-[10px] text-white/40">{stats.count} exercises · {stats.mins} mins · {stats.kcal} kcal</p>
+                              <p className="text-[11px] font-medium text-[var(--text-muted)]">{stats.count} exercises · {stats.mins} mins · {stats.kcal} kcal</p>
                             </div>
                             {isLocked ? (
-                              <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
-                                <svg className="w-3.5 h-3.5 text-white/20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                              <div className="w-8 h-8 rounded-full bg-[var(--bg-card)] border border-[var(--border-soft)] flex items-center justify-center shrink-0">
+                                <svg className="w-3.5 h-3.5 text-[var(--text-muted)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                                 </svg>
                               </div>
                             ) : (
-                              <ProgressRing percent={percent} color="#ffffff" checkColor="#0b0d10" />
+                              <ProgressRing percent={percent} color={mColor} checkColor="#ffffff" />
                             )}
                           </button>
                         );
@@ -686,39 +698,40 @@ export const PlanView: React.FC<PlanViewProps> = ({ onStartWorkout }) => {
 
         const exRow = (ex: Exercise, combinedIdx: number, displayNum: number, originalIdx: number) => {
           const det = EXERCISE_DETAILS[ex.name];
+          const mColor = LEVELS[m].color;
           return (
             <div key={combinedIdx} className="flex items-center gap-1.5 sm:gap-2">
               <button
                 onClick={() => setDetailExIdx(combinedIdx)}
-                className="flex-1 flex items-center gap-3 px-3.5 sm:px-4 py-3.5 rounded-2xl bg-white/[0.06] backdrop-blur-xl border border-white/10 text-left transition-all hover:bg-white/[0.1] active:scale-[0.99]"
+                className="flex-1 flex items-center gap-3 px-3.5 sm:px-4 py-3.5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-soft)] text-left transition-all hover:border-[var(--border-medium)] active:scale-[0.99]"
               >
-                <div className="w-8 h-8 rounded-full bg-white/10 border border-white/10 flex items-center justify-center text-[12px] font-black text-white shrink-0">{displayNum}</div>
+                <div className="w-8 h-8 rounded-full flex items-center justify-center text-[12px] font-black text-white shrink-0" style={{ backgroundColor: `${mColor}20`, color: mColor }}>{displayNum}</div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-[13px] font-bold text-white truncate">{ex.name}</p>
-                  {det && <p className="text-[11px] text-white/45 truncate mt-0.5">{det.musclesWorked}</p>}
+                  <p className="text-[13px] font-extrabold text-[var(--text-primary)] truncate">{ex.name}</p>
+                  {det && <p className="text-[11px] text-[var(--text-muted)] truncate mt-0.5 font-medium">{det.musclesWorked}</p>}
                 </div>
-                <span className="text-[11px] font-bold text-white/50 shrink-0">{ex.duration}</span>
-                <ChevronRight className="w-4 h-4 text-white/30 shrink-0" />
+                <span className="text-[11px] font-bold text-[var(--text-muted)] shrink-0">{ex.duration}</span>
+                <ChevronRight className="w-4 h-4 text-[var(--text-muted)] shrink-0" />
               </button>
               <button
                 onClick={() => setReplaceExercise({ dayKey: detailDay!, exerciseIdx: originalIdx, exercise: ex })}
-                className="w-11 h-11 rounded-xl bg-white/10 border border-white/10 flex items-center justify-center shrink-0 transition-all hover:bg-white/20 active:scale-90 touch-manipulation"
+                className="w-11 h-11 rounded-xl bg-[var(--bg-soft)] border border-[var(--border-soft)] flex items-center justify-center shrink-0 transition-all hover:bg-[var(--bg-card)] active:scale-90 touch-manipulation"
                 title="Replace exercise"
               >
-                <RefreshCw className="w-4 h-4 text-white/60" />
+                <RefreshCw className="w-4 h-4 text-[var(--text-muted)]" />
               </button>
             </div>
           );
         };
 
         return (
-          <div className="fixed inset-0 z-[150] flex flex-col animate-fade-in" style={{ background: 'linear-gradient(160deg, #0b0d10 0%, #14181f 55%, #0b0d10 100%)' }}>
+          <div className="fixed inset-0 z-[150] flex flex-col animate-fade-in" style={{ background: 'linear-gradient(160deg, var(--bg-page) 0%, var(--bg-card) 55%, var(--bg-page) 100%)' }}>
             <div className="flex-1 overflow-y-auto custom-scrollbar">
               <div className="max-w-2xl mx-auto px-5 pt-5 pb-40 safe-area-top">
                 {/* Back */}
                 <button
                   onClick={() => { setDetailDay(null); setDetailExIdx(null); }}
-                  className="w-11 h-11 rounded-full bg-white/10 border border-white/10 backdrop-blur-xl flex items-center justify-center text-white transition-all active:scale-90"
+                  className="w-11 h-11 rounded-full bg-[var(--bg-card)] border border-[var(--border-soft)] flex items-center justify-center text-[var(--text-primary)] transition-all active:scale-90"
                 >
                   <ChevronLeft className="w-5 h-5" />
                 </button>
@@ -726,38 +739,38 @@ export const PlanView: React.FC<PlanViewProps> = ({ onStartWorkout }) => {
                 {/* Title */}
                 <div className="mt-6 flex items-end justify-between gap-3">
                   <div className="min-w-0">
-                    <h2 className="text-[34px] font-black text-white tracking-tight leading-none">Day {dayNum}</h2>
-                    <p className="text-[13px] font-medium text-white/50 mt-2.5">{month.title} · Week {w + 1}</p>
+                    <h2 className="text-[34px] font-black text-[var(--text-primary)] tracking-tight leading-none">Day {dayNum}</h2>
+                    <p className="text-[13px] font-semibold text-[var(--text-muted)] mt-2.5">{month.title} · Week {w + 1}</p>
                   </div>
                   {percent >= 100 ? (
-                    <div className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-[12px] font-black shrink-0" style={{ backgroundColor: '#ffffff', color: '#0b0d10' }}>
+                    <div className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-[12px] font-extrabold shrink-0" style={{ backgroundColor: LEVELS[m].color, color: '#ffffff' }}>
                       <Check className="w-3.5 h-3.5" strokeWidth={3} /> 100%
                     </div>
                   ) : percent > 0 ? (
-                    <div className="px-3.5 py-1.5 rounded-full bg-white/10 border border-white/10 text-white text-[12px] font-black shrink-0">{percent}%</div>
+                    <div className="px-3.5 py-1.5 rounded-full bg-[var(--bg-card)] border border-[var(--border-soft)] text-[var(--text-primary)] text-[12px] font-extrabold shrink-0">{percent}%</div>
                   ) : null}
                 </div>
 
                 {/* Stats */}
-                <div className="mt-6 grid grid-cols-3 rounded-3xl bg-white/[0.06] backdrop-blur-xl border border-white/10 py-5 divide-x divide-white/10">
+                <div className="mt-6 grid grid-cols-3 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-soft)] py-5 divide-x divide-[var(--border-soft)]">
                   <div className="text-center px-2">
-                    <p className="text-[22px] font-black text-white leading-none">{stats.count}</p>
-                    <p className="text-[11px] font-medium text-white/45 mt-1.5">Exercises</p>
+                    <p className="text-[22px] font-black text-[var(--text-primary)] leading-none">{stats.count}</p>
+                    <p className="text-[11px] font-semibold text-[var(--text-muted)] mt-1.5">Exercises</p>
                   </div>
                   <div className="text-center px-2">
-                    <p className="text-[22px] font-black text-white leading-none">{stats.mins} <span className="text-[13px] font-bold">mins</span></p>
-                    <p className="text-[11px] font-medium text-white/45 mt-1.5">Duration</p>
+                    <p className="text-[22px] font-black text-[var(--text-primary)] leading-none">{stats.mins} <span className="text-[13px] font-bold">mins</span></p>
+                    <p className="text-[11px] font-semibold text-[var(--text-muted)] mt-1.5">Duration</p>
                   </div>
                   <div className="text-center px-2">
-                    <p className="text-[22px] font-black text-white leading-none">{stats.kcal} <span className="text-[13px] font-bold">kcal</span></p>
-                    <p className="text-[11px] font-medium text-white/45 mt-1.5">Calories</p>
+                    <p className="text-[22px] font-black text-[var(--text-primary)] leading-none">{stats.kcal} <span className="text-[13px] font-bold">kcal</span></p>
+                    <p className="text-[11px] font-semibold text-[var(--text-muted)] mt-1.5">Calories</p>
                   </div>
                 </div>
 
                 {/* Warm-up */}
                 {warmup.length > 0 && (
                   <>
-                    <p className="text-[18px] font-black text-white mt-8 mb-3">Warm-up</p>
+                    <p className="text-[16px] font-extrabold text-[var(--text-primary)] mt-8 mb-3 tracking-tight">Warm-up</p>
                     <div className="space-y-2">
                       {warmup.map((ex, i) => exRow(ex, i, i + 1, i))}
                     </div>
@@ -765,7 +778,7 @@ export const PlanView: React.FC<PlanViewProps> = ({ onStartWorkout }) => {
                 )}
 
                 {/* Exercises */}
-                <p className="text-[18px] font-black text-white mt-7 mb-3">Exercises</p>
+                <p className="text-[16px] font-extrabold text-[var(--text-primary)] mt-7 mb-3 tracking-tight">Exercises</p>
                 <div className="space-y-2">
                   {main.map((ex, i) => exRow(ex, warmup.length + i, i + 1, warmup.length + i))}
                 </div>
@@ -773,16 +786,16 @@ export const PlanView: React.FC<PlanViewProps> = ({ onStartWorkout }) => {
             </div>
 
             {/* START */}
-            <div className="absolute bottom-0 inset-x-0 px-5 pb-6 pt-12 bg-gradient-to-t from-[#0b0d10] via-[#0b0d10]/85 to-transparent">
+            <div className="absolute bottom-0 inset-x-0 px-5 pb-6 pt-12 bg-gradient-to-t from-[var(--bg-page)] via-[var(--bg-page)]/85 to-transparent">
               {dayMonthLocked ? (
-                <div className="w-full max-w-2xl mx-auto block py-4 rounded-full text-[13px] font-bold text-center tracking-wider bg-white/10 text-white/40 border border-white/10">
+                <div className="w-full max-w-2xl mx-auto block py-4 rounded-full text-[13px] font-bold text-center tracking-wider bg-[var(--bg-card)] text-[var(--text-muted)] border border-[var(--border-soft)]">
                   Complete Month {m} first to unlock
                 </div>
               ) : (
                 <button
                   onClick={() => { setDetailDay(null); setDetailExIdx(null); handleStartDay(m, w, d, day); }}
-                  className="w-full max-w-2xl mx-auto block py-4 rounded-full text-[15px] font-black tracking-[0.25em] shadow-2xl transition-all active:scale-[0.98]"
-                  style={{ backgroundColor: '#ffffff', color: '#0b0d10' }}
+                  className="w-full max-w-2xl mx-auto block py-4 rounded-full text-[14px] font-extrabold tracking-[0.2em] shadow-lg transition-all active:scale-[0.98]"
+                  style={{ backgroundColor: LEVELS[m].color, color: '#ffffff' }}
                 >
                   START
                 </button>
