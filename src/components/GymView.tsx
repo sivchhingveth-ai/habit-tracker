@@ -62,9 +62,8 @@ export const GymView: React.FC<GymViewProps> = ({
   const [calcWeight, setCalcWeight] = useState(70);
   const [calcActivity, setCalcActivity] = useState('sedentary');
   const [calcGoal, setCalcGoal] = useState('maintain');
-  const [calcResult, setCalcResult] = useState<{ bmr: number; tdee: number; proteinLow: number; proteinHigh: number; lose: number; maintain: number; gain: number } | null>(null);
 
-  const handleCalcCalculate = () => {
+  const calcResult = React.useMemo(() => {
     let bmr: number;
     if (calcGender === 'male') {
       bmr = 10 * calcWeight + 6.25 * calcHeight - 5 * calcAge + 5;
@@ -73,16 +72,27 @@ export const GymView: React.FC<GymViewProps> = ({
     }
     const multipliers: Record<string, number> = { sedentary: 1.2, light: 1.375, moderate: 1.55, active: 1.725, very_active: 1.9 };
     const tdee = Math.round(bmr * (multipliers[calcActivity] || 1.2));
-    setCalcResult({
+    const proteinPerKg = calcGoal === 'lose' ? 2.2 : calcGoal === 'gain' ? 2.0 : 1.8;
+    const proteinLow = Math.round(calcWeight * 1.6);
+    const proteinHigh = Math.round(calcWeight * proteinPerKg);
+    const proteinMid = Math.round((proteinLow + proteinHigh) / 2);
+    const fatGrams = Math.round((calcGoal === 'lose' ? tdee - 500 : calcGoal === 'gain' ? tdee + 300 : tdee) * 0.25 / 9);
+    const targetCal = calcGoal === 'lose' ? tdee - 500 : calcGoal === 'gain' ? tdee + 300 : tdee;
+    const carbGrams = Math.round((targetCal - proteinMid * 4 - fatGrams * 9) / 4);
+    return {
       bmr: Math.round(bmr),
       tdee,
-      proteinLow: Math.round(calcWeight * 1.6),
-      proteinHigh: Math.round(calcWeight * 2.2),
-      lose: Math.round(tdee - 500),
+      proteinLow,
+      proteinHigh,
+      proteinMid,
+      fatGrams,
+      carbGrams: Math.max(0, carbGrams),
+      lose: tdee - 500,
       maintain: tdee,
-      gain: Math.round(tdee + 300),
-    });
-  };
+      gain: tdee + 300,
+      targetCal,
+    };
+  }, [calcGender, calcAge, calcHeight, calcWeight, calcActivity, calcGoal]);
 
   const refreshCustom = useCallback(() => {
     setCustomWorkouts(getCustomWorkouts());

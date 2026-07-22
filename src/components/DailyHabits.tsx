@@ -408,7 +408,141 @@ const DailyHabitsInner: React.FC<DailyHabitsProps> = ({
       </div>
 
       <div className="sticky top-[44px] sm:top-[42px] md:top-[44px] z-10 sub-nav">
-        <div className="px-3 py-2 sm:px-5 sm:py-3 md:px-6 md:py-4 flex flex-wrap items-center justify-between gap-2 md:gap-4 border-b border-[var(--border-soft)]">
+        {/* Mobile: compact single-row layout */}
+        <div className="flex items-center justify-between px-3 py-2 sm:hidden border-b border-[var(--border-soft)]">
+          <div className="flex items-center gap-2">
+            <div className="relative">
+              <button
+                onClick={handleToggleCategoryDropdown}
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded-full border select-none touch-manipulation transition-all"
+                style={{
+                  touchAction: 'manipulation',
+                  backgroundColor: priorityCategory ? `${TIME_PHASES.find(p => p.key === priorityCategory)?.color}15` : 'var(--bg-card)',
+                  borderColor: priorityCategory ? `${TIME_PHASES.find(p => p.key === priorityCategory)?.color}40` : 'var(--border-soft)',
+                }}
+              >
+                <Filter className="w-3 h-3 text-[var(--text-muted)]" />
+                <span className="text-[10px] font-bold tracking-wider" style={{ color: priorityCategory ? TIME_PHASES.find(p => p.key === priorityCategory)?.color : 'var(--text-muted)' }}>
+                  {priorityCategory ? TIME_PHASES.find(p => p.key === priorityCategory)?.label : 'All'}
+                </span>
+              </button>
+
+              {showCategoryDropdown && (
+                <div
+                  className="absolute top-full left-0 mt-2 w-[260px] z-[100] max-w-[calc(100vw-2rem)] animate-dropdown-in"
+                  style={{ touchAction: 'manipulation' }}
+                >
+                  <div className="relative rounded-2xl bg-[var(--bg-card)] border border-[var(--border-soft)] shadow-xl overflow-hidden">
+                    <div className="px-4 py-2.5 border-b border-[var(--border-soft)]">
+                      <span className="text-[10px] font-medium text-[var(--text-muted)] tracking-widest uppercase">Filter by category</span>
+                    </div>
+                    <button
+                      onClick={() => handleSelectCategory(null)}
+                      className={`w-full px-4 py-2 text-left flex items-center justify-between group transition-all duration-200 touch-manipulation border-b border-[var(--border-soft)] ${
+                        !priorityCategory ? 'bg-[var(--bg-soft)]' : 'hover:bg-[var(--bg-tint)]'
+                      }`}
+                      style={{ touchAction: 'manipulation' }}
+                    >
+                      <span className={`text-[13px] font-medium tracking-wide ${!priorityCategory ? 'text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'}`}>
+                        All Categories
+                      </span>
+                      <span className={`text-[12px] font-semibold px-2 py-0.5 rounded-md ${!priorityCategory ? 'bg-[var(--bg-soft)] text-[var(--text-primary)]' : 'text-[var(--text-muted)]'}`}>
+                        {habits.length}
+                      </span>
+                    </button>
+                    <div>
+                      {visiblePhaseCounts.map((phase, index) => {
+                        const isLast = index === visiblePhaseCounts.length - 1;
+                        const isPriority = priorityCategory === phase.key;
+                        const displayColor = isHistory ? 'var(--text-muted)' : phase.color;
+                        return (
+                          <button
+                            key={phase.key}
+                            onClick={() => handleSelectCategory(phase.key)}
+                            className={`w-full px-4 py-2 text-left flex items-center justify-between group transition-all duration-200 touch-manipulation animate-dropdown-item ${
+                              !isLast ? 'border-b border-[var(--border-soft)]' : ''
+                            } ${
+                              isPriority ? 'bg-[var(--bg-soft)]' : 'hover:bg-[var(--bg-tint)]'
+                            }`}
+                            style={{
+                              touchAction: 'manipulation',
+                              animationDelay: `${index * 40}ms`,
+                            }}
+                          >
+                            <span
+                              className={`text-[13px] font-medium tracking-wide transition-colors duration-200 ${
+                                isPriority ? '' : 'text-[var(--text-secondary)] group-hover:text-[var(--text-primary)]'
+                              }`}
+                              style={isPriority ? { color: displayColor } : {}}
+                            >
+                              {phase.label}
+                            </span>
+                            <span
+                              className={`text-[12px] font-semibold px-2 py-0.5 rounded-md transition-all duration-200 ${
+                                isPriority ? '' : 'text-[var(--text-muted)]'
+                              }`}
+                              style={isPriority ? {
+                                backgroundColor: `${displayColor}20`,
+                                color: displayColor,
+                              } : {}}
+                            >
+                              {phase.count}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+            {!isHistory && (
+              <div className="flex items-center gap-1.5 pl-2 border-l border-[var(--border-soft)]">
+                <Clock className="w-3 h-3 text-[var(--text-muted)] shrink-0" />
+                <span className="text-[10px] whitespace-nowrap">
+                  <LiveClock />
+                </span>
+              </div>
+            )}
+            {isHistory && (
+              <div className="flex items-center gap-1 pl-2 border-l border-[var(--border-soft)]">
+                {startDate !== todayStr ? (
+                  <button onClick={handlePrevDate} className="w-8 h-8 rounded-full flex items-center justify-center text-[var(--text-muted)] active:scale-95 touch-manipulation shrink-0" style={{ touchAction: 'manipulation' }}>
+                    <ChevronLeft className="w-4 h-4" />
+                  </button>
+                ) : (<div className="w-8 h-8 shrink-0" />)}
+                <div className="flex items-center gap-1">
+                  <Clock className="w-3 h-3 text-[var(--text-muted)] shrink-0" />
+                  <span className="text-[10px] font-semibold text-[var(--text-secondary)] whitespace-nowrap">{formattedDate}</span>
+                </div>
+                {maxDate !== todayStr ? (
+                  <button onClick={handleNextDate} className="w-8 h-8 rounded-full flex items-center justify-center text-[var(--text-muted)] active:scale-95 touch-manipulation shrink-0" style={{ touchAction: 'manipulation' }}>
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                ) : (<div className="w-8 h-8 shrink-0" />)}
+              </div>
+            )}
+          </div>
+
+          <div className="flex items-center gap-1.5 shrink-0">
+            {isHistory && (
+              <button onClick={openHistoryGrid} className="w-8 h-8 rounded-lg bg-[var(--bg-soft)] border border-[var(--border-soft)] flex items-center justify-center text-[var(--text-primary)] active:scale-95 touch-manipulation shrink-0" title="Show History Grid" style={{ touchAction: 'manipulation' }}>
+                <LayoutGrid className="w-3.5 h-3.5" />
+              </button>
+            )}
+            <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-[var(--bg-card)] border border-[var(--border-soft)]">
+              <Target className="w-3 h-3" style={{ color: chipColor }} />
+              <span className="text-[11px] font-black text-[var(--text-primary)]">{completedCount}<span className="text-[var(--text-muted)] font-bold">/{totalCount}</span></span>
+            </div>
+            <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-[var(--bg-card)] border border-[var(--border-soft)]">
+              <Flame className={`w-3 h-3 ${isHistory ? 'text-[var(--text-muted)]' : 'text-[#ff6b00]'}`} />
+              <span className="text-[11px] font-black text-[var(--text-primary)]">{currentStreak}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Desktop: full layout */}
+        <div className="hidden sm:flex px-5 py-3 md:px-6 md:py-4 items-center justify-between gap-4 border-b border-[var(--border-soft)]">
           <div className="min-w-0 flex items-center gap-3">
             <div className="relative">
               <button
@@ -450,7 +584,6 @@ const DailyHabitsInner: React.FC<DailyHabitsProps> = ({
                     </button>
                     <div>
                       {visiblePhaseCounts.map((phase, index) => {
-                        const PhaseIcon = phase.icon;
                         const isLast = index === visiblePhaseCounts.length - 1;
                         const isPriority = priorityCategory === phase.key;
                         const displayColor = isHistory ? 'var(--text-muted)' : phase.color;
@@ -499,7 +632,7 @@ const DailyHabitsInner: React.FC<DailyHabitsProps> = ({
             {!isHistory && (
               <div className="flex items-center gap-2 ml-4 pl-4 border-l border-[var(--border-soft)]">
                 <Clock className="w-3 h-3 text-[var(--text-muted)] shrink-0" />
-                <span className="text-[10px] md:text-[11px] whitespace-nowrap">
+                <span className="text-[11px] whitespace-nowrap">
                   <LiveClock />
                 </span>
               </div>
@@ -520,7 +653,7 @@ const DailyHabitsInner: React.FC<DailyHabitsProps> = ({
                 )}
                 <div className="flex items-center gap-2 px-0.5">
                   <Clock className="w-3 h-3 text-[var(--text-muted)] shrink-0" />
-                  <span className="text-[10px] md:text-[11px] font-semibold text-[var(--text-secondary)] whitespace-nowrap">
+                  <span className="text-[11px] font-semibold text-[var(--text-secondary)] whitespace-nowrap">
                     {formattedDate}
                   </span>
                 </div>
@@ -539,7 +672,7 @@ const DailyHabitsInner: React.FC<DailyHabitsProps> = ({
             )}
           </div>
 
-          <div className="flex items-center gap-1.5 sm:gap-2 md:gap-4 shrink-0 flex-wrap">
+          <div className="flex items-center gap-2 md:gap-4 shrink-0">
             {isHistory && (
               <button
                 onClick={openHistoryGrid}
@@ -550,28 +683,28 @@ const DailyHabitsInner: React.FC<DailyHabitsProps> = ({
                 <LayoutGrid className="w-4 h-4" />
               </button>
             )}
-            <div className="bg-[var(--bg-card)] border border-[var(--border-soft)] rounded-xl p-1.5 md:p-2 flex items-center gap-2 shadow-xl flex-1 md:flex-none justify-center md:justify-start">
+            <div className="bg-[var(--bg-card)] border border-[var(--border-soft)] rounded-xl p-2 flex items-center gap-2 shadow-xl">
               <div
-                className="w-6 h-6 md:w-8 md:h-8 rounded-lg border flex items-center justify-center transition-colors"
+                className="w-8 h-8 rounded-lg border flex items-center justify-center transition-colors"
                 style={{ backgroundColor: `${chipColor}10`, borderColor: `${chipColor}20` }}
               >
-                <Target className="w-3.5 h-3.5 md:w-4 md:h-4 transition-colors" style={{ color: chipColor }} />
+                <Target className="w-4 h-4 transition-colors" style={{ color: chipColor }} />
               </div>
               <div className="text-right pr-1">
-                <p className="text-[13px] md:text-[15px] font-black text-[var(--text-primary)] leading-none">
-                  {completedCount}<span className="text-[var(--text-muted)] text-[9px] md:text-[11px]">/{totalCount}</span>
+                <p className="text-[15px] font-black text-[var(--text-primary)] leading-none">
+                  {completedCount}<span className="text-[var(--text-muted)] text-[11px]">/{totalCount}</span>
                 </p>
-                <p className="text-[7px] md:text-[8px] font-bold text-[var(--text-muted)] mt-0.5 tracking-wider">Done</p>
+                <p className="text-[8px] font-bold text-[var(--text-muted)] mt-0.5 tracking-wider">Done</p>
               </div>
             </div>
 
-            <div className="bg-[var(--bg-card)] border border-[var(--border-soft)] rounded-xl p-1.5 md:p-2 flex items-center gap-2 shadow-xl flex-1 md:flex-none justify-center md:justify-start">
-              <div className={`w-6 h-6 md:w-8 md:h-8 rounded-lg flex items-center justify-center ${isHistory ? 'bg-[var(--text-muted)]/10 border border-[var(--text-muted)]/20' : 'bg-[#ff6b00]/10 border border-[#ff6b00]/20'}`}>
-                <Flame className={`w-3.5 h-3.5 md:w-4 md:h-4 ${isHistory ? 'text-[var(--text-muted)]' : 'text-[#ff6b00]'}`} />
+            <div className="bg-[var(--bg-card)] border border-[var(--border-soft)] rounded-xl p-2 flex items-center gap-2 shadow-xl">
+              <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${isHistory ? 'bg-[var(--text-muted)]/10 border border-[var(--text-muted)]/20' : 'bg-[#ff6b00]/10 border border-[#ff6b00]/20'}`}>
+                <Flame className={`w-4 h-4 ${isHistory ? 'text-[var(--text-muted)]' : 'text-[#ff6b00]'}`} />
               </div>
               <div className="text-right pr-1">
-                <p className="text-[13px] md:text-[15px] font-black text-[var(--text-primary)] leading-none">{currentStreak}</p>
-                <p className="text-[7px] md:text-[8px] font-bold text-[var(--text-muted)] mt-0.5 tracking-wider">Streak</p>
+                <p className="text-[15px] font-black text-[var(--text-primary)] leading-none">{currentStreak}</p>
+                <p className="text-[8px] font-bold text-[var(--text-muted)] mt-0.5 tracking-wider">Streak</p>
               </div>
             </div>
           </div>

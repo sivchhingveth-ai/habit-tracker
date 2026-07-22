@@ -61,8 +61,9 @@ export const Tabs: React.FC<TabsProps> = ({
   useEffect(() => {
     if (!gymDropdownOpen || !onGymToggle) return;
     const handleClick = (e: MouseEvent) => {
-      const nav = (e.target as HTMLElement).closest('.top-nav');
-      if (!nav) onGymToggle();
+      const target = e.target as HTMLElement;
+      if (target.closest('.top-nav') || target.closest('[data-gym-dropdown]')) return;
+      onGymToggle();
     };
     document.addEventListener('mousedown', handleClick);
     return () => document.removeEventListener('mousedown', handleClick);
@@ -262,7 +263,7 @@ export const Tabs: React.FC<TabsProps> = ({
                     </button>
 
                     {isGym && gymDropdownOpen && gymDropdownItems && (
-                      <div className="border-t border-white/8">
+                      <div className="border-t border-white/8" data-gym-dropdown>
                         {gymDropdownItems.map((item) => (
                             <button
                               key={item.key}

@@ -55,7 +55,7 @@ export default function App() {
     },
     {
       key: 'plan',
-      label: '3-Month Plan',
+      label: 'Workout',
       icon: <Calendar className="w-3.5 h-3.5 text-white/50" />,
       active: activeGymSection === 'plan',
       onClick: () => { setActiveTab('Gym'); setActiveGymSection('plan'); setGymNavExpanded(false); },
