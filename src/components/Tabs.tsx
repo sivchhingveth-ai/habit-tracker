@@ -109,7 +109,13 @@ export const Tabs: React.FC<TabsProps> = ({
                       if (isActive) activeTabRef.current = el;
                       if (isGym) gymTabRef.current = el;
                     }}
-                    onClick={() => onTabChange(tab)}
+                    onClick={() => {
+                      if (isGym && onGymToggle) {
+                        onGymToggle();
+                      } else {
+                        onTabChange(tab);
+                      }
+                    }}
                     className={`nav-tab relative h-full flex items-center justify-center gap-1.5 shrink-0 touch-manipulation group px-3 md:px-4 ${
                       isActive ? 'is-active' : ''
                     }`}
@@ -185,10 +191,10 @@ export const Tabs: React.FC<TabsProps> = ({
         </div>
       </div>
 
-      {/* Gym dropdown below tab */}
+      {/* Gym dropdown below tab — desktop only */}
       {gymDropdownOpen && gymDropdownItems.length > 0 && gymTabRect && (
         <div
-          className="absolute animate-slide-up"
+          className="absolute animate-slide-up hidden sm:block"
           style={{ left: gymTabRect.left, top: '100%', width: gymTabRect.width + 40 }}
         >
           <div className="mt-0.5 rounded-xl bg-[#12161c]/95 backdrop-blur-2xl border border-white/10 shadow-2xl overflow-hidden">
@@ -237,9 +243,12 @@ export const Tabs: React.FC<TabsProps> = ({
                   <div key={tab}>
                     <button
                       onClick={() => {
-                        onTabChange(tab);
-                        if (isGym && onGymToggle) onGymToggle();
-                        setDrawerOpen(false);
+                        if (isGym && onGymToggle) {
+                          onGymToggle();
+                        } else {
+                          onTabChange(tab);
+                          setDrawerOpen(false);
+                        }
                       }}
                       className={`w-full flex items-center gap-3 px-4 py-3.5 transition-all active:bg-white/[0.06] ${isActive ? 'bg-white/[0.08]' : ''}`}
                     >
@@ -255,12 +264,13 @@ export const Tabs: React.FC<TabsProps> = ({
                     {isGym && gymDropdownOpen && (
                       <div className="border-t border-white/8">
                         {gymDropdownItems.map((item) => (
-                          <button
-                            key={item.key}
-                            onClick={() => {
-                              item.onClick();
-                              setDrawerOpen(false);
-                            }}
+                            <button
+                              key={item.key}
+                              onClick={() => {
+                                onTabChange('Gym');
+                                item.onClick();
+                                setDrawerOpen(false);
+                              }}
                             className={`w-full flex items-center gap-3 pl-12 pr-4 py-3 transition-all active:bg-white/[0.06] ${item.active ? 'bg-white/[0.06]' : ''}`}
                           >
                             <span className={`text-[13px] font-bold ${item.active ? 'text-white' : 'text-white/70'}`}>{item.label}</span>
