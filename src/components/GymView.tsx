@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { Sparkles, Play, Check, Plus, Pencil, Trash2, Dumbbell, Info, Trophy, Flame, Beef, Calculator, Calendar } from 'lucide-react';
+import { Sparkles, Play, Check, Plus, Pencil, Trash2, Dumbbell, Info, Trophy, Flame, Beef, Calendar } from 'lucide-react';
 import { Tabs } from './Tabs';
 import { ExerciseTimer } from './ExerciseTimer';
 import { ExerciseDetail } from './ExerciseDetail';
@@ -367,59 +367,98 @@ export const GymView: React.FC<GymViewProps> = ({
                   onChange={(e) => setCalcGoal(e.target.value)}
                   className="w-full py-3 px-4 rounded-xl bg-white/[0.04] border border-white/8 text-white text-[13px] font-bold appearance-none cursor-pointer"
                 >
-                  <option value="lose" className="bg-[#0b0c0f]">Lose Weight</option>
+                  <option value="lose" className="bg-[#0b0c0f]">Lose Weight (−500 cal)</option>
                   <option value="maintain" className="bg-[#0b0c0f]">Maintain Weight</option>
-                  <option value="gain" className="bg-[#0b0c0f]">Gain Weight</option>
+                  <option value="gain" className="bg-[#0b0c0f]">Gain Weight (+300 cal)</option>
                 </select>
               </div>
 
-              {/* Calculate button */}
-              <button
-                onClick={handleCalcCalculate}
-                className="w-full py-3.5 rounded-2xl flex items-center justify-center gap-2 text-[14px] font-bold bg-white/[0.10] backdrop-blur-xl border border-white/15 text-white transition-all active:scale-[0.98]"
-              >
-                <Calculator className="w-4 h-4" />
-                Calculate
-              </button>
-
-              {/* Results */}
-              {calcResult && (
-                <div className="space-y-3 pt-1 animate-slide-up">
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="bg-white/[0.04] border border-white/8 rounded-xl p-4 text-center">
-                      <p className="text-[10px] font-bold tracking-widest uppercase text-white/30 mb-1">BMR</p>
-                      <p className="text-[24px] font-black text-white tabular-nums">{calcResult.bmr}</p>
-                      <p className="text-[10px] text-white/25">cal/day</p>
-                    </div>
-                    <div className="bg-white/[0.04] border border-white/8 rounded-xl p-4 text-center">
-                      <p className="text-[10px] font-bold tracking-widest uppercase text-white/30 mb-1">TDEE</p>
-                      <p className="text-[24px] font-black text-white tabular-nums">{calcResult.tdee}</p>
-                      <p className="text-[10px] text-white/25">cal/day</p>
-                    </div>
+              {/* Results — auto-calculated */}
+              <div className="space-y-3 pt-1 animate-slide-up">
+                {/* BMR / TDEE */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="bg-white/[0.04] border border-white/8 rounded-xl p-4 text-center">
+                    <p className="text-[10px] font-bold tracking-widest uppercase text-white/30 mb-1">BMR</p>
+                    <p className="text-[24px] font-black text-white tabular-nums">{calcResult.bmr}</p>
+                    <p className="text-[10px] text-white/25">cal/day</p>
                   </div>
-
-                  {/* Protein */}
-                  <div className="bg-white/[0.04] border border-white/8 rounded-xl p-4">
-                    <div className="flex items-center gap-2 mb-1.5">
-                      <Beef className="w-4 h-4 text-white/40" />
-                      <p className="text-[11px] font-bold tracking-widest uppercase text-white/40">Daily Protein</p>
-                    </div>
-                    <p className="text-[24px] font-black text-white tabular-nums">{calcResult.proteinLow}–{calcResult.proteinHigh} <span className="text-[12px] text-white/35">g/day</span></p>
-                    <p className="text-[10px] text-white/25 mt-1">1.6–2.2g per kg body weight</p>
-                  </div>
-
-                  {/* Goal target */}
-                  <div className="bg-white/[0.04] border border-white/8 rounded-xl p-4 flex items-center justify-between">
-                    <span className="text-[13px] font-bold text-white/50">
-                      {calcGoal === 'lose' ? 'Target (lose)' : calcGoal === 'gain' ? 'Target (gain)' : 'Target (maintain)'}
-                    </span>
-                    <span className="text-[18px] font-black text-white tabular-nums">
-                      {calcGoal === 'lose' ? calcResult.lose : calcGoal === 'gain' ? calcResult.gain : calcResult.maintain}
-                      <span className="text-[10px] text-white/35 ml-1">cal</span>
-                    </span>
+                  <div className="bg-white/[0.04] border border-white/8 rounded-xl p-4 text-center">
+                    <p className="text-[10px] font-bold tracking-widest uppercase text-white/30 mb-1">TDEE</p>
+                    <p className="text-[24px] font-black text-white tabular-nums">{calcResult.tdee}</p>
+                    <p className="text-[10px] text-white/25">cal/day</p>
                   </div>
                 </div>
-              )}
+
+                {/* Target Calories */}
+                <div className="bg-white/[0.08] border border-white/15 rounded-xl p-4 flex items-center justify-between">
+                  <div>
+                    <p className="text-[11px] font-bold tracking-widest uppercase text-white/50">
+                      {calcGoal === 'lose' ? 'Cut Target' : calcGoal === 'gain' ? 'Bulk Target' : 'Maintain'}
+                    </p>
+                    <p className="text-[10px] text-white/30 mt-0.5">
+                      {calcGoal === 'lose' ? 'TDEE − 500 cal' : calcGoal === 'gain' ? 'TDEE + 300 cal' : 'No surplus or deficit'}
+                    </p>
+                  </div>
+                  <span className="text-[22px] font-black text-white tabular-nums">
+                    {calcResult.targetCal}
+                    <span className="text-[10px] text-white/35 ml-1">cal</span>
+                  </span>
+                </div>
+
+                {/* Macros — Protein */}
+                <div className="bg-white/[0.04] border border-white/8 rounded-xl p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <Beef className="w-4 h-4 text-[#d05a96]" />
+                      <p className="text-[11px] font-bold tracking-widest uppercase text-white/40">Protein</p>
+                    </div>
+                    <p className="text-[18px] font-black text-white tabular-nums">{calcResult.proteinMid}g</p>
+                  </div>
+                  <div className="w-full h-2 rounded-full bg-white/10 overflow-hidden">
+                    <div className="h-full rounded-full bg-[#d05a96] transition-all duration-500" style={{ width: `${Math.min(100, (calcResult.proteinMid / calcWeight) * 50)}%` }} />
+                  </div>
+                  <div className="flex justify-between mt-1.5">
+                    <p className="text-[10px] text-white/30">{calcResult.proteinLow}–{calcResult.proteinHigh}g/day</p>
+                    <p className="text-[10px] text-white/30">{(calcResult.proteinMid * 4).toLocaleString()} cal</p>
+                  </div>
+                </div>
+
+                {/* Macros — Carbs */}
+                <div className="bg-white/[0.04] border border-white/8 rounded-xl p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <Flame className="w-4 h-4 text-[#4e55e0]" />
+                      <p className="text-[11px] font-bold tracking-widest uppercase text-white/40">Carbs</p>
+                    </div>
+                    <p className="text-[18px] font-black text-white tabular-nums">{calcResult.carbGrams}g</p>
+                  </div>
+                  <div className="w-full h-2 rounded-full bg-white/10 overflow-hidden">
+                    <div className="h-full rounded-full bg-[#4e55e0] transition-all duration-500" style={{ width: `${Math.min(100, (calcResult.carbGrams / calcWeight) * 30)}%` }} />
+                  </div>
+                  <div className="flex justify-between mt-1.5">
+                    <p className="text-[10px] text-white/30">Remainder of calories</p>
+                    <p className="text-[10px] text-white/30">{(calcResult.carbGrams * 4).toLocaleString()} cal</p>
+                  </div>
+                </div>
+
+                {/* Macros — Fats */}
+                <div className="bg-white/[0.04] border border-white/8 rounded-xl p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <Beef className="w-4 h-4 text-[#b08d2e]" />
+                      <p className="text-[11px] font-bold tracking-widest uppercase text-white/40">Fats</p>
+                    </div>
+                    <p className="text-[18px] font-black text-white tabular-nums">{calcResult.fatGrams}g</p>
+                  </div>
+                  <div className="w-full h-2 rounded-full bg-white/10 overflow-hidden">
+                    <div className="h-full rounded-full bg-[#b08d2e] transition-all duration-500" style={{ width: `${Math.min(100, (calcResult.fatGrams / calcWeight) * 50)}%` }} />
+                  </div>
+                  <div className="flex justify-between mt-1.5">
+                    <p className="text-[10px] text-white/30">25% of total calories</p>
+                    <p className="text-[10px] text-white/30">{(calcResult.fatGrams * 9).toLocaleString()} cal</p>
+                  </div>
+                </div>
+              </div>
             </div>
           )}
 
