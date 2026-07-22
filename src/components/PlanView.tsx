@@ -23,6 +23,12 @@ const GOALS: { key: string; label: string; icon: React.ReactNode; categories: Ex
 const LEVEL_PROGRESSION: Level[] = ['beginner', 'intermediate', 'advanced'];
 const PLAN_STORAGE = 'habit-tracker-3month-plan';
 
+const DURATIONS: { key: number; label: string; shortLabel: string; desc: string; weeks: number; levelPath: Level[]; goalTips: string[] }[] = [
+  { key: 1, label: '1 Month', shortLabel: '1 Mo', desc: 'Quick kickstart — build the habit', weeks: 4, levelPath: ['beginner'], goalTips: ['Learn the basics', 'Build consistency', 'Form good habits'] },
+  { key: 2, label: '2 Months', shortLabel: '2 Mo', desc: 'Solid foundation — see real results', weeks: 8, levelPath: ['beginner', 'intermediate'], goalTips: ['Build base strength', 'Increase intensity', 'See visible change'] },
+  { key: 3, label: '3 Months', shortLabel: '3 Mo', desc: 'Full transformation — max results', weeks: 12, levelPath: ['beginner', 'intermediate', 'advanced'], goalTips: ['Master form', 'Progressive overload', 'Peak performance'] },
+];
+
 interface DayWorkout {
   dayName: string;
   exercises: Exercise[];
@@ -44,6 +50,7 @@ interface MonthPlan {
 interface ThreeMonthPlan {
   goalKey: string;
   categories: ExerciseCategory[];
+  durationMonths: number;
   startedAt: number;
   currentDay: number;
   completedDays: string[];
@@ -63,6 +70,7 @@ function loadPlan(): ThreeMonthPlan | null {
       return null;
     }
     if (!p.completedDays) p.completedDays = [];
+    if (!p.durationMonths) p.durationMonths = p.months.length || 3;
     return p;
   } catch {
     localStorage.removeItem(PLAN_STORAGE);
@@ -74,11 +82,12 @@ function savePlan(p: ThreeMonthPlan | null) {
   try { if (p) localStorage.setItem(PLAN_STORAGE, JSON.stringify(p)); else localStorage.removeItem(PLAN_STORAGE); } catch {}
 }
 
-function generateThreeMonthPlan(goalKey: string, categories: ExerciseCategory[]): ThreeMonthPlan {
+function generateThreeMonthPlan(goalKey: string, categories: ExerciseCategory[], durationMonths: number): ThreeMonthPlan {
   const goal = GOALS.find((g) => g.key === goalKey)!;
+  const dur = DURATIONS.find((d) => d.key === durationMonths) || DURATIONS[2];
   const months: MonthPlan[] = [];
-  for (let m = 0; m < 3; m++) {
-    const level = LEVEL_PROGRESSION[m];
+  for (let m = 0; m < dur.levelPath.length; m++) {
+    const level = dur.levelPath[m];
     const weeks: WeekPlan[] = [];
     for (let w = 0; w < 4; w++) {
       const days: DayWorkout[] = [];
@@ -87,9 +96,9 @@ function generateThreeMonthPlan(goalKey: string, categories: ExerciseCategory[])
       }
       weeks.push({ week: w + 1, label: `Week ${w + 1}`, days });
     }
-    months.push({ month: m + 1, level, title: goal.monthFocus[m], weeks });
+    months.push({ month: m + 1, level, title: goal.monthFocus[m] || goal.monthFocus[goal.monthFocus.length - 1], weeks });
   }
-  return { goalKey, categories, startedAt: Date.now(), currentDay: 0, completedDays: [], months };
+  return { goalKey, categories, durationMonths, startedAt: Date.now(), currentDay: 0, completedDays: [], months };
 }
 
 function getGlobalDayIndex(plan: ThreeMonthPlan, monthIdx: number, weekIdx: number, dayIdx: number): number {
@@ -143,8 +152,9 @@ interface PlanViewProps {
 export const PlanView: React.FC<PlanViewProps> = ({ onStartWorkout }) => {
   const [plan, setPlan] = useState<ThreeMonthPlan | null>(loadPlan);
   const [progress, setProgress] = useState<PlanProgress>(getPlanProgress);
-  const [step, setStep] = useState<1 | 2 | 3>(1);
+  const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
   const [selectedGoal, setSelectedGoal] = useState<string | null>(null);
+  const [selectedDuration, setSelectedDuration] = useState<number>(3);
   const [selectedCategories, setSelectedCategories] = useState<ExerciseCategory[]>([]);
   const [expandedMonth, setExpandedMonth] = useState<number | null>(plan ? 0 : null);
   const [detailDay, setDetailDay] = useState<string | null>(null);
@@ -188,13 +198,18 @@ export const PlanView: React.FC<PlanViewProps> = ({ onStartWorkout }) => {
     setStep(2);
   }, []);
 
+  const handleDurationSelect = useCallback((months: number) => {
+    setSelectedDuration(months);
+    setStep(3);
+  }, []);
+
   const handleStartPlan = useCallback(() => {
     if (selectedCategories.length === 0 || !selectedGoal) return;
-    const newPlan = generateThreeMonthPlan(selectedGoal, selectedCategories);
+    const newPlan = generateThreeMonthPlan(selectedGoal, selectedCategories, selectedDuration);
     setPlan(newPlan);
     savePlan(newPlan);
     setExpandedMonth(0);
-  }, [selectedCategories, selectedGoal]);
+  }, [selectedCategories, selectedGoal, selectedDuration]);
 
   const handleStartDay = useCallback((monthIdx: number, weekIdx: number, dayIdx: number, day: DayWorkout) => {
     if (!plan) return;
@@ -210,6 +225,7 @@ export const PlanView: React.FC<PlanViewProps> = ({ onStartWorkout }) => {
     setPlan(null);
     setStep(1);
     setSelectedGoal(null);
+    setSelectedDuration(3);
     setSelectedCategories([]);
     setExpandedMonth(null);
     setDetailDay(null);
@@ -272,7 +288,7 @@ export const PlanView: React.FC<PlanViewProps> = ({ onStartWorkout }) => {
           <>
             <div className="text-center">
               <h2 className="text-[22px] font-black text-[var(--text-primary)] tracking-tight">What's your goal?</h2>
-              <p className="text-[var(--text-muted)] text-[13px] font-medium mt-1">Pick your 3-month fitness goal</p>
+              <p className="text-[var(--text-muted)] text-[13px] font-medium mt-1">Pick your fitness goal</p>
             </div>
             <div className="space-y-2">
               {GOALS.map((goal) => (
@@ -291,13 +307,54 @@ export const PlanView: React.FC<PlanViewProps> = ({ onStartWorkout }) => {
 
         {step === 2 && (
           <>
+            <div className="text-center">
+              <h2 className="text-[20px] font-black text-[var(--text-primary)] tracking-tight">How long?</h2>
+              <p className="text-[var(--text-muted)] text-[13px] font-medium mt-1">Choose your plan duration</p>
+            </div>
+            <div className="flex items-center justify-center gap-2 py-1">
+              <div className="h-1.5 w-8 rounded-full bg-[var(--brand)]" />
+              <div className="h-1.5 w-4 rounded-full bg-white/20" />
+              <div className="h-1.5 w-4 rounded-full bg-white/20" />
+              <div className="h-1.5 w-4 rounded-full bg-white/20" />
+            </div>
+            <div className="space-y-2.5">
+              {DURATIONS.map((dur) => (
+                <button key={dur.key} onClick={() => handleDurationSelect(dur.key)}
+                  className="w-full rounded-2xl border border-[var(--border-soft)] bg-[var(--bg-card)] overflow-hidden transition-all active:scale-[0.98] text-left">
+                  <div className="flex items-center gap-4 px-4 py-4">
+                    <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-[var(--brand)]/10 border border-[var(--brand)]/20 shrink-0">
+                      <span className="text-[16px] font-black text-[var(--brand)]">{dur.key}</span>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[14px] font-bold text-[var(--text-primary)]">{dur.label}</p>
+                      <p className="text-[11px] text-[var(--text-muted)] mt-0.5">{dur.desc}</p>
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-[var(--text-muted)] shrink-0" />
+                  </div>
+                  <div className="px-4 pb-3 flex gap-1.5 flex-wrap">
+                    {dur.goalTips.map((tip, i) => (
+                      <span key={i} className="text-[9px] font-bold tracking-wider uppercase px-2 py-0.5 rounded-full bg-[var(--bg-soft)] text-[var(--text-muted)]">{tip}</span>
+                    ))}
+                  </div>
+                </button>
+              ))}
+            </div>
+            <button onClick={() => setStep(1)} className="w-full py-3.5 rounded-2xl flex items-center justify-center gap-2 text-[14px] font-bold bg-[var(--bg-soft)] border border-[var(--border-soft)] text-[var(--text-muted)] active:scale-[0.98]">
+              <ChevronLeft className="w-4 h-4" /> Back
+            </button>
+          </>
+        )}
+
+        {step === 3 && (
+          <>
             <div>
               <h2 className="text-[20px] font-black text-[var(--text-primary)] tracking-tight">Fine-tune your focus</h2>
               <p className="text-[var(--text-muted)] text-[13px] font-medium mt-1">Adjust muscle groups if needed</p>
             </div>
             <div className="flex items-center justify-center gap-2 py-1">
-              <div className="h-1.5 w-8 rounded-full bg-white" />
-              <div className="h-1.5 w-4 rounded-full bg-white/40" />
+              <div className="h-1.5 w-8 rounded-full bg-[var(--brand)]" />
+              <div className="h-1.5 w-8 rounded-full bg-[var(--brand)]" />
+              <div className="h-1.5 w-4 rounded-full bg-white/20" />
               <div className="h-1.5 w-4 rounded-full bg-white/20" />
             </div>
             <div className="rounded-2xl border border-[var(--border-soft)] bg-[var(--bg-card)] p-4">
@@ -307,25 +364,25 @@ export const PlanView: React.FC<PlanViewProps> = ({ onStartWorkout }) => {
                   const labels: Record<string, string> = { chest: 'Chest', back: 'Back', shoulders: 'Shoulders', arms: 'Arms', core: 'Abs', legs: 'Legs', glutes: 'Glutes', cardio: 'Cardio', 'full-body': 'Full Body' };
                   return (
                     <button key={cat} onClick={() => toggleCategory(cat)}
-                      className={`relative flex flex-col items-center justify-center gap-1.5 py-4 px-2 rounded-xl transition-all active:scale-95 backdrop-blur-xl border ${
-                        active ? 'bg-white/[0.14] border-white/60 shadow-lg' : 'bg-white/[0.06] border-white/10 hover:bg-white/[0.10]'
+                      className={`relative flex flex-col items-center justify-center gap-1.5 py-4 px-2 rounded-xl transition-all active:scale-95 border ${
+                        active ? 'bg-[var(--brand)]/10 border-[var(--brand)]/40 shadow-lg' : 'bg-[var(--bg-card)] border-[var(--border-soft)] hover:bg-[var(--bg-soft)]'
                       }`}>
-                      {active && <div className="absolute top-1.5 right-1.5 w-4 h-4 rounded-full bg-white flex items-center justify-center"><Check className="w-2.5 h-2.5 text-[#0b0d10]" strokeWidth={3} /></div>}
-                      <span className="text-[12px] font-bold text-white">{labels[cat]}</span>
+                      {active && <div className="absolute top-1.5 right-1.5 w-4 h-4 rounded-full bg-[var(--brand)] flex items-center justify-center"><Check className="w-2.5 h-2.5 text-white" strokeWidth={3} /></div>}
+                      <span className={`text-[12px] font-bold ${active ? 'text-[var(--brand)]' : 'text-[var(--text-secondary)]'}`}>{labels[cat]}</span>
                     </button>
                   );
                 })}
               </div>
             </div>
             <div className="flex gap-2">
-              <button onClick={() => setStep(1)} className="flex-1 py-3.5 rounded-2xl flex items-center justify-center gap-2 text-[14px] font-bold bg-white/10 border border-white/10 text-white/70 active:scale-[0.98] backdrop-blur-xl">
+              <button onClick={() => setStep(2)} className="flex-1 py-3.5 rounded-2xl flex items-center justify-center gap-2 text-[14px] font-bold bg-[var(--bg-soft)] border border-[var(--border-soft)] text-[var(--text-muted)] active:scale-[0.98]">
                 <ChevronLeft className="w-4 h-4" /> Back
               </button>
-              <button onClick={() => setStep(3)} disabled={selectedCategories.length === 0}
-                className="flex-[2] py-3.5 rounded-2xl flex items-center justify-center gap-2 text-[14px] font-bold active:scale-[0.98] shadow-lg backdrop-blur-xl border transition-all disabled:cursor-not-allowed"
+              <button onClick={() => setStep(4)} disabled={selectedCategories.length === 0}
+                className="flex-[2] py-3.5 rounded-2xl flex items-center justify-center gap-2 text-[14px] font-bold active:scale-[0.98] shadow-lg border transition-all disabled:cursor-not-allowed"
                 style={selectedCategories.length > 0
-                  ? { backgroundColor: 'rgba(255,255,255,0.9)', color: '#0b0d10', borderColor: 'rgba(255,255,255,0.2)' }
-                  : { backgroundColor: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.35)', borderColor: 'rgba(255,255,255,0.08)' }
+                  ? { backgroundColor: 'var(--text-primary)', color: 'var(--bg-card)', borderColor: 'transparent' }
+                  : { backgroundColor: 'var(--bg-soft)', color: 'var(--text-muted)', borderColor: 'var(--border-soft)' }
                 }>
                 Next <ChevronRight className="w-4 h-4" />
               </button>
@@ -333,42 +390,64 @@ export const PlanView: React.FC<PlanViewProps> = ({ onStartWorkout }) => {
           </>
         )}
 
-        {step === 3 && (
+        {step === 4 && (
           <>
             <div>
-              <h2 className="text-[20px] font-black text-[var(--text-primary)] tracking-tight">Your 3-Month Plan</h2>
-              <p className="text-[var(--text-muted)] text-[13px] font-medium mt-1">Progressive difficulty over 12 weeks</p>
+              <h2 className="text-[20px] font-black text-[var(--text-primary)] tracking-tight">Your {selectedDuration}-Month Plan</h2>
+              <p className="text-[var(--text-muted)] text-[13px] font-medium mt-1">Progressive difficulty over {selectedDuration * 4} weeks</p>
             </div>
             <div className="flex items-center justify-center gap-2 py-1">
-              <div className="h-1.5 w-8 rounded-full bg-white" />
-              <div className="h-1.5 w-8 rounded-full bg-white" />
-              <div className="h-1.5 w-8 rounded-full bg-white" />
+              <div className="h-1.5 w-8 rounded-full bg-[var(--brand)]" />
+              <div className="h-1.5 w-8 rounded-full bg-[var(--brand)]" />
+              <div className="h-1.5 w-8 rounded-full bg-[var(--brand)]" />
+              <div className="h-1.5 w-4 rounded-full bg-[var(--brand)]" />
             </div>
             <div className="rounded-2xl border border-[var(--border-soft)] bg-[var(--bg-card)] p-4 space-y-3">
-              {GOALS.find((g) => g.key === selectedGoal)?.monthFocus.map((focus, i) => (
-                <div key={i} className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl flex items-center justify-center text-[12px] font-black text-white shrink-0" style={{ backgroundColor: LEVELS[i].color }}>M{i + 1}</div>
-                  <div>
-                    <p className="text-[13px] font-bold text-[var(--text-primary)]">{focus}</p>
-                    <p className="text-[11px] text-[var(--text-muted)]">{LEVELS[i].label} · 4 weeks · 5 days/week</p>
-                  </div>
-                </div>
-              ))}
+              {(() => {
+                const dur = DURATIONS.find((d) => d.key === selectedDuration) || DURATIONS[2];
+                const goal = GOALS.find((g) => g.key === selectedGoal);
+                return dur.levelPath.map((level, i) => {
+                  const lvl = LEVELS.find((l) => l.key === level) || LEVELS[0];
+                  const focus = goal?.monthFocus[i] || goal?.monthFocus[goal.monthFocus.length - 1] || 'Build Strength';
+                  return (
+                    <div key={i} className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl flex items-center justify-center text-[12px] font-black text-white shrink-0" style={{ backgroundColor: lvl.color }}>M{i + 1}</div>
+                      <div>
+                        <p className="text-[13px] font-bold text-[var(--text-primary)]">{focus}</p>
+                        <p className="text-[11px] text-[var(--text-muted)]">{lvl.label} · 4 weeks · 5 days/week</p>
+                      </div>
+                    </div>
+                  );
+                });
+              })()}
             </div>
             <div className="rounded-2xl border border-[var(--border-soft)] bg-[var(--bg-card)] p-4">
               <p className="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider mb-2">Target Areas</p>
               <div className="flex flex-wrap gap-1.5">
                 {selectedCategories.map((c) => (
-                  <span key={c} className="px-2.5 py-1 rounded-lg bg-white/10 text-white text-[11px] font-bold">{CATEGORY_LABELS[c]}</span>
+                  <span key={c} className="px-2.5 py-1 rounded-lg bg-[var(--bg-soft)] text-[var(--text-secondary)] text-[11px] font-bold">{CATEGORY_LABELS[c]}</span>
+                ))}
+              </div>
+            </div>
+            <div className="rounded-2xl border border-[var(--border-soft)] bg-[var(--bg-card)] p-4">
+              <p className="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider mb-2">What to Expect</p>
+              <div className="space-y-2">
+                {DURATIONS.find((d) => d.key === selectedDuration)?.goalTips.map((tip, i) => (
+                  <div key={i} className="flex items-center gap-2">
+                    <div className="w-5 h-5 rounded-full bg-[var(--brand)]/10 flex items-center justify-center shrink-0">
+                      <Check className="w-3 h-3 text-[var(--brand)]" />
+                    </div>
+                    <span className="text-[12px] text-[var(--text-secondary)]">{tip}</span>
+                  </div>
                 ))}
               </div>
             </div>
             <div className="flex gap-2">
-              <button onClick={() => setStep(2)} className="flex-1 py-3.5 rounded-2xl flex items-center justify-center gap-2 text-[14px] font-bold bg-white/10 border border-white/10 text-white/70 active:scale-[0.98] backdrop-blur-xl">
+              <button onClick={() => setStep(3)} className="flex-1 py-3.5 rounded-2xl flex items-center justify-center gap-2 text-[14px] font-bold bg-[var(--bg-soft)] border border-[var(--border-soft)] text-[var(--text-muted)] active:scale-[0.98]">
                 <ChevronLeft className="w-4 h-4" /> Back
               </button>
-              <button onClick={handleStartPlan} className="flex-[2] py-3.5 rounded-2xl flex items-center justify-center gap-2 text-[14px] font-bold active:scale-[0.98] shadow-lg backdrop-blur-xl border transition-all hover:brightness-110"
-                style={{ backgroundColor: 'rgba(255,255,255,0.9)', color: '#0b0d10', borderColor: 'rgba(255,255,255,0.2)' }}>
+              <button onClick={handleStartPlan} className="flex-[2] py-3.5 rounded-2xl flex items-center justify-center gap-2 text-[14px] font-black active:scale-[0.98] shadow-lg border transition-all hover:brightness-110"
+                style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-card)', borderColor: 'transparent' }}>
                 <Play className="w-5 h-5" fill="currentColor" /> Start Plan
               </button>
             </div>
@@ -430,7 +509,7 @@ export const PlanView: React.FC<PlanViewProps> = ({ onStartWorkout }) => {
               {currentLevel?.label || 'Beginner'}
             </span>
           </div>
-          <p className="text-[10px] sm:text-[11px] text-white/45 mt-0.5">Month {currentMonthIdx + 1} of 3 — {currentMonth?.title}</p>
+          <p className="text-[10px] sm:text-[11px] text-white/45 mt-0.5">Month {currentMonthIdx + 1} of {plan.months.length} — {currentMonth?.title}</p>
         </div>
         <div className="text-right shrink-0">
           <p className="text-[16px] sm:text-[18px] font-black text-white leading-none">{Math.round((completedCount / totalDays) * 100)}%</p>
