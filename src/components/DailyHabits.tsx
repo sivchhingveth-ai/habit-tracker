@@ -251,7 +251,7 @@ const DailyHabitsInner: React.FC<DailyHabitsProps> = ({
 
   const [expandedHistoryHabit, setExpandedHistoryHabit] = useState<any>(null);
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
-  const [priorityCategory, setPriorityCategory] = useState<string | null>(() => getCurrentPhaseKey());
+  const [priorityCategory, setPriorityCategory] = useState<string | null>(null);
   const scrollPositionRef = useRef(0);
 
   // Animation state — only on tab switch, not date changes
@@ -416,7 +416,6 @@ const DailyHabitsInner: React.FC<DailyHabitsProps> = ({
                   borderColor: priorityCategory ? `${TIME_PHASES.find(p => p.key === priorityCategory)?.color}40` : 'var(--border-soft)',
                 }}
               >
-                <Filter className="w-3.5 h-3.5" style={{ color: priorityCategory ? TIME_PHASES.find(p => p.key === priorityCategory)?.color : 'var(--text-muted)' }} />
                 <span className="text-[11px] font-bold tracking-wider" style={{ color: priorityCategory ? TIME_PHASES.find(p => p.key === priorityCategory)?.color : 'var(--text-muted)' }}>
                   {priorityCategory ? TIME_PHASES.find(p => p.key === priorityCategory)?.label : 'All'}
                 </span>
@@ -438,13 +437,8 @@ const DailyHabitsInner: React.FC<DailyHabitsProps> = ({
                       }`}
                       style={{ touchAction: 'manipulation' }}
                     >
-                      <span className="flex items-center gap-3">
-                        <div className={`w-6 h-6 rounded-md flex items-center justify-center ${!priorityCategory ? 'bg-[var(--bg-soft)]' : 'bg-[var(--bg-tint)]'}`}>
-                          <Filter className="w-3 h-3 text-[var(--text-secondary)]" />
-                        </div>
-                        <span className={`text-[13px] font-medium tracking-wide ${!priorityCategory ? 'text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'}`}>
-                          All Categories
-                        </span>
+                      <span className={`text-[13px] font-medium tracking-wide ${!priorityCategory ? 'text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'}`}>
+                        All Categories
                       </span>
                       <span className={`text-[12px] font-semibold px-2 py-0.5 rounded-md ${!priorityCategory ? 'bg-[var(--bg-soft)] text-[var(--text-primary)]' : 'text-[var(--text-muted)]'}`}>
                         {habits.length}
@@ -470,28 +464,13 @@ const DailyHabitsInner: React.FC<DailyHabitsProps> = ({
                               animationDelay: `${index * 40}ms`,
                             }}
                           >
-                            <span className="flex items-center gap-3">
-                              <div
-                                className={`w-6 h-6 rounded-md flex items-center justify-center transition-all duration-200 ${
-                                  isPriority ? '' : 'bg-[var(--bg-soft)] group-hover:bg-[var(--bg-tint)]'
-                                }`}
-                                style={isPriority ? { backgroundColor: `${displayColor}20` } : {}}
-                              >
-                                <PhaseIcon
-                                  className={`w-3 h-3 transition-all duration-200 ${
-                                    isPriority ? '' : 'text-[var(--text-secondary)] group-hover:text-[var(--text-primary)]'
-                                  }`}
-                                  style={isPriority ? { color: displayColor } : {}}
-                                />
-                              </div>
-                              <span
-                                className={`text-[13px] font-medium tracking-wide transition-colors duration-200 ${
-                                  isPriority ? '' : 'text-[var(--text-secondary)] group-hover:text-[var(--text-primary)]'
-                                }`}
-                                style={isPriority ? { color: displayColor } : {}}
-                              >
-                                {phase.label}
-                              </span>
+                            <span
+                              className={`text-[13px] font-medium tracking-wide transition-colors duration-200 ${
+                                isPriority ? '' : 'text-[var(--text-secondary)] group-hover:text-[var(--text-primary)]'
+                              }`}
+                              style={isPriority ? { color: displayColor } : {}}
+                            >
+                              {phase.label}
                             </span>
                             <span
                               className={`text-[12px] font-semibold px-2 py-0.5 rounded-md transition-all duration-200 ${

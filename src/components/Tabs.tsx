@@ -36,7 +36,6 @@ export const Tabs: React.FC<TabsProps> = ({
 }) => {
   const activeTabRef = useRef<HTMLButtonElement>(null);
   const gymTabRef = useRef<HTMLButtonElement>(null);
-  const gymMobileRef = useRef<HTMLButtonElement>(null);
   const [gymTabRect, setGymTabRect] = useState<{ left: number; width: number } | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const nickname = useAppStore((s) => s.nickname);
@@ -50,17 +49,14 @@ export const Tabs: React.FC<TabsProps> = ({
   }, [activeTab]);
 
   useEffect(() => {
-    const el = gymTabRef.current?.offsetWidth
-      ? gymTabRef.current
-      : gymMobileRef.current;
-    if (el) {
-      const rect = el.getBoundingClientRect();
-      const navRect = el.closest('.top-nav')?.getBoundingClientRect();
+    if (gymTabRef.current) {
+      const rect = gymTabRef.current.getBoundingClientRect();
+      const navRect = gymTabRef.current.closest('.top-nav')?.getBoundingClientRect();
       if (navRect) {
         setGymTabRect({ left: rect.left - navRect.left, width: rect.width });
       }
     }
-  }, [gymDropdownOpen, activeTab]);
+  }, [gymDropdownOpen]);
 
   useEffect(() => {
     if (!gymDropdownOpen || !onGymToggle) return;
@@ -95,18 +91,6 @@ export const Tabs: React.FC<TabsProps> = ({
             <Menu className="w-5 h-5 text-white" />
           </button>
           <span className="text-[13px] font-black text-white flex-1">{activeTab}</span>
-          {activeTab === 'Gym' && onGymToggle && (
-            <button
-              ref={gymMobileRef}
-              onClick={() => onGymToggle()}
-              className="w-8 h-8 flex items-center justify-center rounded-lg active:bg-white/[0.08] transition-all"
-            >
-              {gymDropdownOpen
-                ? <ChevronUp className="w-4 h-4 text-white" />
-                : <ChevronDown className="w-4 h-4 text-white" />
-              }
-            </button>
-          )}
         </div>
 
         {/* Desktop: Tab group */}
