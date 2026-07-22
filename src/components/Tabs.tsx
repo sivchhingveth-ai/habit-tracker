@@ -261,20 +261,22 @@ export const Tabs: React.FC<TabsProps> = ({
                       )}
                     </button>
 
-                    {isGym && gymDropdownOpen && (
+                    {isGym && gymDropdownOpen && gymDropdownItems && (
                       <div className="border-t border-white/8">
                         {gymDropdownItems.map((item) => (
                             <button
                               key={item.key}
-                              onClick={() => {
+                              onClick={(e) => {
+                                e.stopPropagation();
                                 item.onClick();
                                 setDrawerOpen(false);
                               }}
-                            className={`w-full flex items-center gap-3 pl-12 pr-4 py-3 transition-all active:bg-white/[0.06] ${item.active ? 'bg-white/[0.06]' : ''}`}
-                          >
-                            <span className={`text-[13px] font-bold ${item.active ? 'text-white' : 'text-white/70'}`}>{item.label}</span>
-                            {item.active && <Check className="w-4 h-4 text-white/50 ml-auto" />}
-                          </button>
+                              style={{ touchAction: 'manipulation' }}
+                              className={`w-full flex items-center gap-3 pl-12 pr-4 py-3 transition-all active:bg-white/[0.06] ${item.active ? 'bg-white/[0.06]' : ''}`}
+                            >
+                              <span className={`text-[13px] font-bold ${item.active ? 'text-white' : 'text-white/70'}`}>{item.label}</span>
+                              {item.active && <Check className="w-4 h-4 text-white/50 ml-auto" />}
+                            </button>
                         ))}
                       </div>
                     )}
