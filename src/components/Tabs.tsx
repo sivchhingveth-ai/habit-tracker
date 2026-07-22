@@ -83,7 +83,7 @@ export const Tabs: React.FC<TabsProps> = ({
   return (
     <div className="top-nav sticky top-0 z-40">
       <div className="flex h-[44px] sm:h-[42px] md:h-[44px] items-center">
-        {/* Mobile: Hamburger + Active tab name */}
+        {/* Mobile: Hamburger + Active tab name + Profile */}
         <div className="flex sm:hidden items-center px-3 h-full gap-3 w-full">
           <button
             onClick={() => setDrawerOpen(true)}
@@ -92,6 +92,22 @@ export const Tabs: React.FC<TabsProps> = ({
             <Menu className="w-5 h-5 text-white" />
           </button>
           <span className="text-[13px] font-black text-white flex-1">{activeTab}</span>
+          <button
+            onClick={openProfileModal}
+            className="w-8 h-8 flex items-center justify-center touch-manipulation"
+            title="Profile"
+            style={{ touchAction: 'manipulation' }}
+          >
+            <div className="w-7 h-7 rounded-full bg-[var(--bg-soft)] border border-[var(--border-soft)] flex items-center justify-center shrink-0 overflow-hidden transition-all">
+              {avatarSrc(avatar) ? (
+                <img src={avatarSrc(avatar)} alt="Avatar" className="w-full h-full object-contain" draggable={false} />
+              ) : (
+                <span className="text-[11px] font-bold text-[var(--text-primary)]">
+                  {initial || <UserIcon className="w-3.5 h-3.5 text-[var(--text-muted)]" />}
+                </span>
+              )}
+            </div>
+          </button>
         </div>
 
         {/* Desktop: Tab group */}

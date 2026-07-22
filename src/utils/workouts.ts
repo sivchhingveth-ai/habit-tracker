@@ -297,13 +297,13 @@ export const WORKOUTS: Workout[] = [
     level: 'beginner',
     gender: 'men',
     exercises: [
-      { name: 'Regular Push-Ups', duration: '30 sec', reps: 'as many as you can' },
+      { name: 'Regular Push-Ups', duration: '12 reps', reps: '12' },
       { name: 'Rest', duration: '10 sec' },
-      { name: 'Wide-Grip Push-Ups', duration: '30 sec', reps: 'chest wide' },
+      { name: 'Wide-Grip Push-Ups', duration: '12 reps', reps: '12' },
       { name: 'Rest', duration: '10 sec' },
-      { name: 'Incline Push-Ups', duration: '30 sec', reps: 'hands on a chair or wall' },
+      { name: 'Incline Push-Ups', duration: '12 reps', reps: '12' },
       { name: 'Rest', duration: '10 sec' },
-      { name: 'Knee Push-Ups', duration: '30 sec', reps: 'controlled tempo' },
+      { name: 'Knee Push-Ups', duration: '12 reps', reps: '12' },
       { name: 'Rest', duration: '10 sec' },
       { name: 'Plank Hold', duration: '30 sec' },
       { name: 'Repeat round one more time', duration: '~5 min' },
@@ -320,11 +320,11 @@ export const WORKOUTS: Workout[] = [
     exercises: [
       { name: 'Jumping Jacks', duration: '30 sec' },
       { name: 'Rest', duration: '10 sec' },
-      { name: 'Push-Ups', duration: '30 sec', reps: 'standard form' },
+      { name: 'Push-Ups', duration: '12 reps', reps: '12' },
       { name: 'Rest', duration: '10 sec' },
-      { name: 'Bodyweight Squats', duration: '30 sec' },
+      { name: 'Bodyweight Squats', duration: '15 reps', reps: '15' },
       { name: 'Rest', duration: '10 sec' },
-      { name: 'Walking Lunges', duration: '30 sec' },
+      { name: 'Walking Lunges', duration: '12 reps', reps: '12' },
       { name: 'Rest', duration: '10 sec' },
       { name: 'Mountain Climbers', duration: '30 sec' },
       { name: 'Rest', duration: '10 sec' },
@@ -344,15 +344,15 @@ export const WORKOUTS: Workout[] = [
     exercises: [
       { name: 'Burpees', duration: '30 sec' },
       { name: 'Rest', duration: '10 sec' },
-      { name: 'Diamond Push-Ups', duration: '30 sec' },
+      { name: 'Diamond Push-Ups', duration: '10 reps', reps: '10' },
       { name: 'Rest', duration: '10 sec' },
-      { name: 'Pistol Squat Progression', duration: '30 sec', reps: 'assisted if needed' },
+      { name: 'Pistol Squat Progression', duration: '8 reps', reps: '8' },
       { name: 'Rest', duration: '10 sec' },
-      { name: 'Pull-Ups / Inverted Rows', duration: '30 sec' },
+      { name: 'Pull-Ups / Inverted Rows', duration: '8 reps', reps: '8' },
       { name: 'Rest', duration: '10 sec' },
-      { name: 'Plank to Shoulder Tap', duration: '30 sec' },
+      { name: 'Plank to Shoulder Tap', duration: '12 reps', reps: '12' },
       { name: 'Rest', duration: '10 sec' },
-      { name: 'Jump Squats', duration: '30 sec' },
+      { name: 'Jump Squats', duration: '12 reps', reps: '12' },
       { name: 'Rest', duration: '10 sec' },
       { name: 'Repeat 3 more rounds', duration: '~15 min' },
     ],
@@ -368,11 +368,11 @@ export const WORKOUTS: Workout[] = [
     exercises: [
       { name: 'March in Place', duration: '30 sec' },
       { name: 'Rest', duration: '10 sec' },
-      { name: 'Wall Push-Ups', duration: '30 sec' },
+      { name: 'Wall Push-Ups', duration: '12 reps', reps: '12' },
       { name: 'Rest', duration: '10 sec' },
-      { name: 'Glute Bridges', duration: '30 sec', reps: 'squeeze at the top' },
+      { name: 'Glute Bridges', duration: '15 reps', reps: '15' },
       { name: 'Rest', duration: '10 sec' },
-      { name: 'Standing Side Leg Raises', duration: '30 sec' },
+      { name: 'Standing Side Leg Raises', duration: '12 reps', reps: '12' },
       { name: 'Rest', duration: '10 sec' },
       { name: 'Cat-Cow Stretch', duration: '30 sec' },
       { name: 'Rest', duration: '10 sec' },
@@ -392,13 +392,13 @@ export const WORKOUTS: Workout[] = [
     exercises: [
       { name: 'Jumping Jacks', duration: '30 sec' },
       { name: 'Rest', duration: '10 sec' },
-      { name: 'Push-Ups (knee or full)', duration: '30 sec' },
+      { name: 'Push-Ups (knee or full)', duration: '12 reps', reps: '12' },
       { name: 'Rest', duration: '10 sec' },
-      { name: 'Sumo Squats', duration: '30 sec', reps: 'wide stance' },
+      { name: 'Sumo Squats', duration: '15 reps', reps: '15' },
       { name: 'Rest', duration: '10 sec' },
-      { name: 'Tricep Dips (chair)', duration: '30 sec' },
+      { name: 'Tricep Dips (chair)', duration: '12 reps', reps: '12' },
       { name: 'Rest', duration: '10 sec' },
-      { name: 'Reverse Lunges', duration: '30 sec' },
+      { name: 'Reverse Lunges', duration: '12 reps', reps: '12' },
       { name: 'Rest', duration: '10 sec' },
       { name: 'Forearm Plank', duration: '30 sec' },
       { name: 'Rest', duration: '10 sec' },
@@ -416,15 +416,15 @@ export const WORKOUTS: Workout[] = [
     exercises: [
       { name: 'Burpees', duration: '30 sec' },
       { name: 'Rest', duration: '10 sec' },
-      { name: 'Archer Push-Ups', duration: '30 sec' },
+      { name: 'Archer Push-Ups', duration: '10 reps', reps: '10' },
       { name: 'Rest', duration: '10 sec' },
-      { name: 'Jump Squats', duration: '30 sec' },
+      { name: 'Jump Squats', duration: '12 reps', reps: '12' },
       { name: 'Rest', duration: '10 sec' },
-      { name: 'Bulgarian Split Squats', duration: '30 sec' },
+      { name: 'Bulgarian Split Squats', duration: '10 reps', reps: '10' },
       { name: 'Rest', duration: '10 sec' },
       { name: 'Side Plank', duration: '30 sec' },
       { name: 'Rest', duration: '10 sec' },
-      { name: 'Skater Jumps', duration: '30 sec' },
+      { name: 'Skater Jumps', duration: '12 reps', reps: '12' },
       { name: 'Rest', duration: '10 sec' },
       { name: 'Repeat 3 more rounds', duration: '~15 min' },
     ],
@@ -439,7 +439,10 @@ export function isRepsExercise(ex: Exercise): boolean {
   const n = ex.name.toLowerCase();
   if (n.includes('repeat') || n.includes('round')) return true;
   if (ex.duration.startsWith('~')) return true;
-  return false;
+  if (ex.reps) return true;
+  // Strength exercises that should be reps-based
+  const repsBased = ['push-up', 'push up', 'squat', 'lunge', 'dip', 'bridge', 'leg raise', 'crunch', 'sit-up', 'pull-up', 'inverted row', 'plank to shoulder', 'side plank', 'archer', 'diamond', 'bulgarian', 'pistol', 'glute bridge', 'sumo', 'reverse lunge', 'walking lunge', 'jump squat', 'skater'];
+  return repsBased.some(keyword => n.includes(keyword));
 }
 
 export const ALL_EXERCISES: Exercise[] = Object.entries(EXERCISE_DETAILS).map(([name, detail]) => ({
@@ -481,9 +484,22 @@ export function generateWorkout(categories: ExerciseCategory[], level: Level): E
   const count = level === 'beginner' ? 5 : level === 'intermediate' ? 6 : 7;
   const selected = shuffled.slice(0, count);
 
+  const repsMap: Record<Level, number> = {
+    'beginner': 8,
+    'intermediate': 12,
+    'advanced': 15,
+  };
+  const repsCount = repsMap[level];
+
   const exercises: Exercise[] = [];
   selected.forEach((ex, i) => {
-    exercises.push({ name: ex.name, duration: '30 sec', categories: ex.categories });
+    const isReps = isRepsExercise(ex);
+    exercises.push({
+      name: ex.name,
+      duration: isReps ? `${repsCount} reps` : '30 sec',
+      reps: isReps ? `${repsCount}` : undefined,
+      categories: ex.categories
+    });
     if (i < selected.length - 1) {
       exercises.push({ name: 'Rest', duration: '10 sec' });
     }
