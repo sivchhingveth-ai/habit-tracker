@@ -28,10 +28,17 @@ interface GymViewProps {
   onTabChange: (tab: string) => void;
   onLogout: () => void;
   isLoggingOut: boolean;
+  gymDropdownOpen?: boolean;
+  onGymToggle?: () => void;
+  gymDropdownItems?: Array<{ key: string; label: string; icon: React.ReactNode; active: boolean; onClick: () => void }>;
+  activeGymSection?: 'plan' | 'calculator';
+  onSetActiveGymSection?: (section: 'plan' | 'calculator') => void;
 }
 
 export const GymView: React.FC<GymViewProps> = ({
   tabs, activeTab, onTabChange, onLogout, isLoggingOut,
+  gymDropdownOpen, onGymToggle, gymDropdownItems,
+  activeGymSection: activeGymSectionProp, onSetActiveGymSection
 }) => {
   const [activeTimer, setActiveTimer] = useState<ActiveTimer | null>(null);
   const [completedExercises, setCompletedExercises] = useState<Set<number>>(new Set());
@@ -45,8 +52,8 @@ export const GymView: React.FC<GymViewProps> = ({
   const [level, setLevel] = useState<Level>('beginner');
   const [planWorkout, setPlanWorkout] = useState<Workout | null>(null);
   const [planDayKey, setPlanDayKey] = useState<string | null>(null);
-  const [gymNavExpanded, setGymNavExpanded] = useState(false);
-  const [activeGymSection, setActiveGymSection] = useState<'plan' | 'calculator'>('plan');
+  const activeGymSection = activeGymSectionProp ?? 'plan';
+  const setActiveGymSection = onSetActiveGymSection ?? (() => {});
 
   // Calorie calculator state
   const [calcGender, setCalcGender] = useState<'male' | 'female'>('male');
@@ -251,24 +258,9 @@ export const GymView: React.FC<GymViewProps> = ({
           onTabChange={onTabChange}
           onLogout={onLogout}
           isLoggingOut={isLoggingOut}
-          gymDropdownOpen={gymNavExpanded}
-          onGymToggle={() => setGymNavExpanded(!gymNavExpanded)}
-          gymDropdownItems={[
-            {
-              key: 'calculator',
-              label: 'Calorie Calculator',
-              icon: <Flame className="w-3.5 h-3.5 text-white/50" />,
-              active: activeGymSection === 'calculator',
-              onClick: () => { setActiveGymSection('calculator'); setGymNavExpanded(false); },
-            },
-            {
-              key: 'plan',
-              label: '3-Month Plan',
-              icon: <Calendar className="w-3.5 h-3.5 text-white/50" />,
-              active: activeGymSection === 'plan',
-              onClick: () => { setActiveGymSection('plan'); setGymNavExpanded(false); },
-            },
-          ]}
+          gymDropdownOpen={gymDropdownOpen}
+          onGymToggle={onGymToggle}
+          gymDropdownItems={gymDropdownItems}
         />
       </div>
 

@@ -244,6 +244,7 @@ export const Tabs: React.FC<TabsProps> = ({
                     <button
                       onClick={() => {
                         if (isGym && onGymToggle) {
+                          if (activeTab !== tab) onTabChange(tab);
                           onGymToggle();
                         } else {
                           onTabChange(tab);
@@ -267,7 +268,6 @@ export const Tabs: React.FC<TabsProps> = ({
                             <button
                               key={item.key}
                               onClick={() => {
-                                onTabChange('Gym');
                                 item.onClick();
                                 setDrawerOpen(false);
                               }}

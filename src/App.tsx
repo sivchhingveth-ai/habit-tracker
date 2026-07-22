@@ -24,7 +24,7 @@ import { ProfileModal } from './components/ProfileModal';
 import { GymView } from './components/GymView';
 import { HistoryGrid } from './components/HistoryGrid';
 import useAppStore from './store/appStore';
-import { Plus, Loader2, ShieldAlert, ArrowUp } from 'lucide-react';
+import { Plus, Loader2, ShieldAlert, ArrowUp, Flame, Calendar } from 'lucide-react';
 import { Habit, SavingGoal } from './types';
 import { getEffectiveDateStr, getEffectiveDate, formatDateStr, calculateStreak } from './utils/dateUtils';
 
@@ -42,6 +42,25 @@ export default function App() {
 
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [isOnline, setIsOnline] = useState(window.navigator.onLine);
+  const [gymNavExpanded, setGymNavExpanded] = useState(false);
+  const [activeGymSection, setActiveGymSection] = useState<'plan' | 'calculator'>('plan');
+
+  const gymDropdownItems = [
+    {
+      key: 'calculator',
+      label: 'Calorie Calculator',
+      icon: <Flame className="w-3.5 h-3.5 text-white/50" />,
+      active: activeGymSection === 'calculator',
+      onClick: () => { setActiveTab('Gym'); setActiveGymSection('calculator'); setGymNavExpanded(false); },
+    },
+    {
+      key: 'plan',
+      label: '3-Month Plan',
+      icon: <Calendar className="w-3.5 h-3.5 text-white/50" />,
+      active: activeGymSection === 'plan',
+      onClick: () => { setActiveTab('Gym'); setActiveGymSection('plan'); setGymNavExpanded(false); },
+    },
+  ];
 
   useEffect(() => {
     const handleOnline = () => setIsOnline(true);
@@ -562,6 +581,9 @@ export default function App() {
                 onTabChange={setActiveTab}
                 onLogout={handleLogout}
                 isLoggingOut={isLoggingOut}
+                gymDropdownOpen={gymNavExpanded}
+                onGymToggle={() => setGymNavExpanded(!gymNavExpanded)}
+                gymDropdownItems={gymDropdownItems}
               />
             </div>
           )}
@@ -579,6 +601,9 @@ export default function App() {
                 onDateChange={setHistoryDate}
                 startDate={accountStartDateStr}
                 maxDate={todayStr}
+                gymDropdownOpen={gymNavExpanded}
+                onGymToggle={() => setGymNavExpanded(!gymNavExpanded)}
+                gymDropdownItems={gymDropdownItems}
               />
             </div>
           )}
@@ -598,6 +623,9 @@ export default function App() {
                 onLogout={handleLogout}
                 isLoggingOut={isLoggingOut}
                 startDate={accountStartDateStr}
+                gymDropdownOpen={gymNavExpanded}
+                onGymToggle={() => setGymNavExpanded(!gymNavExpanded)}
+                gymDropdownItems={gymDropdownItems}
               />
             </div>
           )}
@@ -609,6 +637,11 @@ export default function App() {
                 onTabChange={setActiveTab}
                 onLogout={handleLogout}
                 isLoggingOut={isLoggingOut}
+                gymDropdownOpen={gymNavExpanded}
+                onGymToggle={() => setGymNavExpanded(!gymNavExpanded)}
+                gymDropdownItems={gymDropdownItems}
+                activeGymSection={activeGymSection}
+                onSetActiveGymSection={setActiveGymSection}
               />
             </div>
           )}

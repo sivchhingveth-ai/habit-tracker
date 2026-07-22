@@ -19,6 +19,9 @@ interface DailyHabitsProps {
   onDateChange?: (dateStr: string) => void;
   startDate?: string;
   maxDate?: string;
+  gymDropdownOpen?: boolean;
+  onGymToggle?: () => void;
+  gymDropdownItems?: Array<{ key: string; label: string; icon: React.ReactNode; active: boolean; onClick: () => void }>;
 }
 
 const TIME_PHASES = [
@@ -242,7 +245,8 @@ ActiveHabitCard.displayName = 'ActiveHabitCard';
 const DailyHabitsInner: React.FC<DailyHabitsProps> = ({
   habits, onToggleHabit,
   tabs, activeTab, onTabChange, onLogout, isLoggingOut, filterPhase,
-  historyDate, onDateChange, startDate, maxDate
+  historyDate, onDateChange, startDate, maxDate,
+  gymDropdownOpen, onGymToggle, gymDropdownItems
 }) => {
   const isHistory = !!historyDate;
   const todayStr = isHistory ? historyDate! : getEffectiveDateStr();
@@ -400,7 +404,7 @@ const DailyHabitsInner: React.FC<DailyHabitsProps> = ({
   return (
     <div className="flex flex-col relative w-full h-full">
       <div className="sticky top-0 z-20">
-        <Tabs tabs={tabs} activeTab={activeTab} onTabChange={onTabChange} onLogout={onLogout} isLoggingOut={isLoggingOut} />
+        <Tabs tabs={tabs} activeTab={activeTab} onTabChange={onTabChange} onLogout={onLogout} isLoggingOut={isLoggingOut} gymDropdownOpen={gymDropdownOpen} onGymToggle={onGymToggle} gymDropdownItems={gymDropdownItems} />
       </div>
 
       <div className="sticky top-[60px] sm:top-[64px] md:top-[68px] z-10 sub-nav">
