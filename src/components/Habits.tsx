@@ -283,17 +283,10 @@ export const Habits: React.FC<HabitsProps> = ({
                           }`}
                           style={{ touchAction: 'manipulation' }}
                         >
-                          <span className="flex items-center gap-3">
-                            <div className={`w-6 h-6 rounded-md flex items-center justify-center transition-all duration-200 ${
-                              !selectedCategory ? 'bg-[var(--bg-soft)]' : 'bg-[var(--bg-tint)]'
-                            }`}>
-                              <Target className="w-3 h-3 text-[var(--text-secondary)]" />
-                            </div>
-                            <span className={`text-[13px] font-medium tracking-wide ${
-                              !selectedCategory ? 'text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'
-                            }`}>
-                              All Categories
-                            </span>
+                          <span className={`text-[13px] font-medium tracking-wide ${
+                            !selectedCategory ? 'text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'
+                          }`}>
+                            All Categories
                           </span>
                           <span className={`text-[12px] font-semibold px-2 py-0.5 rounded-md transition-all duration-200 ${
                             !selectedCategory
@@ -314,7 +307,6 @@ export const Habits: React.FC<HabitsProps> = ({
                             })).filter(p => p.count > 0);
                             
                             return visiblePhases.map((phase, index) => {
-                              const PhaseIcon = phase.icon;
                               const isSelected = selectedCategory === phase.key;
                               const isLast = index === visiblePhases.length - 1;
                               return (
@@ -331,28 +323,13 @@ export const Habits: React.FC<HabitsProps> = ({
                                     animationDelay: `${index * 40}ms`
                                   }}
                                 >
-                                  <span className="flex items-center gap-3">
-                                    <div 
-                                      className={`w-6 h-6 rounded-md flex items-center justify-center transition-all duration-200 ${
-                                        isSelected ? '' : 'bg-[var(--bg-soft)] group-hover:bg-[var(--bg-tint)]'
-                                      }`}
-                                      style={isSelected ? { backgroundColor: `${phase.color}20` } : {}}
-                                    >
-                                      <PhaseIcon 
-                                        className={`w-3 h-3 transition-all duration-200 ${
-                                          isSelected ? '' : 'text-[var(--text-secondary)] group-hover:text-[var(--text-primary)]'
-                                        }`}
-                                        style={isSelected ? { color: phase.color } : {}} 
-                                      />
-                                    </div>
-                                    <span 
-                                      className={`text-[13px] font-medium tracking-wide transition-colors duration-200 ${
-                                        isSelected ? '' : 'text-[var(--text-secondary)] group-hover:text-[var(--text-primary)]'
-                                      }`}
-                                      style={isSelected ? { color: phase.color } : {}}
-                                    >
-                                      {phase.label}
-                                    </span>
+                                  <span
+                                    className={`text-[13px] font-medium tracking-wide transition-colors duration-200 ${
+                                      isSelected ? '' : 'text-[var(--text-secondary)] group-hover:text-[var(--text-primary)]'
+                                    }`}
+                                    style={isSelected ? { color: phase.color } : {}}
+                                  >
+                                    {phase.label}
                                   </span>
                                   <span 
                                     className={`text-[12px] font-semibold px-2 py-0.5 rounded-md transition-all duration-200 ${
