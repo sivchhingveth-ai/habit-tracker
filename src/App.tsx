@@ -19,6 +19,7 @@ import { DailyHabits } from './components/DailyHabits';
 import { Modal } from './components/Modal';
 import { ConfirmModal } from './components/ConfirmModal';
 import { DatePicker } from './components/DatePicker';
+import { Select } from './components/Select';
 import { Auth } from './components/Auth';
 import { ProfileModal } from './components/ProfileModal';
 import { HistoryGrid } from './components/HistoryGrid';
@@ -32,6 +33,14 @@ import useAppStore from './store/appStore';
 import { Plus, Loader2, ShieldAlert, ArrowUp, Flame, Calendar } from 'lucide-react';
 import { Habit, SavingGoal } from './types';
 import { getEffectiveDateStr, getEffectiveDate, formatDateStr, calculateStreak } from './utils/dateUtils';
+
+const MONTHLY_FREQUENCY_OPTIONS = [
+  { value: '', label: 'Daily - Every day of the month' },
+  { value: '1', label: 'Once - Only on the 1st of each month' },
+  { value: '2', label: 'Twice - On the 1st and 15th of each month' },
+  { value: '3', label: '3 times - On the 1st, 11th, and 21st of each month' },
+  { value: '4', label: 'Weekly - On the 1st, 8th, 15th, and 22nd of each month' },
+];
 
 export default function App() {
   const todayStr = getEffectiveDateStr();
@@ -717,17 +726,12 @@ export default function App() {
             </div>
             <div className="animate-in fade-in slide-in-from-bottom-5 duration-600">
               <label className={labelClass}>Monthly Frequency</label>
-              <select 
+              <Select
                 className={inputClass}
                 value={newHabitMonthlyTarget}
-                onChange={e => setNewHabitMonthlyTarget(e.target.value)}
-              >
-                <option value="">Daily - Every day of the month</option>
-                <option value="1">Once - Only on the 1st of each month</option>
-                <option value="2">Twice - On the 1st and 15th of each month</option>
-                <option value="3">3 times - On the 1st, 11th, and 21st of each month</option>
-                <option value="4">Weekly - On the 1st, 8th, 15th, and 22nd of each month</option>
-              </select>
+                onChange={setNewHabitMonthlyTarget}
+                options={MONTHLY_FREQUENCY_OPTIONS}
+              />
             </div>
           </div>
 
