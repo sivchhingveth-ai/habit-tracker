@@ -21,8 +21,13 @@ import { ConfirmModal } from './components/ConfirmModal';
 import { DatePicker } from './components/DatePicker';
 import { Auth } from './components/Auth';
 import { ProfileModal } from './components/ProfileModal';
-import { GymView } from './components/GymView';
 import { HistoryGrid } from './components/HistoryGrid';
+
+// The Gym tab carries the whole fitness subsystem (plans, timer, animations,
+// workout data) — load it only when the tab is opened.
+const GymView = React.lazy(() =>
+  import('./components/GymView').then((m) => ({ default: m.GymView }))
+);
 import useAppStore from './store/appStore';
 import { Plus, Loader2, ShieldAlert, ArrowUp, Flame, Calendar } from 'lucide-react';
 import { Habit, SavingGoal } from './types';
@@ -631,6 +636,13 @@ export default function App() {
           )}
           {activeTab === 'Gym' && (
             <div key={activeTab} className="flex-1 flex flex-col min-h-0">
+              <React.Suspense
+                fallback={
+                  <div className="flex-1 flex items-center justify-center py-24">
+                    <Loader2 className="w-8 h-8 text-[#4e55e0] animate-spin" />
+                  </div>
+                }
+              >
               <GymView
                 tabs={tabs}
                 activeTab={activeTab}
@@ -643,6 +655,7 @@ export default function App() {
                 activeGymSection={activeGymSection}
                 onSetActiveGymSection={setActiveGymSection}
               />
+              </React.Suspense>
             </div>
           )}
 

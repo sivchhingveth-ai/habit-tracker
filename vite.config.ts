@@ -17,7 +17,19 @@ export default defineConfig(({mode}) => {
         },
         workbox: {
           globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2,webmanifest}'],
+          // Avatars are only needed when the picker opens — cache them lazily at runtime
+          globIgnores: ['avatars/**'],
           maximumFileSizeToCacheInBytes: 3 * 1024 * 1024, // 3MB limit
+          runtimeCaching: [
+            {
+              urlPattern: /\/avatars\/.*\.png$/,
+              handler: 'CacheFirst',
+              options: {
+                cacheName: 'avatars',
+                expiration: { maxEntries: 32, maxAgeSeconds: 60 * 60 * 24 * 90 },
+              },
+            },
+          ],
         },
         manifest: {
           name: "Buttress",

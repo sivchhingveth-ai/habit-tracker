@@ -135,7 +135,7 @@ export const ProfileModal: React.FC = () => {
                         : 'bg-[var(--bg-soft)] border border-[var(--border-soft)] hover:border-[var(--border-medium)]'
                     }`}
                   >
-                    <img src={src} alt={label} className="w-[80%] h-[80%] object-contain" draggable={false} />
+                    <img src={src} alt={label} loading="lazy" decoding="async" className="w-[80%] h-[80%] object-contain" draggable={false} />
                     {active && (
                       <span className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-[var(--brand)] flex items-center justify-center">
                         <Check className="w-2 h-2 text-white" strokeWidth={4} />
