@@ -21,7 +21,7 @@ const GOALS: { key: string; label: string; icon: React.ReactNode; categories: Ex
 ];
 
 const LEVEL_PROGRESSION: Level[] = ['beginner', 'intermediate', 'advanced'];
-const PLAN_STORAGE = 'habit-tracker-3month-plan';
+const PLAN_STORAGE = 'buttress-3month-plan';
 
 const DURATIONS: { key: number; label: string; shortLabel: string; desc: string; weeks: number; levelPath: Level[]; goalTips: string[] }[] = [
   { key: 1, label: '1 Month', shortLabel: '1 Mo', desc: 'Quick kickstart — build the habit', weeks: 4, levelPath: ['beginner'], goalTips: ['Learn the basics', 'Build consistency', 'Form good habits'] },

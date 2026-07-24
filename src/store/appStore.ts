@@ -3,7 +3,7 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 import { getEffectiveDateStr, getEffectiveDate } from '../utils/dateUtils';
 
 export type Theme = 'light' | 'dark';
-const THEME_KEY = 'habit_tracker_theme';
+const THEME_KEY = 'buttress_theme';
 
 function getInitialTheme(): Theme {
   return 'dark';
@@ -176,8 +176,8 @@ const useAppStore = create<AppStore>()(
       profileModalOpen: false,
       gymModalOpen: false,
       historyGridOpen: false,
-      nickname: typeof window !== 'undefined' ? (localStorage.getItem('habit_tracker_nickname') || '') : '',
-      avatar: typeof window !== 'undefined' ? (localStorage.getItem('habit_tracker_avatar') || '') : '',
+      nickname: typeof window !== 'undefined' ? (localStorage.getItem('buttress_nickname') || '') : '',
+      avatar: typeof window !== 'undefined' ? (localStorage.getItem('buttress_avatar') || '') : '',
       theme: getInitialTheme(),
 
       // Time actions - single source of truth
@@ -263,15 +263,15 @@ const useAppStore = create<AppStore>()(
       closeHistoryGrid: () => set({ historyGridOpen: false }),
       setNickname: (name) => {
         if (typeof window !== 'undefined') {
-          if (name) localStorage.setItem('habit_tracker_nickname', name);
-          else localStorage.removeItem('habit_tracker_nickname');
+          if (name) localStorage.setItem('buttress_nickname', name);
+          else localStorage.removeItem('buttress_nickname');
         }
         set({ nickname: name });
       },
       setAvatar: (emoji) => {
         if (typeof window !== 'undefined') {
-          if (emoji) localStorage.setItem('habit_tracker_avatar', emoji);
-          else localStorage.removeItem('habit_tracker_avatar');
+          if (emoji) localStorage.setItem('buttress_avatar', emoji);
+          else localStorage.removeItem('buttress_avatar');
         }
         set({ avatar: emoji });
       },
@@ -288,7 +288,7 @@ const useAppStore = create<AppStore>()(
       },
     }),
     {
-      name: 'habit-tracker-store',
+      name: 'buttress-store',
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({ 
         // Only persist UI preferences, not time-sensitive data

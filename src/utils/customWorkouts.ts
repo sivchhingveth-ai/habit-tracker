@@ -1,6 +1,6 @@
 import { Workout, Exercise } from './workouts';
 
-const STORAGE_KEY = 'habit-tracker-custom-workouts';
+const STORAGE_KEY = 'buttress-custom-workouts';
 
 let _id = Date.now();
 const nextId = () => `custom-${_id++}`;

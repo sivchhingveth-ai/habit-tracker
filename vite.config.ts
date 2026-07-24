@@ -20,8 +20,8 @@ export default defineConfig(({mode}) => {
           maximumFileSizeToCacheInBytes: 3 * 1024 * 1024, // 3MB limit
         },
         manifest: {
-          name: "Elite Habit Tracker",
-          short_name: "Elite",
+          name: "Buttress",
+          short_name: "Buttress",
           start_url: "/",
           display: "standalone",
           background_color: "#000000",

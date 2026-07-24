@@ -1,4 +1,4 @@
-const STORAGE_PREFIX = 'habit-tracker-fitness-';
+const STORAGE_PREFIX = 'buttress-fitness-';
 
 function load<T>(key: string, fallback: T): T {
   try {

@@ -1,5 +1,5 @@
-const PROGRESS_STORAGE = 'habit-tracker-plan-progress';
-const PLAN_STORAGE = 'habit-tracker-3month-plan';
+const PROGRESS_STORAGE = 'buttress-plan-progress';
+const PLAN_STORAGE = 'buttress-3month-plan';
 
 export const PLAN_PROGRESS_EVENT = 'plan-progress-updated';
 
