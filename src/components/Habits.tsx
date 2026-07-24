@@ -367,7 +367,7 @@ export const Habits: React.FC<HabitsProps> = ({
             const { phase, habits: phaseHabits } = phaseGroup as { phase: typeof TIME_PHASES[number]; habits: Habit[] };
 
             return (
-              <div key={phaseKey} className="space-y-3 sm:space-y-4">
+              <div key={phaseKey} className="space-y-2 sm:space-y-2.5">
                 {/* Phase Header - Compacted */}
                 <div className="flex items-center gap-2 sm:gap-3 px-0.5">
                   <div className="flex items-center gap-2 sm:gap-3 min-w-0">
@@ -383,7 +383,7 @@ export const Habits: React.FC<HabitsProps> = ({
                   <div className="flex-1 h-px section-divider-fade" />
                 </div>
 
-                <div className="grid gap-2 sm:gap-3 md:gap-4 grid-cols-1">
+                <div className="grid gap-1.5 sm:gap-2 grid-cols-1">
                   {phaseHabits.map(habit => {
                     const totalMonthly = days.filter(d => habit.history[d.dateStr]).length;
                     const daysInCurrentMonth = days.length;
@@ -402,7 +402,7 @@ export const Habits: React.FC<HabitsProps> = ({
                       <div
                         data-habit-id={String(habit.id)}
                         onClick={() => setShowActionsId(isExpanded ? null : habit.id)}
-                        className={`w-full flex flex-col rounded-2xl transition-all duration-500 group relative overflow-hidden cursor-pointer border-2 touch-manipulation ${
+                        className={`w-full flex flex-col rounded-xl transition-all duration-500 group relative overflow-hidden cursor-pointer border touch-manipulation ${
                           isExpanded
                           ? 'bg-[var(--bg-card)] border-[var(--border-medium)] shadow-2xl z-[1]'
                           : 'bg-[var(--bg-card)] border-[var(--border-soft)] hover:border-[var(--border-medium)]'
@@ -416,9 +416,9 @@ export const Habits: React.FC<HabitsProps> = ({
                         />
 
                         {/* Card Front Content */}
-                        <div className="flex flex-row items-center justify-between p-3 sm:p-4 md:p-6 relative z-10 w-full">
-                          <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
-                            <div className="relative w-10 h-10 sm:w-12 sm:h-12 shrink-0">
+                        <div className="flex flex-row items-center justify-between px-2.5 py-2 sm:px-3 sm:py-2.5 md:px-4 md:py-3 relative z-10 w-full">
+                          <div className="flex items-center gap-2.5 sm:gap-3 flex-1 min-w-0">
+                            <div className="relative w-8 h-8 sm:w-9 sm:h-9 shrink-0">
                               <svg className="w-full h-full -rotate-90" viewBox="0 0 48 48">
                                 <circle cx="24" cy="24" r="21" fill="transparent" style={{ stroke: 'var(--border-soft)' }} strokeWidth="4" />
                                 <circle
@@ -434,29 +434,29 @@ export const Habits: React.FC<HabitsProps> = ({
                                 />
                               </svg>
                               <div className="absolute inset-0 flex items-center justify-center">
-                                <span className="text-[9px] sm:text-[10px] md:text-[11px] font-black" style={{ color: phase.color }}>{completionRate}%</span>
+                                <span className="text-[8px] sm:text-[9px] font-black" style={{ color: phase.color }}>{completionRate}%</span>
                               </div>
                             </div>
 
                             <div className="min-w-0">
-                              <h4 className={`text-[14px] sm:text-[15px] md:text-[17px] font-black text-[var(--text-primary)] uppercase tracking-tight transition-all ${
+                              <h4 className={`text-[12px] sm:text-[13px] md:text-[14px] font-bold text-[var(--text-primary)] tracking-tight transition-all ${
                                 isExpanded ? 'whitespace-normal break-words' : 'truncate'
                               }`}>
                                   {toTitleCase(habit.name)}
                               </h4>
-                              <div className="flex items-center gap-3 mt-2">
-                                <div className="flex items-center gap-1 bg-[#ff6b00]/10 px-2 py-0.5 rounded-full">
-                                  <Flame className="w-3.5 h-3.5 text-[#ff6b00] animate-fire" />
-                                  <span className="text-[11px] font-black text-[#ff6b00]">{habit.streak}</span>
+                              <div className="flex items-center gap-2.5 mt-1">
+                                <div className="flex items-center gap-1 bg-[#ff6b00]/10 px-1.5 py-px rounded-full">
+                                  <Flame className="w-3 h-3 text-[#ff6b00] animate-fire" />
+                                  <span className="text-[10px] font-black text-[#ff6b00]">{habit.streak}</span>
                                 </div>
-                                <span className="text-[11px] font-bold text-[var(--text-muted)] tracking-widest">{totalMonthly}/{target} Days</span>
+                                <span className="text-[10px] font-semibold text-[var(--text-muted)] tracking-wide">{totalMonthly}/{target} Days</span>
                               </div>
                             </div>
                           </div>
 
                           <div className="flex items-center gap-2 relative z-10">
-                            <div className={`card-toggle w-11 h-11 rounded-full flex items-center justify-center transition-all duration-300 ${isExpanded ? 'is-active' : ''}`}>
-                              <AlignLeft className="w-4 h-4 md:w-[18px] md:h-[18px] transition-transform duration-300" />
+                            <div className={`card-toggle w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 ${isExpanded ? 'is-active' : ''}`}>
+                              <AlignLeft className="w-3.5 h-3.5 transition-transform duration-300" />
                             </div>
                           </div>
                         </div>
