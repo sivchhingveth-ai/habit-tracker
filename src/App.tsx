@@ -50,6 +50,13 @@ export default function App() {
   const [gymNavExpanded, setGymNavExpanded] = useState(false);
   const [activeGymSection, setActiveGymSection] = useState<'plan' | 'calculator'>('plan');
 
+  // Close the gym dropdown when navigating to any tab so it doesn't
+  // linger open on the next view
+  const handleTabChange = (tab: string) => {
+    setGymNavExpanded(false);
+    setActiveTab(tab);
+  };
+
   const gymDropdownItems = [
     {
       key: 'calculator',
@@ -583,7 +590,7 @@ export default function App() {
                 onToggleHabit={toggleHabit}
                 tabs={tabs}
                 activeTab={activeTab}
-                onTabChange={setActiveTab}
+                onTabChange={handleTabChange}
                 onLogout={handleLogout}
                 isLoggingOut={isLoggingOut}
                 gymDropdownOpen={gymNavExpanded}
@@ -599,7 +606,7 @@ export default function App() {
                 onToggleHabit={toggleHabit}
                 tabs={tabs}
                 activeTab={activeTab}
-                onTabChange={setActiveTab}
+                onTabChange={handleTabChange}
                 onLogout={handleLogout}
                 isLoggingOut={isLoggingOut}
                 historyDate={historyDate}
@@ -624,7 +631,7 @@ export default function App() {
                 onMonthChange={setViewDate}
                 tabs={tabs}
                 activeTab={activeTab}
-                onTabChange={setActiveTab}
+                onTabChange={handleTabChange}
                 onLogout={handleLogout}
                 isLoggingOut={isLoggingOut}
                 startDate={accountStartDateStr}
@@ -646,7 +653,7 @@ export default function App() {
               <GymView
                 tabs={tabs}
                 activeTab={activeTab}
-                onTabChange={setActiveTab}
+                onTabChange={handleTabChange}
                 onLogout={handleLogout}
                 isLoggingOut={isLoggingOut}
                 gymDropdownOpen={gymNavExpanded}

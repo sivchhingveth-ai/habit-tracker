@@ -1,6 +1,6 @@
-import React, { useMemo, useState, useEffect } from 'react';
+﻿import React, { useMemo, useState, useEffect } from 'react';
 import { Habit } from '../types';
-import { Edit2, Trash2, Plus, Activity, TrendingUp, Search, Target, Clock, ChevronLeft, ChevronRight, Check, Circle, AlignLeft, Info, Flame, Pencil } from 'lucide-react';
+import { Edit2, Trash2, Plus, Activity, TrendingUp, Search, Clock, ChevronLeft, ChevronRight, Check, Circle, AlignLeft, Info, Flame, Pencil } from 'lucide-react';
 import { getEffectiveDate, formatDateStr, toTitleCase } from '../utils/dateUtils';
 import { Tabs } from './Tabs';
 
@@ -26,11 +26,11 @@ interface HabitsProps {
 
 // Time phase definitions
 const TIME_PHASES = [
-  { key: 'reset', label: 'Health', time: 'reset', icon: Target, color: '#6fa83b' },
-  { key: 'growth', label: 'Growth', time: 'growth', icon: Target, color: '#9b5cff' },
-  { key: 'distraction', label: 'Reset', time: 'distraction', icon: Target, color: '#4e55e0' },
-  { key: 'daily_rule', label: 'Eliminate', time: 'any', icon: Target, color: '#d05a96' },
-  { key: 'spending', label: 'Boundary', time: 'spending', icon: Target, color: '#b08d2e' },
+  { key: 'reset', label: 'Health', time: 'reset', color: '#6fa83b' },
+  { key: 'growth', label: 'Growth', time: 'growth', color: '#9b5cff' },
+  { key: 'distraction', label: 'Reset', time: 'distraction', color: '#4e55e0' },
+  { key: 'daily_rule', label: 'Eliminate', time: 'any', color: '#d05a96' },
+  { key: 'spending', label: 'Boundary', time: 'spending', color: '#b08d2e' },
 ] as const;
 
 const getPhaseForHabit = (habit: Habit) => {
@@ -228,7 +228,7 @@ export const Habits: React.FC<HabitsProps> = ({
                     aria-label="Clear search"
                     style={{ touchAction: 'manipulation' }}
                   >
-                    <span className="text-[var(--text-primary)] text-[12px] font-bold leading-none">✕</span>
+                    <span className="text-[var(--text-primary)] text-[12px] font-bold leading-none">âœ•</span>
                   </button>
                 )}
               </div>
@@ -250,7 +250,6 @@ export const Habits: React.FC<HabitsProps> = ({
                     touchAction: 'manipulation'
                   }}
                 >
-                  <Target className="w-4 h-4" style={{ color: selectedCategory ? TIME_PHASES.find(p => p.key === selectedCategory)?.color : 'currentColor' }} />
                   <span className="hidden sm:inline">{selectedCategory ? TIME_PHASES.find(p => p.key === selectedCategory)?.label.toUpperCase() : 'ALL CATEGORIES'}</span>
                   <span className="sm:hidden">{selectedCategory ? TIME_PHASES.find(p => p.key === selectedCategory)?.label.toUpperCase() : 'ALL'}</span>
                   <ChevronRight className={`w-4 h-4 ${showCategoryFilter ? 'rotate-90' : ''}`} style={{ transition: 'none' }} />
