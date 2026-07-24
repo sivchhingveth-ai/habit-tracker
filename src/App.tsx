@@ -20,6 +20,7 @@ import { Modal } from './components/Modal';
 import { ConfirmModal } from './components/ConfirmModal';
 import { DatePicker } from './components/DatePicker';
 import { Select } from './components/Select';
+import { CategoryPicker } from './components/CategoryPicker';
 import { Auth } from './components/Auth';
 import { ProfileModal } from './components/ProfileModal';
 import { HistoryGrid } from './components/HistoryGrid';
@@ -40,6 +41,7 @@ const MONTHLY_FREQUENCY_OPTIONS = [
   { value: '2', label: 'Twice - On the 1st and 15th of each month' },
   { value: '3', label: '3 times - On the 1st, 11th, and 21st of each month' },
   { value: '4', label: 'Weekly - On the 1st, 8th, 15th, and 22nd of each month' },
+  { value: 'custom', label: 'Custom - Set your own times per month' },
 ];
 
 export default function App() {
@@ -137,6 +139,7 @@ export default function App() {
   const [spendingError, setSpendingError] = useState('');
   const [newHabitTime, setNewHabitTime] = useState('');
   const [newHabitMonthlyTarget, setNewHabitMonthlyTarget] = useState('');
+  const [useCustomFreq, setUseCustomFreq] = useState(false);
   const [newHabitDescription, setNewHabitDescription] = useState('');
   const [habitError, setHabitError] = useState('');
 
@@ -402,6 +405,7 @@ export default function App() {
         setNewHabitName('');
         setNewHabitTime('');
         setNewHabitMonthlyTarget('');
+        setUseCustomFreq(false);
         setNewHabitDescription('');
         const currentEditId = editingHabitId;
         setEditingHabitId(null);
@@ -498,6 +502,7 @@ export default function App() {
     setNewHabitName('');
     setNewHabitTime('');
     setNewHabitMonthlyTarget('');
+    setUseCustomFreq(false);
     setNewHabitDescription('');
     setHabitError('');
     setModalOpen('habit');
@@ -508,7 +513,10 @@ export default function App() {
       setEditingHabitId(id);
       setNewHabitName(habit.name);
       setNewHabitTime(habit.time || '');
-      setNewHabitMonthlyTarget(habit.monthlyTarget?.toString() || '');
+      const target = habit.monthlyTarget;
+      setNewHabitMonthlyTarget(target ? target.toString() : '');
+      // Any target that isn't one of the presets is treated as custom
+      setUseCustomFreq(!!target && ![1, 2, 3, 4].includes(target));
       setNewHabitDescription(habit.description || '');
       setHabitError('');
       setModalOpen('habit');
@@ -593,7 +601,7 @@ export default function App() {
       <main className="flex-1 overflow-y-auto relative z-10 overscroll-contain overflow-x-hidden">
         <div className="max-w-[1000px] mx-auto min-h-full bg-[var(--bg-page)] relative flex flex-col w-full">
           {activeTab === 'To Do List' && (
-            <div key={activeTab}>
+            <div key={activeTab} className="animate-tab-in">
               <DailyHabits
                 habits={habits}
                 onToggleHabit={toggleHabit}
@@ -609,7 +617,7 @@ export default function App() {
             </div>
           )}
           {activeTab === 'History' && (
-            <div key={activeTab}>
+            <div key={activeTab} className="animate-tab-in">
               <DailyHabits 
                 habits={habits}
                 onToggleHabit={toggleHabit}
@@ -629,7 +637,7 @@ export default function App() {
             </div>
           )}
           {activeTab === 'Add Habit' && (
-            <div key={activeTab}>
+            <div key={activeTab} className="animate-tab-in">
               <Habits
                 habits={habits}
                 onToggleHabit={toggleHabit}
@@ -651,7 +659,7 @@ export default function App() {
             </div>
           )}
           {activeTab === 'Gym' && (
-            <div key={activeTab} className="flex-1 flex flex-col min-h-0">
+            <div key={activeTab} className="flex-1 flex flex-col min-h-0 animate-tab-in">
               <React.Suspense
                 fallback={
                   <div className="flex-1 flex items-center justify-center py-24">
@@ -703,35 +711,43 @@ export default function App() {
           <div className="flex flex-col md:grid md:grid-cols-2 gap-4">
             <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
               <label className={labelClass}>Core Categories</label>
-              <div className="flex flex-wrap gap-1.5 mt-1">
-                {[
-                  { name: 'Health', time: 'reset' },
-                  { name: 'Growth', time: 'growth' },
-                  { name: 'Reset', time: 'distraction' },
-                  { name: 'Eliminate', time: 'any' },
-                  { name: 'Boundary', time: 'spending' }
-                ].map(phase => (
-                  <button
-                    key={phase.name}
-                    onClick={(e) => { e.preventDefault(); setNewHabitTime(phase.time); }}
-                    className={`px-2.5 py-1.5 rounded-lg text-[9px] md:text-[10px] font-black uppercase tracking-wider transition-all border ${newHabitTime === phase.time
-                      ? 'bg-[#0a0a0a] border-[#0a0a0a] text-white'
-                      : 'bg-white border-[#e8eaed] text-[#8a8f97] hover:border-[#0a0a0a] hover:text-[#0a0a0a]'
-                      }`}
-                  >
-                    {phase.name}
-                  </button>
-                ))}
-              </div>
+              <CategoryPicker value={newHabitTime} onChange={setNewHabitTime} />
             </div>
             <div className="animate-in fade-in slide-in-from-bottom-5 duration-600">
               <label className={labelClass}>Monthly Frequency</label>
               <Select
                 className={inputClass}
-                value={newHabitMonthlyTarget}
-                onChange={setNewHabitMonthlyTarget}
+                value={useCustomFreq ? 'custom' : newHabitMonthlyTarget}
+                onChange={(val) => {
+                  if (val === 'custom') {
+                    setUseCustomFreq(true);
+                    if (!newHabitMonthlyTarget || ['1', '2', '3', '4'].includes(newHabitMonthlyTarget)) {
+                      setNewHabitMonthlyTarget('6');
+                    }
+                  } else {
+                    setUseCustomFreq(false);
+                    setNewHabitMonthlyTarget(val);
+                  }
+                }}
                 options={MONTHLY_FREQUENCY_OPTIONS}
               />
+              {useCustomFreq && (
+                <div className="mt-2 flex items-center gap-2 animate-in fade-in slide-in-from-top-2 duration-200">
+                  <input
+                    type="number"
+                    min={1}
+                    max={31}
+                    value={newHabitMonthlyTarget}
+                    onChange={(e) => {
+                      const n = Math.max(1, Math.min(31, parseInt(e.target.value) || 1));
+                      setNewHabitMonthlyTarget(String(n));
+                    }}
+                    className={inputClass}
+                    style={{ maxWidth: '90px' }}
+                  />
+                  <span className="text-[11px] font-semibold text-[var(--text-muted)]">times per month, spread evenly</span>
+                </div>
+              )}
             </div>
           </div>
 

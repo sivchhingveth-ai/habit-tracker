@@ -36,47 +36,38 @@ export const getEffectiveDateStr = (date: Date = new Date()): string => {
 };
 
 /**
+ * Returns the days of the month (1-indexed) a habit is due for a given
+ * monthly target, evenly spaced from day 1. Generalizes the old fixed
+ * 1/2/3/4 presets (which matched 1st; 1st+15th; 1st/11th/21st;
+ * 1st/8th/15th/22nd) to any custom target count.
+ */
+export const getDueDaysInMonth = (monthlyTarget: number, daysInMonth: number): number[] => {
+  const target = Math.min(monthlyTarget, daysInMonth);
+  return Array.from({ length: target }, (_, i) => 1 + Math.floor((i * daysInMonth) / target));
+};
+
+/**
  * Checks if a habit should be visible on a specific day based on monthly target.
- * Monthly target defines how many times per month the habit appears.
- * 
- * @param monthlyTarget - Number of times per month (1, 2, 3, 4, or undefined for daily)
+ * Monthly target defines how many times per month the habit appears, spread
+ * evenly across the month starting from the 1st.
+ *
+ * @param monthlyTarget - Number of times per month (undefined/0 = daily)
  * @param dateStr - The date to check in YYYY-MM-DD format
  * @returns boolean - Whether the habit should be visible on this day
  */
 export const shouldShowHabitOnDay = (monthlyTarget: number | undefined | null, dateStr: string): boolean => {
-  // If no target or 0, show every day (full month)
-  if (!monthlyTarget || monthlyTarget === 0) {
+  // If no target, 0, or at/above the days in the month, show every day
+  if (!monthlyTarget || monthlyTarget <= 0) {
     return true;
   }
-  
+
   const [year, month, day] = dateStr.split('-').map(Number);
-  const date = new Date(year, month - 1, day);
-  const currentDay = date.getDate();
+  const currentDay = day;
   const daysInMonth = new Date(year, month, 0).getDate();
-  
-  switch (monthlyTarget) {
-    case 1:
-      // Only show on day 1 of the month
-      return currentDay === 1;
-      
-    case 2:
-      // Split into 2 periods: first 2 weeks and last 2 weeks
-      // Show on day 1 and day 15
-      return currentDay === 1 || currentDay === 15;
-      
-    case 3:
-      // Split into 3 periods: every ~10 days
-      // Show on day 1, day 11, and day 21
-      return currentDay === 1 || currentDay === 11 || currentDay === 21;
-      
-    case 4:
-      // Weekly - show on day 1, 8, 15, 22 (every 7 days)
-      return currentDay === 1 || currentDay === 8 || currentDay === 15 || currentDay === 22;
-      
-    default:
-      // For any other number, show every day
-      return true;
-  }
+
+  if (monthlyTarget >= daysInMonth) return true;
+
+  return getDueDaysInMonth(monthlyTarget, daysInMonth).includes(currentDay);
 };
 
 /**

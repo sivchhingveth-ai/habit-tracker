@@ -2,6 +2,7 @@
 import { Habit } from '../types';
 import { Edit2, Trash2, Plus, Activity, TrendingUp, Search, Clock, ChevronLeft, ChevronRight, Check, Circle, AlignLeft, Info, Flame, Pencil } from 'lucide-react';
 import { getEffectiveDate, formatDateStr, toTitleCase } from '../utils/dateUtils';
+import { useCategories, toPhases, Phase } from '../utils/categories';
 import { Tabs } from './Tabs';
 
 interface HabitsProps {
@@ -24,33 +25,28 @@ interface HabitsProps {
   gymDropdownItems?: Array<{ key: string; label: string; icon: React.ReactNode; active: boolean; onClick: () => void }>;
 }
 
-// Time phase definitions
-const TIME_PHASES = [
-  { key: 'reset', label: 'Health', time: 'reset', color: '#6fa83b' },
-  { key: 'growth', label: 'Growth', time: 'growth', color: '#9b5cff' },
-  { key: 'distraction', label: 'Reset', time: 'distraction', color: '#4e55e0' },
-  { key: 'daily_rule', label: 'Eliminate', time: 'any', color: '#d05a96' },
-  { key: 'spending', label: 'Boundary', time: 'spending', color: '#b08d2e' },
-] as const;
-
-const getPhaseForHabit = (habit: Habit) => {
-  if (!habit.time) return TIME_PHASES[0];
-  const time = habit.time;
-  // Find by time value - works for all category types
-  const phase = TIME_PHASES.find(p => p.time === time);
-  if (phase) return phase;
-  // Fallback for legacy time strings
-  if (time === '08:00') return TIME_PHASES[0]; // Health
-  if (time === '14:00') return TIME_PHASES[1]; // Growth
-  if (time === '20:00' || time === '02:00') return TIME_PHASES[2]; // Discipline
-  return TIME_PHASES[0];
-};
-
 export const Habits: React.FC<HabitsProps> = ({
   habits, onDeleteHabit, onAddHabit, onEditHabit, currentMonth, onMonthChange,
   tabs, activeTab, onTabChange, onLogout, isLoggingOut, startDate,
   gymDropdownOpen, onGymToggle, gymDropdownItems
 }) => {
+  // Categories are user-customizable (see ProfileModal / New Habit modal),
+  // so pull the live list instead of a hardcoded phase table.
+  const categories = useCategories();
+  const TIME_PHASES = useMemo(() => toPhases(categories), [categories]);
+
+  const getPhaseForHabit = (habit: Habit) => {
+    if (!habit.time) return TIME_PHASES[0];
+    const phase = TIME_PHASES.find(p => p.time === habit.time);
+    if (phase) return phase;
+    // Legacy data: the earliest habits stored a literal time-of-day string
+    // instead of a category id.
+    if (habit.time === '08:00') return TIME_PHASES[0];
+    if (habit.time === '14:00') return TIME_PHASES[1] ?? TIME_PHASES[0];
+    if (habit.time === '20:00' || habit.time === '02:00') return TIME_PHASES[2] ?? TIME_PHASES[0];
+    return TIME_PHASES[0];
+  };
+
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [showCategoryFilter, setShowCategoryFilter] = useState(false);
@@ -86,7 +82,7 @@ export const Habits: React.FC<HabitsProps> = ({
 
   // Group habits by time phase
   const groupedByPhase = useMemo(() => {
-    const groups: Record<string, { phase: typeof TIME_PHASES[number]; habits: Habit[] }> = {};
+    const groups: Record<string, { phase: Phase; habits: Habit[] }> = {};
 
     // Initialize groups in order
     TIME_PHASES.forEach(p => {
@@ -364,7 +360,7 @@ export const Habits: React.FC<HabitsProps> = ({
               <p className="text-[var(--text-muted)]/60 text-sm mt-1">Click "Add Habit" to start your journey!</p>
             </div>
           )}          {Object.entries(groupedByPhase).map(([phaseKey, phaseGroup]) => {
-            const { phase, habits: phaseHabits } = phaseGroup as { phase: typeof TIME_PHASES[number]; habits: Habit[] };
+            const { phase, habits: phaseHabits } = phaseGroup as { phase: Phase; habits: Habit[] };
 
             return (
               <div key={phaseKey} className="space-y-2 sm:space-y-2.5">

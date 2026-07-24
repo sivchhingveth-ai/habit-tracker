@@ -2,6 +2,7 @@ import React, { useMemo, useState, useCallback, useRef } from 'react';
 import { Habit } from '../types';
 import { Circle, Flame, Target, Sparkles, ChevronDown, ChevronUp, Minus, Clock, ChevronLeft, ChevronRight, Filter, AlignLeft, Info, LayoutGrid } from 'lucide-react';
 import { getEffectiveDateStr, getEffectiveDate, formatDateStr, shouldShowHabitOnDay, toTitleCase } from '../utils/dateUtils';
+import { useCategories, toPhases, Phase } from '../utils/categories';
 import { Tabs } from './Tabs';
 import { LiveClock } from './LiveClock';
 import useAppStore from '../store/appStore';
@@ -24,23 +25,16 @@ interface DailyHabitsProps {
   gymDropdownItems?: Array<{ key: string; label: string; icon: React.ReactNode; active: boolean; onClick: () => void }>;
 }
 
-const TIME_PHASES = [
-  { key: 'reset', label: 'Health', time: 'reset', icon: Target, color: '#6fa83b', emoji: '🌱' },
-  { key: 'daily_rule', label: 'Eliminate', time: 'any', icon: Target, color: '#d05a96', emoji: '🎯' },
-  { key: 'growth', label: 'Growth', time: 'growth', icon: Target, color: '#9b5cff', emoji: '🚀' },
-  { key: 'distraction', label: 'Reset', time: 'distraction', icon: Target, color: '#4e55e0', emoji: '🚫' },
-  { key: 'spending', label: 'Boundary', time: 'spending', icon: Target, color: '#b08d2e', emoji: '💰' },
-] as const;
-
-const getPhaseForHabit = (habit: Habit) => {
-  if (!habit.time) return TIME_PHASES[0];
+const getPhaseForHabit = (habit: Habit, phases: Phase[]): Phase => {
+  if (!habit.time) return phases[0];
   const time = habit.time;
-  const phase = TIME_PHASES.find(p => p.time === time);
+  const phase = phases.find(p => p.time === time);
   if (phase) return phase;
-  if (time === '08:00') return TIME_PHASES[0];
-  if (time === '14:00') return TIME_PHASES[2];
-  if (time === '20:00' || time === '02:00') return TIME_PHASES[3];
-  return TIME_PHASES[0];
+  // Legacy data stored a literal time-of-day instead of a category id
+  if (time === '08:00') return phases[0];
+  if (time === '14:00') return phases[1] ?? phases[0];
+  if (time === '20:00' || time === '02:00') return phases[2] ?? phases[0];
+  return phases[0];
 };
 
 const getCurrentPhaseKey = (): string | null => {
@@ -162,7 +156,7 @@ HistoryHabitCard.displayName = 'HistoryHabitCard';
 interface ActiveCardProps {
   habit: Habit;
   todayStr: string;
-  phase: typeof TIME_PHASES[number];
+  phase: Phase;
   phaseKey: string;
   priorityCategory: string | null;
   globalIdx: number;
@@ -253,6 +247,11 @@ const DailyHabitsInner: React.FC<DailyHabitsProps> = ({
   const todayDate = isHistory ? new Date(historyDate!) : getEffectiveDate();
   const currentPhaseKey = getCurrentPhaseKey();
 
+  // User-customizable categories (see New Habit modal); live-updates
+  const categories = useCategories();
+  const TIME_PHASES = useMemo(() => toPhases(categories), [categories]);
+  const phaseForHabit = useCallback((h: Habit) => getPhaseForHabit(h, TIME_PHASES), [TIME_PHASES]);
+
   const [expandedHistoryHabit, setExpandedHistoryHabit] = useState<any>(null);
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
   const [priorityCategory, setPriorityCategory] = useState<string | null>(null);
@@ -302,14 +301,14 @@ const DailyHabitsInner: React.FC<DailyHabitsProps> = ({
 
   // Group habits by phase — memoized
   const groupedByPhase = useMemo(() => {
-    const groups: { phase: typeof TIME_PHASES[number]; habits: Habit[] }[] = TIME_PHASES.map(p => ({
+    const groups: { phase: Phase; habits: Habit[] }[] = TIME_PHASES.map(p => ({
       phase: p,
       habits: [],
     }));
 
     habits.forEach(h => {
       if (!shouldShowHabitOnDay(h.monthlyTarget, todayStr)) return;
-      const phase = getPhaseForHabit(h);
+      const phase = phaseForHabit(h);
       const group = groups.find(g => g.phase.key === phase.key);
       if (group) group.habits.push(h);
     });
@@ -321,7 +320,7 @@ const DailyHabitsInner: React.FC<DailyHabitsProps> = ({
     }
 
     return nonEmpty;
-  }, [habits, priorityCategory, todayStr]);
+  }, [habits, priorityCategory, todayStr, TIME_PHASES, phaseForHabit]);
 
   const visibleHabits = useMemo(() => groupedByPhase.flatMap(g => g.habits), [groupedByPhase]);
 
@@ -358,9 +357,9 @@ const DailyHabitsInner: React.FC<DailyHabitsProps> = ({
   const visiblePhaseCounts = useMemo(() => {
     return TIME_PHASES.map(phase => ({
       ...phase,
-      count: habits.filter(h => getPhaseForHabit(h).key === phase.key && shouldShowHabitOnDay(h.monthlyTarget, todayStr)).length,
+      count: habits.filter(h => phaseForHabit(h).key === phase.key && shouldShowHabitOnDay(h.monthlyTarget, todayStr)).length,
     })).filter(p => p.count > 0);
-  }, [habits, todayStr]);
+  }, [habits, todayStr, TIME_PHASES, phaseForHabit]);
 
   // Callbacks — stable references
   const handleToggleExpand = useCallback((id: any) => {
@@ -723,7 +722,7 @@ const DailyHabitsInner: React.FC<DailyHabitsProps> = ({
         )}
 
         {groupedByPhase.map((phaseGroup) => {
-          const { phase, habits: phaseHabits } = phaseGroup as { phase: typeof TIME_PHASES[number]; habits: Habit[] };
+          const { phase, habits: phaseHabits } = phaseGroup as { phase: Phase; habits: Habit[] };
 
           return (
             <div key={phase.key} id={`phase-${phase.key}`} className="space-y-1.5 scroll-mt-20">

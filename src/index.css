@@ -63,22 +63,21 @@
    card in both themes.
    ============================================================ */
 html[data-theme="dark"] {
-  --bg-page: #030305;
-  /* Card/border tokens were nearly the same luminance as --bg-page,
-     so any box relying on just a fill + soft border (habit cards,
-     the gym goal/duration pickers, etc.) read as invisible against
-     the near-black canvas. Raised borders more than fills so edges
-     stay clearly legible without turning the app gray. */
-  --bg-card: #101218;
-  --bg-soft: #1b1e26;
-  --bg-tint: #0b0d11;
+  /* Neutral near-black greys (R=G=B) so surfaces read as true "deep
+     dark glass" rather than tinted deep-blue. Card/border tokens are
+     lifted clearly above the page so boxes never blend into the
+     canvas; borders step up more than fills so edges stay crisp. */
+  --bg-page: #050505;
+  --bg-card: #161616;
+  --bg-soft: #232323;
+  --bg-tint: #101010;
 
-  --border-soft: #2a2f3b;
-  --border-medium: #3c4250;
+  --border-soft: #2e2e2e;
+  --border-medium: #414141;
 
-  --text-primary: #f2f4f7;
-  --text-secondary: #b6bcc7;
-  --text-muted: #7e838c;
+  --text-primary: #f4f4f5;
+  --text-secondary: #b9babd;
+  --text-muted: #808083;
 
   --brand: #6b71ea;
   --brand-soft: #6b71ea20;
@@ -311,7 +310,7 @@ html.theme-transition *::after {
   box-shadow: 0 1px 3px rgba(10, 10, 10, 0.04);
 }
 html[data-theme="dark"] .top-nav {
-  background-color: rgba(10, 11, 15, 0.6);
+  background-color: rgba(12, 12, 12, 0.65);
   box-shadow: none;
 }
 
@@ -397,11 +396,8 @@ html[data-theme="dark"] .top-nav .nav-add-icon-wrap {
   box-shadow: 0 1px 2px rgba(10, 10, 10, 0.03);
 }
 html[data-theme="dark"] .sub-nav {
-  background-color: rgba(10, 11, 15, 0.6);
+  background-color: rgba(12, 12, 12, 0.65);
   box-shadow: none;
-}
-html[data-theme="dark"] .sub-nav {
-  background-color: rgba(10, 11, 15, 0.6);
 }
 
 /* ============================================================
@@ -546,6 +542,24 @@ html[data-theme="dark"] .sub-nav {
 
 .animate-slide-in-left {
   animation: slide-in-left 0.25s cubic-bezier(0.2, 0, 0, 1.0);
+}
+
+/* ============================================================
+   TAB CONTENT ENTRANCE
+   Applied to each tab panel (keyed by tab) so switching tabs
+   fades + eases the new view up into place instead of a hard
+   cut. Kept short and GPU-friendly (opacity + translate only).
+   ============================================================ */
+@keyframes tab-in {
+  0% { opacity: 0; transform: translateY(8px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+.animate-tab-in {
+  animation: tab-in 0.34s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-tab-in { animation: none; }
 }
 
 @keyframes check-pop {
@@ -747,9 +761,9 @@ html[data-theme="dark"] .x-button-outline { background-color: var(--bg-card); bo
 html[data-theme="dark"] .x-button-outline:hover { background-color: var(--bg-soft); }
 
 /* Scrollbars & selection */
-html[data-theme="dark"] * { scrollbar-color: #3a3f4a transparent; }
-html[data-theme="dark"] ::-webkit-scrollbar-thumb { background: #3a3f4a; }
-html[data-theme="dark"] ::-webkit-scrollbar-thumb:hover { background: #4a4f5a; }
+html[data-theme="dark"] * { scrollbar-color: #3a3a3a transparent; }
+html[data-theme="dark"] ::-webkit-scrollbar-thumb { background: #3a3a3a; }
+html[data-theme="dark"] ::-webkit-scrollbar-thumb:hover { background: #4a4a4a; }
 html[data-theme="dark"] .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.14); }
 html[data-theme="dark"] ::selection { background-color: color-mix(in srgb, var(--brand) 35%, transparent); }
 

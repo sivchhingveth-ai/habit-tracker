@@ -5,6 +5,7 @@ import { ExerciseTimer } from './ExerciseTimer';
 import { ExerciseDetail } from './ExerciseDetail';
 import { AddWorkoutModal } from './AddWorkoutModal';
 import { PlanView } from './PlanView';
+import { Select } from './Select';
 import { WORKOUTS, Gender, Level, Workout, Exercise, isRepsExercise } from '../utils/workouts';
 import { getCustomWorkouts, deleteCustomWorkout } from '../utils/customWorkouts';
 import { addWorkoutLog, estimateCaloriesBurned, addXP } from '../utils/fitnessData';
@@ -346,31 +347,33 @@ export const GymView: React.FC<GymViewProps> = ({
               {/* Activity Level */}
               <div>
                 <p className="text-[11px] font-bold tracking-[0.2em] uppercase text-white/40 mb-2">Activity Level</p>
-                <select
+                <Select
                   value={calcActivity}
-                  onChange={(e) => setCalcActivity(e.target.value)}
-                  className="w-full py-3 px-4 rounded-xl bg-white/[0.04] border border-white/8 text-white text-[13px] font-bold appearance-none cursor-pointer"
-                >
-                  <option value="sedentary" className="bg-[#0b0c0f]">Sedentary (little/no exercise)</option>
-                  <option value="light" className="bg-[#0b0c0f]">Light (exercise 1-3x/week)</option>
-                  <option value="moderate" className="bg-[#0b0c0f]">Moderate (exercise 3-5x/week)</option>
-                  <option value="active" className="bg-[#0b0c0f]">Active (exercise 6-7x/week)</option>
-                  <option value="very_active" className="bg-[#0b0c0f]">Very Active (intense daily)</option>
-                </select>
+                  onChange={setCalcActivity}
+                  className="w-full py-3 px-4 rounded-xl bg-white/[0.04] border border-white/8 text-white text-[13px] font-bold"
+                  options={[
+                    { value: 'sedentary', label: 'Sedentary - little/no exercise' },
+                    { value: 'light', label: 'Light - exercise 1-3x/week' },
+                    { value: 'moderate', label: 'Moderate - exercise 3-5x/week' },
+                    { value: 'active', label: 'Active - exercise 6-7x/week' },
+                    { value: 'very_active', label: 'Very Active - intense daily' },
+                  ]}
+                />
               </div>
 
               {/* Goal */}
               <div>
                 <p className="text-[11px] font-bold tracking-[0.2em] uppercase text-white/40 mb-2">Goal</p>
-                <select
+                <Select
                   value={calcGoal}
-                  onChange={(e) => setCalcGoal(e.target.value)}
-                  className="w-full py-3 px-4 rounded-xl bg-white/[0.04] border border-white/8 text-white text-[13px] font-bold appearance-none cursor-pointer"
-                >
-                  <option value="lose" className="bg-[#0b0c0f]">Lose Weight (−500 cal)</option>
-                  <option value="maintain" className="bg-[#0b0c0f]">Maintain Weight</option>
-                  <option value="gain" className="bg-[#0b0c0f]">Gain Weight (+300 cal)</option>
-                </select>
+                  onChange={setCalcGoal}
+                  className="w-full py-3 px-4 rounded-xl bg-white/[0.04] border border-white/8 text-white text-[13px] font-bold"
+                  options={[
+                    { value: 'lose', label: 'Lose Weight - −500 cal' },
+                    { value: 'maintain', label: 'Maintain Weight' },
+                    { value: 'gain', label: 'Gain Weight - +300 cal' },
+                  ]}
+                />
               </div>
 
               {/* Results — auto-calculated */}
