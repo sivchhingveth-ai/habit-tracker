@@ -206,7 +206,8 @@ button:active {
 .x-button-primary {
   background-color: var(--text-primary);
   color: #ffffff;
-  font-weight: 800;
+  font-weight: 700;
+  letter-spacing: 0.01em;
   border-radius: 9999px;
   padding: 10px 20px;
   font-size: 15px;
@@ -730,8 +731,11 @@ html[data-theme="dark"] .hover\:border-\[\#0a0a0a\]:hover { border-color: var(--
 html[data-theme="dark"] .hover\:bg-\[\#1a1a1a\]:hover { background-color: #5860ee; }
 
 /* Component classes whose bg was tied to --text-primary (now light) */
-html[data-theme="dark"] .x-button-primary { background-color: var(--brand); color: #ffffff; }
-html[data-theme="dark"] .x-button-primary:hover { background-color: #5860ee; }
+/* Deeper indigo fill than the accent --brand token: white 15px text
+   on #6b71ea sits around 4:1 contrast and reads washed out; #4d54e3
+   brings it to ~5.7:1 while keeping the same hue */
+html[data-theme="dark"] .x-button-primary { background-color: #4d54e3; color: #ffffff; }
+html[data-theme="dark"] .x-button-primary:hover { background-color: #5b62f0; }
 html[data-theme="dark"] .x-button-glass { background-color: var(--bg-card); color: var(--text-primary); border-color: var(--border-soft); }
 html[data-theme="dark"] .x-button-glass:hover { background-color: var(--bg-soft); }
 html[data-theme="dark"] .x-button-outline { background-color: var(--bg-card); border-color: var(--border-soft); }
