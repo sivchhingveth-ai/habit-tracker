@@ -36,9 +36,11 @@
   --accent: #fc8fc6;
   --accent-deep: #d05a96;
 
-  --shadow-sm: 0 1px 2px rgba(10, 10, 10, 0.04);
-  --shadow-md: 0 4px 14px rgba(10, 10, 10, 0.06);
-  --shadow-lg: 0 12px 32px rgba(10, 10, 10, 0.08);
+  /* Layered shadows: a tight contact shadow + a soft ambient one
+     reads as real elevation instead of a flat gray blur */
+  --shadow-sm: 0 1px 2px rgba(16, 18, 27, 0.05);
+  --shadow-md: 0 2px 6px rgba(16, 18, 27, 0.05), 0 10px 28px rgba(16, 18, 27, 0.07);
+  --shadow-lg: 0 4px 12px rgba(16, 18, 27, 0.06), 0 24px 56px rgba(16, 18, 27, 0.14);
 
   /* Liquid-glass hover (light) */
   --glass-fill: rgba(10, 10, 10, 0.06);
@@ -76,9 +78,9 @@ html[data-theme="dark"] {
   --brand-soft: #6b71ea20;
   --brand-medium: #6b71ea38;
 
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.6);
-  --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.7);
-  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.85);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.5), 0 12px 32px rgba(0, 0, 0, 0.55);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.55), 0 28px 72px rgba(0, 0, 0, 0.75);
 
   /* Liquid-glass hover (dark) */
   --glass-fill: rgba(255, 255, 255, 0.07);
@@ -139,7 +141,15 @@ html {
 .bg-x-blue { background-color: var(--brand); }
 
 ::selection {
-  background-color: rgba(78, 85, 224, 0.2);
+  background-color: color-mix(in srgb, var(--brand) 22%, transparent);
+}
+
+/* Modern, accessible keyboard-focus ring in the brand color;
+   pointer interactions stay clean because :focus-visible only
+   fires for keyboard/assistive navigation */
+:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--brand) 70%, transparent);
+  outline-offset: 2px;
 }
 
 html {
@@ -731,7 +741,7 @@ html[data-theme="dark"] * { scrollbar-color: #3a3f4a transparent; }
 html[data-theme="dark"] ::-webkit-scrollbar-thumb { background: #3a3f4a; }
 html[data-theme="dark"] ::-webkit-scrollbar-thumb:hover { background: #4a4f5a; }
 html[data-theme="dark"] .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.14); }
-html[data-theme="dark"] ::selection { background-color: rgba(107, 113, 234, 0.35); }
+html[data-theme="dark"] ::selection { background-color: color-mix(in srgb, var(--brand) 35%, transparent); }
 
 /* ============================================================
    LIGHT THEME — utility remaps

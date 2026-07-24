@@ -214,15 +214,22 @@ export const Tabs: React.FC<TabsProps> = ({
           className="absolute animate-slide-up hidden sm:block"
           style={{ left: gymTabRect.left, top: '100%', width: gymTabRect.width + 40 }}
         >
-          <div className="mt-0.5 rounded-xl bg-[#12161c]/95 backdrop-blur-2xl border border-white/10 shadow-2xl overflow-hidden">
-            {gymDropdownItems.map((item, i) => (
+          <div
+            className="mt-1.5 rounded-xl p-1 bg-[var(--bg-card)]/95 backdrop-blur-2xl border border-[var(--border-soft)] overflow-hidden"
+            style={{ boxShadow: 'var(--shadow-lg)' }}
+          >
+            {gymDropdownItems.map((item) => (
               <button
                 key={item.key}
                 onClick={item.onClick}
-                className={`w-full flex items-center gap-2 px-3 py-2 transition-all active:bg-white/[0.04] ${item.active ? 'bg-white/[0.06]' : ''} ${i > 0 ? 'border-t border-white/5' : ''}`}
+                className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg transition-colors ${
+                  item.active ? 'bg-[var(--brand-soft)]' : 'hover:bg-[var(--bg-soft)] active:bg-[var(--bg-soft)]'
+                }`}
               >
-                <span className="flex-1 text-left text-[12px] font-bold text-white/80">{item.label}</span>
-                {item.active && <Check className="w-3 h-3 text-white/60 shrink-0" />}
+                <span className={`flex-1 text-left text-[12px] font-bold ${item.active ? 'text-[var(--brand)]' : 'text-[var(--text-secondary)]'}`}>
+                  {item.label}
+                </span>
+                {item.active && <Check className="w-3 h-3 text-[var(--brand)] shrink-0" strokeWidth={3} />}
               </button>
             ))}
           </div>
@@ -289,10 +296,10 @@ export const Tabs: React.FC<TabsProps> = ({
                                 setDrawerOpen(false);
                               }}
                               style={{ touchAction: 'manipulation' }}
-                              className={`w-full flex items-center gap-3 pl-12 pr-4 py-3 transition-all active:bg-white/[0.06] ${item.active ? 'bg-white/[0.06]' : ''}`}
+                              className={`w-full flex items-center gap-3 pl-12 pr-4 py-3 transition-all active:bg-white/[0.06] ${item.active ? 'bg-[#6b71ea]/15' : ''}`}
                             >
-                              <span className={`text-[13px] font-bold ${item.active ? 'text-white' : 'text-white/70'}`}>{item.label}</span>
-                              {item.active && <Check className="w-4 h-4 text-white/50 ml-auto" />}
+                              <span className={`text-[13px] font-bold ${item.active ? 'text-[#8b90f0]' : 'text-white/70'}`}>{item.label}</span>
+                              {item.active && <Check className="w-4 h-4 text-[#8b90f0] ml-auto" strokeWidth={3} />}
                             </button>
                         ))}
                       </div>
