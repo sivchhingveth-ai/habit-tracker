@@ -64,12 +64,17 @@
    ============================================================ */
 html[data-theme="dark"] {
   --bg-page: #030305;
-  --bg-card: #0b0c0f;
-  --bg-soft: #14161b;
-  --bg-tint: #08090b;
+  /* Card/border tokens were nearly the same luminance as --bg-page,
+     so any box relying on just a fill + soft border (habit cards,
+     the gym goal/duration pickers, etc.) read as invisible against
+     the near-black canvas. Raised borders more than fills so edges
+     stay clearly legible without turning the app gray. */
+  --bg-card: #101218;
+  --bg-soft: #1b1e26;
+  --bg-tint: #0b0d11;
 
-  --border-soft: #1a1d24;
-  --border-medium: #282c35;
+  --border-soft: #2a2f3b;
+  --border-medium: #3c4250;
 
   --text-primary: #f2f4f7;
   --text-secondary: #b6bcc7;
